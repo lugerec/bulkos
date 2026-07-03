@@ -1,3 +1,4 @@
+import { createUserProfile } from "../services/userService";
 import { create } from "zustand";
 import {
   createUserWithEmailAndPassword,
@@ -39,7 +40,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (email, password) => {
     try {
       set({ loading: true, error: null });
-      await createUserWithEmailAndPassword(auth, email, password);
+      const credentials = await createUserWithEmailAndPassword(auth, email, password);
+
+        await createUserProfile(credentials.user.uid, email);
+        
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Registration failed",
