@@ -1,10 +1,26 @@
+import { useEffect } from "react";
+import { useFoodStore } from "../../store/foodStore";
 import { mealData } from "../../data/meal";
 import { C, type Screen } from "../../shared/ui";
 import { ProgressRing, MacroBar, SectionHeader } from "../../shared/components";
 
 // ─── Nutrition ────────────────────────────────────────────────────────────────
+<p
+  style={{
+    color: "white",
+    fontSize: 12,
+    marginBottom: 12,
+  }}
+>
+  Foods loaded: {loading ? "Loading..." : foods.length}
+</p>
 
 export default function NutritionScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
+  const { foods, loadFoods, loading } = useFoodStore();
+
+    useEffect(() => {
+      loadFoods();
+  }, []);
   const totals = { cal: 1840, p: 142, c: 180, f: 48 };
   const goals = { cal: 3100, p: 220, c: 310, f: 85 };
 
