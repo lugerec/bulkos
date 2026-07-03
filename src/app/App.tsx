@@ -1343,10 +1343,11 @@ export default function App() {
   const navigate = useAppStore((s) => s.navigate);
   const goBack = useAppStore((s) => s.goBack);
 
+  const profile = useAuthStore((s) => s.profile);
+
   if (loading) return null;
   if (!user) return <LoginScreen />;
-
-  return <OnboardingScreen />;
+  if (!profile?.onboardingCompleted) return <OnboardingScreen />;
 
   const showNav = mainScreens.includes(screen);
 

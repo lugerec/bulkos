@@ -1,4 +1,3 @@
-import { createUserProfile } from "../services/userService";
 import { create } from "zustand";
 import {
   createUserWithEmailAndPassword,
@@ -8,9 +7,12 @@ import {
   type User,
 } from "firebase/auth";
 import { auth } from "../services/auth";
+import { createUserProfile } from "../services/userService";
+import { getUserProfile } from "../services/user";
 
 type AuthState = {
   user: User | null;
+  profile: any | null;
   loading: boolean;
   error: string | null;
 
@@ -22,13 +24,28 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
+  profile: null,
   loading: true,
   error: null,
 
   initAuth: () => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        set({
+          user: null,
+          profile: null,
+          loading: false,
+          error: null,
+        });
+
+        return;
+      }
+
+      const profile = await getUserProfile(user.uid);
+
       set({
         user,
+        profile,
         loading: false,
         error: null,
       });
@@ -40,10 +57,21 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (email, password) => {
     try {
       set({ loading: true, error: null });
-      const credentials = await createUserWithEmailAndPassword(auth, email, password);
 
-        await createUserProfile(credentials.user.uid, email);
-        
+      const credentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      await createUserProfile(credentials.user.uid, email);
+
+      const profile = await getUserProfile(credentials.user.uid);
+
+      set({
+        user: credentials.user,
+        profile,
+      });
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Registration failed",
@@ -56,7 +84,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email, password) => {
     try {
       set({ loading: true, error: null });
-      await signInWithEmailAndPassword(auth, email, password);
+
+      const credentials = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const profile = await getUserProfile(credentials.user.uid);
+
+      set({
+        user: credentials.user,
+        profile,
+      });
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Login failed",
@@ -69,7 +109,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     try {
       set({ loading: true, error: null });
+
       await signOut(auth);
+
+      set({
+        user: null,
+        profile: null,
+      });
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Logout failed",
