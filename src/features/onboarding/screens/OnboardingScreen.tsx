@@ -1,16 +1,24 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Dumbbell, Flame, Target } from "lucide-react";
-import { C } from "../../shared/ui";
-import { useAuthStore } from "../../store/authStore";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Dumbbell,
+  Flame,
+  Target,
+} from "lucide-react";
+
+import { C } from "@/shared/ui";
+import { useAuthStore } from "@/store/authStore";
 import type {
   ActivityLevel,
   Goal,
   Sex,
   TrainingFrequency,
   UserProfile,
-} from "../../types/profile";
-import { calculateMacroTargets } from "../../lib/nutrition";
-import { updateUserOnboarding } from "../../services/userService";
+} from "@/types/profile";
+import { calculateMacroTargets } from "@/lib/nutrition";
+import { updateUserOnboarding } from "@/services/userService";
 
 const TOTAL_STEPS = 8;
 

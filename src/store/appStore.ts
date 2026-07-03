@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import type { Screen } from "../shared/ui";
+import type { Screen } from "@/shared/ui";
 
-type MealId =
+export type MealType =
   | "breakfast"
   | "snack"
   | "lunch"
@@ -16,6 +16,9 @@ type AppState = {
   prevScreen: Screen;
   navigate: (to: Screen) => void;
   goBack: () => void;
+
+  selectedMeal: MealType;
+  setSelectedMeal: (meal: MealType) => void;
 
   targets: {
     calories: number;
@@ -34,11 +37,11 @@ type AppState = {
     weight: number;
     sleep: number;
     workoutCompleted: boolean;
-    mealsCompleted: MealId[];
+    mealsCompleted: MealType[];
   };
 
-  completeMeal: (mealId: MealId) => void;
-  uncompleteMeal: (mealId: MealId) => void;
+  completeMeal: (mealId: MealType) => void;
+  uncompleteMeal: (mealId: MealType) => void;
   addWater: (liters: number) => void;
   setWeight: (weight: number) => void;
   completeWorkout: () => void;
@@ -50,6 +53,8 @@ export const useAppStore = create<AppState>((set) => ({
   screen: "dashboard",
   prevScreen: "settings",
 
+  selectedMeal: "breakfast",
+
   navigate: (to) =>
     set((state) => ({
       prevScreen: state.screen,
@@ -60,6 +65,11 @@ export const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       screen: state.prevScreen,
     })),
+
+  setSelectedMeal: (meal) =>
+    set({
+      selectedMeal: meal,
+    }),
 
   targets: {
     calories: 3300,

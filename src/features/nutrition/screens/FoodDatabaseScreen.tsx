@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, CheckCircle2 } from "lucide-react";
-import { C } from "../../shared/ui";
-import { useFoodStore } from "../../store/foodStore";
+
+import { C } from "@/shared/ui";
+import { useFoodStore } from "@/store/foodStore";
+import type { FoodItem } from "@/types/food";
+import FoodDetailScreen from "./FoodDetailScreen";
 
 export default function FoodDatabaseScreen() {
   const { foods, loadFoods, loading } = useFoodStore();
   const [search, setSearch] = useState("");
+  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
 
   useEffect(() => {
     loadFoods();
@@ -16,6 +20,15 @@ export default function FoodDatabaseScreen() {
       food.name.toLowerCase().includes(search.toLowerCase())
     );
   }, [foods, search]);
+
+  if (selectedFood) {
+    return (
+      <FoodDetailScreen
+        food={selectedFood}
+        onBack={() => setSelectedFood(null)}
+      />
+    );
+  }
 
   return (
     <div className="px-5 pb-8 pt-4">
@@ -51,6 +64,7 @@ export default function FoodDatabaseScreen() {
         {filteredFoods.map((food) => (
           <button
             key={food.id}
+            onClick={() => setSelectedFood(food)}
             className="w-full text-left rounded-[20px] p-4"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
@@ -61,9 +75,7 @@ export default function FoodDatabaseScreen() {
                     {food.name}
                   </p>
 
-                  {food.verified && (
-                    <CheckCircle2 size={14} color={C.accent} />
-                  )}
+                  {food.verified && <CheckCircle2 size={14} color={C.accent} />}
                 </div>
 
                 <p className="text-xs mb-3" style={{ color: C.fg3 }}>

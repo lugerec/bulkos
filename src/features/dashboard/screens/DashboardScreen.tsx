@@ -1,8 +1,9 @@
 import { ArrowUpRight, Target, Play, Check, Droplets } from "lucide-react";
 import { XAxis, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
-import { C, type Screen } from "../../shared/ui";
-import { ProgressRing, Badge, SectionHeader } from "../../shared/components";
-import { useAuthStore } from "../../store/authStore";
+
+import { C, type Screen } from "@/shared/ui";
+import { ProgressRing, Badge, SectionHeader } from "@/shared/components";
+import { useAuthStore } from "@/store/authStore";
 
 const weeklyBarData = [
   { day: "Mon", cal: 2820 },

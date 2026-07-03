@@ -1,8 +1,23 @@
 import { useEffect } from "react";
-import { useFoodStore } from "../../store/foodStore";
-import { mealData } from "../../data/meal";
-import { C, type Screen } from "../../shared/ui";
-import { ProgressRing, MacroBar, SectionHeader } from "../../shared/components";
+
+import { useFoodStore } from "@/store/foodStore";
+import { useAppStore, type MealType } from "@/store/appStore";
+import { mealData } from "@/data/meal";
+import { C, type Screen } from "@/shared/ui";
+import {
+  ProgressRing,
+  MacroBar,
+  SectionHeader,
+} from "@/shared/components";
+
+const mealTypeMap: Record<string, MealType> = {
+  Breakfast: "breakfast",
+  "Morning Snack": "snack",
+  Lunch: "lunch",
+  "Pre-Workout": "preWorkout",
+  "Post-Workout": "postWorkout",
+  Dinner: "dinner",
+};
 
 export default function NutritionScreen({
   onNavigate,
@@ -10,10 +25,23 @@ export default function NutritionScreen({
   onNavigate: (s: Screen) => void;
 }) {
   const { foods, loadFoods, loading } = useFoodStore();
+  const setSelectedMeal = useAppStore((s) => s.setSelectedMeal);
 
   useEffect(() => {
     loadFoods();
   }, [loadFoods]);
+
+  const openFoodDatabase = (mealLabel?: string) => {
+    if (mealLabel) {
+      const mealType = mealTypeMap[mealLabel];
+
+      if (mealType) {
+        setSelectedMeal(mealType);
+      }
+    }
+
+    onNavigate("food-db");
+  };
 
   const totals = { cal: 1840, p: 142, c: 180, f: 48 };
   const goals = { cal: 3100, p: 220, c: 310, f: 85 };
@@ -76,7 +104,11 @@ export default function NutritionScreen({
       </div>
 
       <div className="px-5">
-        <SectionHeader title="Meals" action="Add food" onAction={() => onNavigate("food-db")} />
+        <SectionHeader
+          title="Meals"
+          action="Add food"
+          onAction={() => openFoodDatabase("Breakfast")}
+        />
 
         <div className="flex flex-col gap-3">
           {mealData.map((meal, i) => (
@@ -130,7 +162,7 @@ export default function NutritionScreen({
 
               <div className="px-3 pb-3">
                 <button
-                  onClick={() => onNavigate("food-db")}
+                  onClick={() => openFoodDatabase(meal.type)}
                   className="w-full py-2 rounded-[12px] text-xs font-semibold"
                   style={{
                     background: C.card2,
@@ -138,7 +170,7 @@ export default function NutritionScreen({
                     color: C.fg2,
                   }}
                 >
-                  Change Meal
+                  Add to {meal.type}
                 </button>
               </div>
             </div>

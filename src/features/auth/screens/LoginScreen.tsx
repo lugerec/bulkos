@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dumbbell } from "lucide-react";
-import { C } from "../../shared/ui";
-import { useAuthStore } from "../../store/authStore";
+import { C } from "../../../shared/ui";
+import { useAuthStore } from "../../../store/authStore";
 
 export default function LoginScreen() {
   const login = useAuthStore((s) => s.login);
