@@ -1,7 +1,8 @@
+import FoodDatabaseScreenNew from "../features/nutrition/FoodDatabaseScreen";
 import OnboardingScreen from "../features/onboarding/OnboardingScreen";
 import LoginScreen from "../features/auth/LoginScreen";
 import { useAuthStore } from "../store/authStore";
-import "../firebase/config";
+import "../config/config";
 import { useAppStore } from "../store/appStore";
 import {
   ProgressRing,
@@ -1389,9 +1390,8 @@ export default function App() {
         >
           {screen === "dashboard" && <DashboardScreen onNavigate={navigate} />}
           {screen === "nutrition" && <NutritionScreen onNavigate={navigate} />}
-          {screen === "food-db" && (
-            <FoodDatabaseScreen onNavigate={navigate} onBack={goBack} />
-          )}
+          {screen === "food-db" && <FoodDatabaseScreenNew />}
+          
           {screen === "meal-detail" && <MealDetailScreen onBack={() => navigate("food-db")} />}
           {screen === "workout" && <WorkoutScreen />}
           {screen === "progress" && <ProgressScreen />}
