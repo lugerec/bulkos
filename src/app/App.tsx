@@ -1,3 +1,4 @@
+import OnboardingScreen from "../features/onboarding/OnboardingScreen";
 import LoginScreen from "../features/auth/LoginScreen";
 import { useAuthStore } from "../store/authStore";
 import "../firebase/config";
@@ -1052,6 +1053,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
 function SettingsScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [notifications, setNotifications] = useState(true);
   const [units, setUnits] = useState<"metric" | "imperial">("metric");
+  const logout = useAuthStore((s) => s.logout);
 
   const Toggle = ({ value, onChange }: { value: boolean; onChange: () => void }) => (
     <button
@@ -1263,6 +1265,14 @@ function SettingsScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
         Export Data
       </button>
 
+
+      <button
+      onClick={logout}
+      className="w-full py-4 rounded-[18px] font-semibold text-sm mb-3"
+      style={{ background: "rgba(255,76,76,0.08)", border: `1px solid rgba(255,76,76,0.25)`, color: C.red }}
+      >
+      Logout
+      </button>
       <p className="text-center text-xs mt-2" style={{ color: C.fg3 }}>BulkOS v2.4.1 · Premium</p>
     </div>
   );
@@ -1335,6 +1345,8 @@ export default function App() {
 
   if (loading) return null;
   if (!user) return <LoginScreen />;
+
+  return <OnboardingScreen />;
 
   const showNav = mainScreens.includes(screen);
 
