@@ -1,3 +1,4 @@
+import { mealData } from "../data/meal";
 import { useState, useEffect } from "react";
 import {
   Home, Utensils, TrendingUp, Dumbbell, Settings as SettingsIcon,
@@ -433,15 +434,6 @@ function DashboardScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
 }
 
 // ─── Nutrition ────────────────────────────────────────────────────────────────
-
-const mealData = [
-  { type: "Breakfast", name: "Overnight Oats & Berries", cal: 520, p: 38, c: 62, f: 12, img: "photo-1517093157656-b9eccef91cb1", time: "7:30 AM" },
-  { type: "Snack", name: "Greek Yogurt & Almonds", cal: 280, p: 22, c: 18, f: 11, img: "photo-1490645935967-10de6ba17061", time: "10:00 AM" },
-  { type: "Lunch", name: "Grilled Chicken Rice Bowl", cal: 680, p: 55, c: 72, f: 14, img: "photo-1546069901-ba9599a7e63c", time: "1:00 PM" },
-  { type: "Pre-Workout", name: "Banana + Whey Shake", cal: 340, p: 32, c: 42, f: 3, img: "photo-1571019614242-c5c5dee9f50b", time: "4:30 PM" },
-  { type: "Post-Workout", name: "Salmon & Quinoa Bowl", cal: 540, p: 48, c: 42, f: 16, img: "photo-1467003909585-2f8a72700288", time: "7:00 PM" },
-  { type: "Dinner", name: "Cottage Cheese & Walnuts", cal: 220, p: 28, c: 8, f: 9, img: "photo-1550583724-b2692b85b150", time: "9:30 PM" },
-];
 
 function NutritionScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const totals = { cal: 1840, p: 142, c: 180, f: 48 };
