@@ -1,31 +1,36 @@
 import { useState } from "react";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  Minus,
-  Plus,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2, Minus, Plus } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import type { FoodItem } from "@/types/food";
+import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/appStore";
+import { addFoodToMeal } from "@/services/logService";
 
 type Props = {
   food: FoodItem;
   onBack: () => void;
 };
 
-const meals = [
-  "Breakfast",
-  "Morning Snack",
-  "Lunch",
-  "Pre Workout",
-  "Post Workout",
-  "Dinner",
-] as const;
+const mealLabels = {
+  breakfast: "Breakfast",
+  snack: "Morning Snack",
+  lunch: "Lunch",
+  preWorkout: "Pre Workout",
+  postWorkout: "Post Workout",
+  dinner: "Dinner",
+} as const;
+
+function getTodayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export default function FoodDetailScreen({ food, onBack }: Props) {
+  const user = useAuthStore((s) => s.user);
+  const selectedMeal = useAppStore((s) => s.selectedMeal);
+
   const [grams, setGrams] = useState(100);
-  const [meal, setMeal] = useState<(typeof meals)[number]>("Breakfast");
+  const [saving, setSaving] = useState(false);
 
   const multiplier = grams / food.serving;
 
@@ -37,6 +42,32 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
   const decrease = () => setGrams((v) => Math.max(10, v - 10));
   const increase = () => setGrams((v) => v + 10);
 
+  const navigate = useAppStore((s) => s.navigate);
+const [error, setError] = useState<string | null>(null);
+
+const handleAddFood = async () => {
+  if (!user || saving) return;
+
+  try {
+    setSaving(true);
+    setError(null);
+
+    await addFoodToMeal({
+      uid: user.uid,
+      date: getTodayKey(),
+      meal: selectedMeal,
+      food,
+      grams,
+    });
+
+    navigate("nutrition");
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Failed to add food");
+  } finally {
+    setSaving(false);
+  }
+};
+
   return (
     <div className="px-5 pb-8 pt-4">
       <button
@@ -47,10 +78,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         <ArrowLeft size={18} color={C.fg} />
       </button>
 
-      <div
-        className="rounded-[28px] p-5 mb-5"
-        style={{ background: C.card, border: `1px solid ${C.border}` }}
-      >
+      <div className="rounded-[28px] p-5 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
         <div className="flex items-start justify-between gap-3 mb-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -81,56 +109,22 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         </div>
       </div>
 
-      <div
-        className="rounded-[28px] p-5 mb-5"
-        style={{ background: C.card, border: `1px solid ${C.border}` }}
-      >
-        <p
-          className="text-[11px] font-bold uppercase tracking-widest mb-4"
-          style={{ color: C.fg2 }}
-        >
+      <div className="rounded-[28px] p-5 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <p className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: C.fg2 }}>
           Meal
         </p>
-
-        <div className="grid grid-cols-2 gap-3">
-          {meals.map((item) => {
-            const active = meal === item;
-
-            return (
-              <button
-                key={item}
-                onClick={() => setMeal(item)}
-                className="rounded-2xl py-3 px-4 text-left"
-                style={{
-                  background: active ? C.accent : C.card2,
-                  border: `1px solid ${active ? C.accent : C.border}`,
-                  color: active ? C.bg : C.fg,
-                }}
-              >
-                <span className="text-sm font-semibold">{item}</span>
-              </button>
-            );
-          })}
-        </div>
+        <p className="text-xl font-extrabold" style={{ color: C.fg }}>
+          {mealLabels[selectedMeal]}
+        </p>
       </div>
 
-      <div
-        className="rounded-[28px] p-5 mb-5"
-        style={{ background: C.card, border: `1px solid ${C.border}` }}
-      >
-        <p
-          className="text-[11px] font-bold uppercase tracking-widest mb-4"
-          style={{ color: C.fg2 }}
-        >
+      <div className="rounded-[28px] p-5 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <p className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: C.fg2 }}>
           Serving size
         </p>
 
         <div className="flex items-center justify-between">
-          <button
-            onClick={decrease}
-            className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{ background: C.card2, border: `1px solid ${C.border}` }}
-          >
+          <button onClick={decrease} className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: C.card2, border: `1px solid ${C.border}` }}>
             <Minus size={18} color={C.fg} />
           </button>
 
@@ -143,11 +137,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
             </p>
           </div>
 
-          <button
-            onClick={increase}
-            className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{ background: C.accent }}
-          >
+          <button onClick={increase} className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: C.accent }}>
             <Plus size={18} color={C.bg} />
           </button>
         </div>
@@ -160,10 +150,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
           border: "1px solid rgba(124,255,107,0.2)",
         }}
       >
-        <p
-          className="text-[11px] font-bold uppercase tracking-widest mb-4"
-          style={{ color: C.fg2 }}
-        >
+        <p className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: C.fg2 }}>
           Calculated macros
         </p>
 
@@ -176,29 +163,27 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </div>
 
       <button
+        onClick={handleAddFood}
+        disabled={saving}
         className="w-full py-4 rounded-[18px] font-bold text-base"
-        style={{ background: C.accent, color: C.bg }}
+        style={{ background: C.accent, color: C.bg, opacity: saving ? 0.6 : 1 }}
       >
-        Add to {meal}
+
+      {error && (
+        <p className="text-sm mb-3" style={{ color: "#ff4d4d" }}>
+      {error}
+      </p>
+        )}
+
+        {saving ? "Adding..." : `Add to ${mealLabels[selectedMeal]}`}
       </button>
     </div>
   );
 }
 
-function Macro({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
+function Macro({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div
-      className="rounded-2xl p-3"
-      style={{ background: C.card2, border: `1px solid ${C.border}` }}
-    >
+    <div className="rounded-2xl p-3" style={{ background: C.card2, border: `1px solid ${C.border}` }}>
       <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
@@ -221,10 +206,7 @@ function BigMacro({
   color: string;
 }) {
   return (
-    <div
-      className="rounded-2xl p-4"
-      style={{ background: "rgba(9,9,9,0.35)", border: `1px solid ${C.border}` }}
-    >
+    <div className="rounded-2xl p-4" style={{ background: "rgba(9,9,9,0.35)", border: `1px solid ${C.border}` }}>
       <p className="text-xs mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
