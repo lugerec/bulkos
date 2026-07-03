@@ -1,3 +1,4 @@
+import { useAppStore } from "../store/appStore";
 import {
   ProgressRing,
   MacroBar,
@@ -1317,15 +1318,9 @@ function BottomNav({ active, onNavigate }: {
 const mainScreens: Screen[] = ["dashboard", "nutrition", "workout", "progress", "settings"];
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>("dashboard");
-  const [prevScreen, setPrevScreen] = useState<Screen>("settings");
-
-  const navigate = (to: Screen) => {
-    setPrevScreen(screen);
-    setScreen(to);
-  };
-
-  const goBack = () => setScreen(prevScreen);
+  const screen = useAppStore((s) => s.screen);
+  const navigate = useAppStore((s) => s.navigate);
+  const goBack = useAppStore((s) => s.goBack);
 
   const showNav = mainScreens.includes(screen);
 
