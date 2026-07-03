@@ -31,3 +31,24 @@ export async function createUserProfile(uid: string, email: string) {
     },
   });
 }
+
+import type { MacroTargets, UserProfile } from "../types/profile";
+
+export async function updateUserOnboarding(
+  uid: string,
+  profile: UserProfile,
+  nutrition: MacroTargets
+) {
+  const ref = doc(db, "users", uid);
+
+  await setDoc(
+    ref,
+    {
+      profile,
+      nutrition,
+      onboardingCompleted: true,
+      updatedAt: new Date(),
+    },
+    { merge: true }
+  );
+}
