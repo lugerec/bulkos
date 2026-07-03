@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { Screen } from "../shared/ui";
 
 type MealId =
   | "breakfast"
@@ -10,6 +11,11 @@ type MealId =
 
 type AppState = {
   userName: string;
+
+  screen: Screen;
+  prevScreen: Screen;
+  navigate: (to: Screen) => void;
+  goBack: () => void;
 
   targets: {
     calories: number;
@@ -40,6 +46,20 @@ type AppState = {
 
 export const useAppStore = create<AppState>((set) => ({
   userName: "Lukáš",
+
+  screen: "dashboard",
+  prevScreen: "settings",
+
+  navigate: (to) =>
+    set((state) => ({
+      prevScreen: state.screen,
+      screen: to,
+    })),
+
+  goBack: () =>
+    set((state) => ({
+      screen: state.prevScreen,
+    })),
 
   targets: {
     calories: 3300,
