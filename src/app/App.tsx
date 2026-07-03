@@ -1,3 +1,4 @@
+import "../firebase/config";
 import { useAppStore } from "../store/appStore";
 import {
   ProgressRing,
