@@ -1,3 +1,4 @@
+import { C, type Screen } from "../shared/ui";
 import { mealData } from "../data/meal";
 import { useState, useEffect } from "react";
 import {
@@ -11,35 +12,6 @@ import {
   AreaChart, Area, XAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell,
 } from "recharts";
-
-// ─── Design tokens ────────────────────────────────────────────────────────────
-const C = {
-  bg: "#090909",
-  card: "#171717",
-  card2: "#1e1e1e",
-  border: "#252525",
-  accent: "#7CFF6B",
-  accentDim: "rgba(124,255,107,0.12)",
-  accentDim2: "rgba(124,255,107,0.06)",
-  fg: "#F0F0F0",
-  fg2: "#888888",
-  fg3: "#444444",
-  red: "#FF4C4C",
-  amber: "#FFB547",
-  blue: "#5B8DEF",
-  purple: "#A855F7",
-} as const;
-
-type Screen =
-  | "dashboard"
-  | "nutrition"
-  | "workout"
-  | "progress"
-  | "settings"
-  | "analytics"
-  | "food-db"
-  | "meal-detail"
-  | "grocery";
 
 // ─── Utility Components ────────────────────────────────────────────────────────
 
