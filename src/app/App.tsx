@@ -1,3 +1,5 @@
+import LoginScreen from "../features/auth/LoginScreen";
+import { useAuthStore } from "../store/authStore";
 import "../firebase/config";
 import { useAppStore } from "../store/appStore";
 import {
@@ -1319,9 +1321,20 @@ function BottomNav({ active, onNavigate }: {
 const mainScreens: Screen[] = ["dashboard", "nutrition", "workout", "progress", "settings"];
 
 export default function App() {
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+  const initAuth = useAuthStore((s) => s.initAuth);
+
+  useEffect(() => {
+  return initAuth();
+  }, [initAuth]);
+
   const screen = useAppStore((s) => s.screen);
   const navigate = useAppStore((s) => s.navigate);
   const goBack = useAppStore((s) => s.goBack);
+
+  if (loading) return null;
+  if (!user) return <LoginScreen />;
 
   const showNav = mainScreens.includes(screen);
 
