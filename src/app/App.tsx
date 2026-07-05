@@ -807,25 +807,6 @@ export default function App() {
           {screen === "settings" && <SettingsScreen onNavigate={navigate} />}
         </div>
 
-        {/* Floating Add Food button (Nutrition only) */}
-        {screen === "nutrition" && (
-          <div
-            className="absolute z-20"
-            style={{ bottom: 100, right: 20 }}
-          >
-            <button
-              onClick={() => navigate("food-db")}
-              className="w-14 h-14 rounded-full flex items-center justify-center"
-              style={{
-                background: C.accent,
-                boxShadow: `0 8px 32px rgba(124,255,107,0.4)`,
-              }}
-            >
-              <Plus size={24} color={C.bg} strokeWidth={2.5} />
-            </button>
-          </div>
-        )}
-
         {/* Bottom navigation */}
         {showNav && <BottomNav active={screen} onNavigate={navigate} />}
       </div>
