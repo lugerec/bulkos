@@ -1,3 +1,4 @@
+import { useDailyTotalsStore } from "@/store/dailyTotalsStore";
 import { create } from "zustand";
 
 import type { MealType } from "@/store/appStore";
@@ -50,6 +51,9 @@ export const useDailyLogStore = create<DailyLogState>((set) => ({
         foodsByMeal: Object.fromEntries(entries) as Record<MealType, LoggedFood[]>,
         loading: false,
       });
+
+      useDailyTotalsStore.getState().recalculate();
+
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Failed to load daily log",
