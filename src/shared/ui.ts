@@ -16,12 +16,15 @@ export const C = {
   } as const;
   
   export type Screen =
-    | "dashboard"
-    | "nutrition"
-    | "workout"
-    | "progress"
-    | "settings"
-    | "analytics"
-    | "food-db"
-    | "meal-detail"
-    | "grocery";
+  | "dashboard"
+  | "nutrition"
+  | "food-db"
+  | "meal-detail"
+  | "workout"
+  | "workout-history"
+  | "workout-detail"
+  | "progress"
+  | "analytics"
+  | "grocery"
+  | "exercise-history"
+  | "settings";

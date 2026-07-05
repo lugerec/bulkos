@@ -24,9 +24,19 @@ function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function getWeekStartKey() {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(d.setDate(diff));
+  return monday.toISOString().slice(0, 10);
+}
+
 function formatDuration(seconds: number) {
-  const minutes = Math.round(seconds / 60);
-  return `~${minutes} min`;
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  return rest > 0 ? `${minutes}m ${rest}s` : `${minutes}m`;
 }
 
 export default function DashboardScreen({
@@ -39,7 +49,6 @@ export default function DashboardScreen({
 
   const foodsByMeal = useDailyLogStore((s) => s.foodsByMeal);
   const loadDailyLog = useDailyLogStore((s) => s.loadDailyLog);
-
   const totals = useDailyTotalsStore((s) => s.totals);
 
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
@@ -47,7 +56,6 @@ export default function DashboardScreen({
 
   useEffect(() => {
     if (!user) return;
-
     loadDailyLog(user.uid, getTodayKey());
     loadWorkouts(user.uid);
   }, [user, loadDailyLog, loadWorkouts]);
@@ -89,8 +97,17 @@ export default function DashboardScreen({
   );
 
   const latestWorkout = workouts[0];
-
-  const workoutsThisWeek = workouts.length;
+  const weekStart = getWeekStartKey();
+  const workoutsThisWeek = workouts.filter((w) => w.date >= weekStart).length;
+  const totalVolume = workouts.reduce((sum, w) => sum + w.volumeKg, 0);
+  const totalTrainingTime = workouts.reduce(
+    (sum, w) => sum + w.durationSeconds,
+    0
+  );
+  const bestWorkout = workouts.reduce(
+    (best, w) => (!best || w.volumeKg > best.volumeKg ? w : best),
+    undefined as typeof latestWorkout | undefined
+  );
 
   const mealStatus: { name: string; done: boolean; meal: MealType }[] = [
     { name: "Breakfast", meal: "breakfast", done: foodsByMeal.breakfast.length > 0 },
@@ -164,12 +181,7 @@ export default function DashboardScreen({
         <div style={{ height: 80 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={todayBarData} barSize={20} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
-              <XAxis
-                dataKey="day"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: C.fg3, fontSize: 10, fontFamily: "Inter" }}
-              />
+              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: C.fg3, fontSize: 10, fontFamily: "Inter" }} />
               <Bar dataKey="cal" radius={[5, 5, 0, 0]}>
                 {todayBarData.map((entry, i) => (
                   <Cell key={i} fill={entry.cal >= macros.calGoal ? C.accent : C.accentDim} />
@@ -184,34 +196,10 @@ export default function DashboardScreen({
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         {[
-          {
-            label: "Calories",
-            remaining: Math.max(macros.calGoal - macros.cal, 0),
-            unit: "kcal",
-            color: C.amber,
-            pct: safePct(macros.cal, macros.calGoal),
-          },
-          {
-            label: "Protein",
-            remaining: Math.max(macros.proteinGoal - macros.protein, 0),
-            unit: "g",
-            color: C.accent,
-            pct: safePct(macros.protein, macros.proteinGoal),
-          },
-          {
-            label: "Carbs",
-            remaining: Math.max(macros.carbsGoal - macros.carbs, 0),
-            unit: "g",
-            color: C.blue,
-            pct: safePct(macros.carbs, macros.carbsGoal),
-          },
-          {
-            label: "Fat",
-            remaining: Math.max(macros.fatGoal - macros.fat, 0),
-            unit: "g",
-            color: C.purple,
-            pct: safePct(macros.fat, macros.fatGoal),
-          },
+          { label: "Calories", remaining: Math.max(macros.calGoal - macros.cal, 0), unit: "kcal", color: C.amber, pct: safePct(macros.cal, macros.calGoal) },
+          { label: "Protein", remaining: Math.max(macros.proteinGoal - macros.protein, 0), unit: "g", color: C.accent, pct: safePct(macros.protein, macros.proteinGoal) },
+          { label: "Carbs", remaining: Math.max(macros.carbsGoal - macros.carbs, 0), unit: "g", color: C.blue, pct: safePct(macros.carbs, macros.carbsGoal) },
+          { label: "Fat", remaining: Math.max(macros.fatGoal - macros.fat, 0), unit: "g", color: C.purple, pct: safePct(macros.fat, macros.fatGoal) },
         ].map(({ label, remaining, unit, color, pct }) => (
           <div key={label} className="rounded-[18px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
             <div className="flex justify-between items-start mb-3">
@@ -254,14 +242,7 @@ export default function DashboardScreen({
               <div key={label} className="flex items-center gap-2">
                 <span className="text-[10px] w-10" style={{ color: C.fg3 }}>{label}</span>
                 <div className="flex-1" style={{ height: 3, background: C.border, borderRadius: 99 }}>
-                  <div
-                    style={{
-                      height: "100%",
-                      width: `${Math.min(pct * 100, 100)}%`,
-                      background: color,
-                      borderRadius: 99,
-                    }}
-                  />
+                  <div style={{ height: "100%", width: `${Math.min(pct * 100, 100)}%`, background: color, borderRadius: 99 }} />
                 </div>
               </div>
             ))}
@@ -269,7 +250,7 @@ export default function DashboardScreen({
         </div>
       </div>
 
-      <SectionHeader title="Today's Training" />
+      <SectionHeader title="Today's Training" action="History" onAction={() => onNavigate("workout-history")} />
 
       <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
         <div className="flex items-center justify-between">
@@ -278,55 +259,43 @@ export default function DashboardScreen({
               {latestWorkout?.name ?? "Push Day A"}
             </p>
             <p className="text-xs mt-0.5" style={{ color: C.fg2 }}>
-              {latestWorkout
-                ? `${latestWorkout.completedSets}/${latestWorkout.totalSets} sets completed`
-                : "Chest · Shoulders · Triceps"}
+              {latestWorkout ? `${latestWorkout.completedSets}/${latestWorkout.totalSets} sets completed` : "Chest · Shoulders · Triceps"}
             </p>
             <div className="flex gap-4 mt-2.5">
               <span className="text-xs" style={{ color: C.fg3 }}>
-                {latestWorkout
-                  ? `${latestWorkout.volumeKg.toLocaleString()} kg`
-                  : "6 exercises"}
+                {latestWorkout ? `${latestWorkout.volumeKg.toLocaleString()} kg` : "6 exercises"}
               </span>
               <span className="text-xs" style={{ color: C.fg3 }}>
-                {latestWorkout
-                  ? formatDuration(latestWorkout.durationSeconds)
-                  : "~65 min"}
+                {latestWorkout ? formatDuration(latestWorkout.durationSeconds) : "~65 min"}
               </span>
             </div>
           </div>
 
-          <button
-            onClick={() => onNavigate("workout")}
-            className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{ background: C.accent, boxShadow: `0 6px 20px rgba(124,255,107,0.3)` }}
-          >
+          <button onClick={() => onNavigate("workout")} className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: C.accent, boxShadow: `0 6px 20px rgba(124,255,107,0.3)` }}>
             <Play size={18} fill={C.bg} color={C.bg} />
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="rounded-[18px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-          <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
-            Workouts this week
-          </p>
-          <p className="text-[24px] font-bold leading-none" style={{ color: C.fg }}>
-            {workoutsThisWeek}
-          </p>
-        </div>
+        <MetricCard label="Workouts this week" value={`${workoutsThisWeek}`} />
+        <MetricCard label="Total workouts" value={`${workouts.length}`} />
+        <MetricCard label="Total volume" value={`${totalVolume.toLocaleString()} kg`} />
+        <MetricCard label="Training time" value={formatDuration(totalTrainingTime)} />
+      </div>
 
-        <div className="rounded-[18px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-          <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
-            Last volume
-          </p>
-          <p className="text-[24px] font-bold leading-none" style={{ color: C.fg }}>
-            {latestWorkout ? latestWorkout.volumeKg.toLocaleString() : 0}
-            <span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>
-              kg
-            </span>
-          </p>
-        </div>
+      <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
+          Best workout
+        </p>
+        <p className="text-base font-bold" style={{ color: C.fg }}>
+          {bestWorkout?.name ?? "No workout yet"}
+        </p>
+        <p className="text-xs mt-1" style={{ color: C.fg3 }}>
+          {bestWorkout
+            ? `${bestWorkout.volumeKg.toLocaleString()} kg · ${formatDuration(bestWorkout.durationSeconds)}`
+            : "Complete a workout to unlock stats"}
+        </p>
       </div>
 
       <SectionHeader title="Meals" action="Log food" onAction={() => onNavigate("nutrition")} />
@@ -334,23 +303,11 @@ export default function DashboardScreen({
       <div className="rounded-[20px] mb-5 overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}` }}>
         {mealStatus.map(({ name, done }, i) => (
           <div key={name} className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: i < mealStatus.length - 1 ? `1px solid ${C.border}` : "none" }}>
-            <div
-              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{
-                background: done ? C.accentDim : "transparent",
-                border: done ? "none" : `1.5px solid ${C.fg3}`,
-              }}
-            >
+            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: done ? C.accentDim : "transparent", border: done ? "none" : `1.5px solid ${C.fg3}` }}>
               {done && <Check size={11} color={C.accent} strokeWidth={2.5} />}
             </div>
-
-            <span className="text-sm flex-1" style={{ color: done ? C.fg : C.fg3 }}>
-              {name}
-            </span>
-
-            <span className="text-[11px]" style={{ color: C.fg3 }}>
-              {done ? "Logged" : "Pending"}
-            </span>
+            <span className="text-sm flex-1" style={{ color: done ? C.fg : C.fg3 }}>{name}</span>
+            <span className="text-[11px]" style={{ color: C.fg3 }}>{done ? "Logged" : "Pending"}</span>
           </div>
         ))}
       </div>
@@ -387,13 +344,22 @@ export default function DashboardScreen({
         </div>
       </div>
 
-      <button
-        onClick={() => onNavigate("workout")}
-        className="w-full py-4 rounded-[18px] font-bold text-base"
-        style={{ background: C.accent, color: C.bg, boxShadow: `0 8px 32px rgba(124,255,107,0.25)` }}
-      >
+      <button onClick={() => onNavigate("workout")} className="w-full py-4 rounded-[18px] font-bold text-base" style={{ background: C.accent, color: C.bg, boxShadow: `0 8px 32px rgba(124,255,107,0.25)` }}>
         Start Today's Workout
       </button>
+    </div>
+  );
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[18px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+      <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
+        {label}
+      </p>
+      <p className="text-[20px] font-bold leading-none" style={{ color: C.fg }}>
+        {value}
+      </p>
     </div>
   );
 }

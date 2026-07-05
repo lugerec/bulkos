@@ -1,3 +1,6 @@
+import ExerciseHistoryScreen from "@/features/workout/screens/ExerciseHistoryScreen";
+import WorkoutDetailScreen from "@/features/workout/screens/WorkoutDetailScreen";
+import WorkoutHistoryScreen from "@/features/workout/screens/WorkoutHistoryScreen";
 import SettingsScreen from "@/features/settings/screens/SettingsScreen";
 import ProgressScreen from "@/features/progress/screens/ProgressScreen";
 import WorkoutScreen from "@/features/workout/screens/WorkoutScreen";
@@ -9,12 +12,6 @@ import NutritionScreen from "../features/nutrition/screens/NutritionScreen";
 
 import { pushA } from "@/data/workouts/pushA";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
-
-useEffect(() => {
-  useWorkoutTemplateStore
-    .getState()
-    .setTemplates([pushA]);
-}, []);
 
 import { useAuthStore } from "../store/authStore";
 import { useAppStore } from "../store/appStore";
@@ -756,6 +753,10 @@ export default function App() {
   return initAuth();
   }, [initAuth]);
 
+  useEffect(() => {
+    useWorkoutTemplateStore.getState().setTemplates([pushA]);
+  }, []);
+
   const screen = useAppStore((s) => s.screen);
   const navigate = useAppStore((s) => s.navigate);
   const goBack = useAppStore((s) => s.goBack);
@@ -810,6 +811,21 @@ export default function App() {
           
           {screen === "meal-detail" && <MealDetailScreen onBack={() => navigate("food-db")} />}
           {screen === "workout" && <WorkoutScreen />}
+          {screen === "workout-history" && (
+          <WorkoutHistoryScreen
+          onBack={() => navigate("dashboard")}
+            onNavigate={navigate}
+        />
+        )}
+
+        {screen === "workout-detail" && (
+        <WorkoutDetailScreen onBack={() => navigate("workout-history")} onNavigate={navigate}
+        />
+        
+        )}
+        {screen === "exercise-history" && (
+        <ExerciseHistoryScreen onBack={() => navigate("workout-detail")} />
+        )}
           {screen === "progress" && <ProgressScreen />}
           {screen === "analytics" && <AnalyticsScreen onBack={() => navigate("settings")} />}
           {screen === "grocery" && <GroceryListScreen onBack={() => navigate("settings")} />}

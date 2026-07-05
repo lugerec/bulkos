@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Check, CheckCircle2, Circle, Timer, X } from "lucide-react";
+import { CheckCircle2, Timer, X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { saveWorkout } from "@/services/workoutService";
+import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
+import type { WorkoutExercise } from "@/types/workout";
 
 const fmt = (s: number) =>
   `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60)
@@ -19,6 +21,7 @@ export default function WorkoutScreen() {
   const user = useAuthStore((s) => s.user);
   const workout = useWorkoutTemplateStore((s) => s.selected);
 
+  const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [restTimer, setRestTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
@@ -26,6 +29,21 @@ export default function WorkoutScreen() {
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!workout) return;
+
+    setExercises(
+      workout.exercises.map((exercise) => ({
+        ...exercise,
+        sets: exercise.sets.map((set) => ({ ...set })),
+      }))
+    );
+
+    setCompleted(new Set());
+    setElapsed(0);
+    setDone(false);
+  }, [workout]);
 
   useEffect(() => {
     const t = setInterval(() => setElapsed((e) => e + 1), 1000);
@@ -51,30 +69,53 @@ export default function WorkoutScreen() {
 
   if (!workout) return null;
 
-  const workoutExercises = workout.exercises;
-
   const toggleSet = (exIdx: number, setIdx: number) => {
     const key = `${exIdx}-${setIdx}`;
 
     setCompleted((prev) => {
-      const n = new Set(prev);
+      const next = new Set(prev);
 
-      if (n.has(key)) {
-        n.delete(key);
+      if (next.has(key)) {
+        next.delete(key);
       } else {
-        n.add(key);
+        next.add(key);
         setRestTimer(90);
         setIsResting(true);
       }
 
-      return n;
+      return next;
     });
   };
 
-  const totalSets = workoutExercises.reduce((a, e) => a + e.sets.length, 0);
+  const updateSet = (
+    exIdx: number,
+    setIdx: number,
+    field: "weight" | "reps",
+    value: number
+  ) => {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+
+        return {
+          ...exercise,
+          sets: exercise.sets.map((set, setIndex) => {
+            if (setIndex !== setIdx) return set;
+
+            return {
+              ...set,
+              [field]: value,
+            };
+          }),
+        };
+      })
+    );
+  };
+
+  const totalSets = exercises.reduce((a, e) => a + e.sets.length, 0);
   const doneSets = completed.size;
 
-  const volumeKg = workoutExercises.reduce((sum, exercise, exIdx) => {
+  const volumeKg = exercises.reduce((sum, exercise, exIdx) => {
     const exerciseVolume = exercise.sets.reduce((setSum, set, setIdx) => {
       const key = `${exIdx}-${setIdx}`;
       return completed.has(key) ? setSum + set.weight * set.reps : setSum;
@@ -90,6 +131,18 @@ export default function WorkoutScreen() {
       setSaving(true);
       setError(null);
 
+      const loggedExercises = exercises.map((exercise, exIdx) => ({
+        ...exercise,
+        sets: exercise.sets.map((set, setIdx) => {
+          const key = `${exIdx}-${setIdx}`;
+      
+          return {
+            ...set,
+            completed: completed.has(key),
+          };
+        }),
+      }));
+      
       await saveWorkout({
         uid: user.uid,
         date: getTodayKey(),
@@ -99,6 +152,7 @@ export default function WorkoutScreen() {
         completedSets: doneSets,
         totalSets,
         volumeKg,
+        exercises: loggedExercises,
       });
 
       setDone(true);
@@ -208,7 +262,7 @@ export default function WorkoutScreen() {
           <div
             style={{
               height: "100%",
-              width: `${(doneSets / totalSets) * 100}%`,
+              width: `${totalSets > 0 ? (doneSets / totalSets) * 100 : 0}%`,
               background: C.accent,
               borderRadius: 99,
               transition: "width 0.4s ease",
@@ -259,7 +313,7 @@ export default function WorkoutScreen() {
       )}
 
       <div className="px-5 flex flex-col gap-4">
-        {workoutExercises.map((ex, exIdx) => (
+        {exercises.map((ex, exIdx) => (
           <div
             key={ex.id}
             className="rounded-[20px] p-4"
@@ -292,44 +346,20 @@ export default function WorkoutScreen() {
               const isDone = completed.has(key);
 
               return (
-                <div
+                <WorkoutSetRow
                   key={setIdx}
-                  className="flex items-center gap-2 py-2 px-1"
-                  style={{
-                    opacity: isDone ? 0.45 : 1,
-                    transition: "opacity 0.3s",
-                  }}
-                >
-                  <span
-                    className="text-xs w-8 text-center font-semibold"
-                    style={{ color: isDone ? C.accent : C.fg3 }}
-                  >
-                    {setIdx + 1}
-                  </span>
-
-                  <span className="text-sm font-bold flex-1 text-center" style={{ color: C.fg }}>
-                    {set.weight} kg
-                  </span>
-
-                  <span className="text-sm font-bold flex-1 text-center" style={{ color: C.fg }}>
-                    {set.reps}
-                  </span>
-
-                  <button
-                    onClick={() => toggleSet(exIdx, setIdx)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center"
-                    style={{
-                      background: isDone ? C.accentDim : C.card2,
-                      border: `1.5px solid ${isDone ? C.accent : C.border}`,
-                    }}
-                  >
-                    {isDone ? (
-                      <Check size={13} color={C.accent} strokeWidth={2.5} />
-                    ) : (
-                      <Circle size={13} color={C.fg3} />
-                    )}
-                  </button>
-                </div>
+                  index={setIdx}
+                  reps={set.reps}
+                  weight={set.weight}
+                  completed={isDone}
+                  onToggle={() => toggleSet(exIdx, setIdx)}
+                  onWeightChange={(value) =>
+                    updateSet(exIdx, setIdx, "weight", value)
+                  }
+                  onRepsChange={(value) =>
+                    updateSet(exIdx, setIdx, "reps", value)
+                  }
+                />
               );
             })}
           </div>

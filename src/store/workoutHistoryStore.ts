@@ -8,26 +8,50 @@ import {
 
 import { db } from "@/services/db";
 
+export type LoggedWorkoutSet = {
+  reps: number;
+  weight: number;
+  completed: boolean;
+};
+
+export type LoggedWorkoutExercise = {
+  id: string;
+  name: string;
+  notes?: string;
+  sets: LoggedWorkoutSet[];
+};
+
 export type WorkoutLog = {
   id: string;
+  templateId?: string;
   date: string;
   name: string;
   durationSeconds: number;
   completedSets: number;
   totalSets: number;
   volumeKg: number;
-  templateId: string;
+  exercises?: LoggedWorkoutExercise[];
 };
 
 type WorkoutHistoryState = {
   workouts: WorkoutLog[];
+  selectedWorkout?: WorkoutLog;
+  selectedExerciseId?: string;
+  selectedExerciseName?: string;
   loading: boolean;
 
   loadWorkouts: (uid: string) => Promise<void>;
+  selectWorkout: (id: string) => void;
+  clearSelectedWorkout: () => void;
+  selectExercise: (exerciseId: string, exerciseName: string) => void;
+  clearSelectedExercise: () => void;
 };
 
-export const useWorkoutHistoryStore = create<WorkoutHistoryState>((set) => ({
+export const useWorkoutHistoryStore = create<WorkoutHistoryState>((set, get) => ({
   workouts: [],
+  selectedWorkout: undefined,
+  selectedExerciseId: undefined,
+  selectedExerciseName: undefined,
   loading: false,
 
   loadWorkouts: async (uid) => {
@@ -46,6 +70,32 @@ export const useWorkoutHistoryStore = create<WorkoutHistoryState>((set) => ({
         ...(doc.data() as Omit<WorkoutLog, "id">),
       })),
       loading: false,
+    });
+  },
+
+  selectWorkout: (id) => {
+    const workout = get().workouts.find((w) => w.id === id);
+
+    if (workout) {
+      set({ selectedWorkout: workout });
+    }
+  },
+
+  clearSelectedWorkout: () => {
+    set({ selectedWorkout: undefined });
+  },
+
+  selectExercise: (exerciseId, exerciseName) => {
+    set({
+      selectedExerciseId: exerciseId,
+      selectedExerciseName: exerciseName,
+    });
+  },
+
+  clearSelectedExercise: () => {
+    set({
+      selectedExerciseId: undefined,
+      selectedExerciseName: undefined,
     });
   },
 }));
