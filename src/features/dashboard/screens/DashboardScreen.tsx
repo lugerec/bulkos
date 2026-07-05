@@ -7,6 +7,7 @@ import { ProgressRing, Badge, SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useDailyLogStore } from "@/store/dailyLogStore";
 import { useDailyTotalsStore } from "@/store/dailyTotalsStore";
+import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import type { MealType } from "@/store/appStore";
 
 const weeklyBarData = [
@@ -23,6 +24,11 @@ function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function formatDuration(seconds: number) {
+  const minutes = Math.round(seconds / 60);
+  return `~${minutes} min`;
+}
+
 export default function DashboardScreen({
   onNavigate,
 }: {
@@ -33,12 +39,18 @@ export default function DashboardScreen({
 
   const foodsByMeal = useDailyLogStore((s) => s.foodsByMeal);
   const loadDailyLog = useDailyLogStore((s) => s.loadDailyLog);
+
   const totals = useDailyTotalsStore((s) => s.totals);
+
+  const workouts = useWorkoutHistoryStore((s) => s.workouts);
+  const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
 
   useEffect(() => {
     if (!user) return;
+
     loadDailyLog(user.uid, getTodayKey());
-  }, [user, loadDailyLog]);
+    loadWorkouts(user.uid);
+  }, [user, loadDailyLog, loadWorkouts]);
 
   if (!userDoc) return null;
 
@@ -75,6 +87,10 @@ export default function DashboardScreen({
   const todayBarData = weeklyBarData.map((item) =>
     item.day === "Sun" ? { ...item, cal: macros.cal } : item
   );
+
+  const latestWorkout = workouts[0];
+
+  const workoutsThisWeek = workouts.length;
 
   const mealStatus: { name: string; done: boolean; meal: MealType }[] = [
     { name: "Breakfast", meal: "breakfast", done: foodsByMeal.breakfast.length > 0 },
@@ -258,11 +274,25 @@ export default function DashboardScreen({
       <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-bold text-base" style={{ color: C.fg }}>Push Day A</p>
-            <p className="text-xs mt-0.5" style={{ color: C.fg2 }}>Chest · Shoulders · Triceps</p>
+            <p className="font-bold text-base" style={{ color: C.fg }}>
+              {latestWorkout?.name ?? "Push Day A"}
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: C.fg2 }}>
+              {latestWorkout
+                ? `${latestWorkout.completedSets}/${latestWorkout.totalSets} sets completed`
+                : "Chest · Shoulders · Triceps"}
+            </p>
             <div className="flex gap-4 mt-2.5">
-              <span className="text-xs" style={{ color: C.fg3 }}>6 exercises</span>
-              <span className="text-xs" style={{ color: C.fg3 }}>~65 min</span>
+              <span className="text-xs" style={{ color: C.fg3 }}>
+                {latestWorkout
+                  ? `${latestWorkout.volumeKg.toLocaleString()} kg`
+                  : "6 exercises"}
+              </span>
+              <span className="text-xs" style={{ color: C.fg3 }}>
+                {latestWorkout
+                  ? formatDuration(latestWorkout.durationSeconds)
+                  : "~65 min"}
+              </span>
             </div>
           </div>
 
@@ -273,6 +303,29 @@ export default function DashboardScreen({
           >
             <Play size={18} fill={C.bg} color={C.bg} />
           </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        <div className="rounded-[18px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
+            Workouts this week
+          </p>
+          <p className="text-[24px] font-bold leading-none" style={{ color: C.fg }}>
+            {workoutsThisWeek}
+          </p>
+        </div>
+
+        <div className="rounded-[18px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
+            Last volume
+          </p>
+          <p className="text-[24px] font-bold leading-none" style={{ color: C.fg }}>
+            {latestWorkout ? latestWorkout.volumeKg.toLocaleString() : 0}
+            <span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>
+              kg
+            </span>
+          </p>
         </div>
       </div>
 
