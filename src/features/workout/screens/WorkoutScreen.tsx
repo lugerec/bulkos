@@ -3,58 +3,8 @@ import { Check, CheckCircle2, Circle, Timer, X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
+import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { saveWorkout } from "@/services/workoutService";
-
-const workoutExercises = [
-  {
-    name: "Barbell Bench Press",
-    sets: [
-      { reps: 5, weight: 100 },
-      { reps: 5, weight: 100 },
-      { reps: 5, weight: 100 },
-      { reps: 3, weight: 100 },
-    ],
-  },
-  {
-    name: "Incline Dumbbell Press",
-    sets: [
-      { reps: 10, weight: 34 },
-      { reps: 10, weight: 34 },
-      { reps: 10, weight: 34 },
-    ],
-  },
-  {
-    name: "Overhead Press",
-    sets: [
-      { reps: 8, weight: 65 },
-      { reps: 8, weight: 65 },
-      { reps: 6, weight: 65 },
-    ],
-  },
-  {
-    name: "Lateral Raises",
-    sets: [
-      { reps: 15, weight: 12 },
-      { reps: 15, weight: 12 },
-      { reps: 12, weight: 12 },
-    ],
-  },
-  {
-    name: "Tricep Pushdown",
-    sets: [
-      { reps: 12, weight: 40 },
-      { reps: 12, weight: 40 },
-      { reps: 10, weight: 40 },
-    ],
-  },
-  {
-    name: "Cable Flyes",
-    sets: [
-      { reps: 15, weight: 15 },
-      { reps: 15, weight: 15 },
-    ],
-  },
-];
 
 const fmt = (s: number) =>
   `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60)
@@ -67,6 +17,7 @@ function getTodayKey() {
 
 export default function WorkoutScreen() {
   const user = useAuthStore((s) => s.user);
+  const workout = useWorkoutTemplateStore((s) => s.selected);
 
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [restTimer, setRestTimer] = useState(0);
@@ -97,6 +48,10 @@ export default function WorkoutScreen() {
 
     return () => clearInterval(t);
   }, [isResting]);
+
+  if (!workout) return null;
+
+  const workoutExercises = workout.exercises;
 
   const toggleSet = (exIdx: number, setIdx: number) => {
     const key = `${exIdx}-${setIdx}`;
@@ -138,7 +93,8 @@ export default function WorkoutScreen() {
       await saveWorkout({
         uid: user.uid,
         date: getTodayKey(),
-        name: "Push Day A",
+        templateId: workout.id,
+        name: workout.name,
         durationSeconds: elapsed,
         completedSets: doneSets,
         totalSets,
@@ -175,7 +131,7 @@ export default function WorkoutScreen() {
         </h2>
 
         <p className="text-base mb-1" style={{ color: C.fg2 }}>
-          Push Day A
+          {workout.name}
         </p>
 
         <p className="text-sm mb-8" style={{ color: C.fg3 }}>
@@ -234,7 +190,7 @@ export default function WorkoutScreen() {
               Active Workout
             </p>
             <h2 className="text-2xl font-extrabold" style={{ color: C.fg }}>
-              Push Day A
+              {workout.name}
             </h2>
           </div>
 
@@ -305,7 +261,7 @@ export default function WorkoutScreen() {
       <div className="px-5 flex flex-col gap-4">
         {workoutExercises.map((ex, exIdx) => (
           <div
-            key={exIdx}
+            key={ex.id}
             className="rounded-[20px] p-4"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >

@@ -16,6 +16,7 @@ export type WorkoutLog = {
   completedSets: number;
   totalSets: number;
   volumeKg: number;
+  templateId: string;
 };
 
 type WorkoutHistoryState = {

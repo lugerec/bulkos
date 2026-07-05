@@ -10,6 +10,7 @@ type SaveWorkoutInput = {
   completedSets: number;
   totalSets: number;
   volumeKg: number;
+  templateId: string;
 };
 
 export async function saveWorkout(input: SaveWorkoutInput) {
@@ -31,5 +32,6 @@ export async function saveWorkout(input: SaveWorkoutInput) {
     totalSets,
     volumeKg,
     createdAt: serverTimestamp(),
+    templateId,
   });
 }

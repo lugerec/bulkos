@@ -7,6 +7,15 @@ import LoginScreen from "../features/auth/screens/LoginScreen";
 import DashboardScreen from "../features/dashboard/screens/DashboardScreen";
 import NutritionScreen from "../features/nutrition/screens/NutritionScreen";
 
+import { pushA } from "@/data/workouts/pushA";
+import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
+
+useEffect(() => {
+  useWorkoutTemplateStore
+    .getState()
+    .setTemplates([pushA]);
+}, []);
+
 import { useAuthStore } from "../store/authStore";
 import { useAppStore } from "../store/appStore";
 
