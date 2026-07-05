@@ -1,4 +1,11 @@
 import { ArrowLeft } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 import { C } from "@/shared/ui";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
@@ -7,18 +14,11 @@ type ExerciseHistoryEntry = {
   workoutId: string;
   date: string;
   workoutName: string;
-  sets: {
-    reps: number;
-    weight: number;
-    completed: boolean;
-  }[];
-  completedSets: {
-    reps: number;
-    weight: number;
-    completed: boolean;
-  }[];
+  sets: { reps: number; weight: number; completed: boolean }[];
+  completedSets: { reps: number; weight: number; completed: boolean }[];
   volume: number;
   maxWeight: number;
+  estimatedOneRepMax: number;
 };
 
 function estimateOneRepMax(weight: number, reps: number) {
@@ -26,11 +26,7 @@ function estimateOneRepMax(weight: number, reps: number) {
   return Math.round(weight * (1 + reps / 30));
 }
 
-export default function ExerciseHistoryScreen({
-  onBack,
-}: {
-  onBack: () => void;
-}) {
+export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }) {
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const exerciseId = useWorkoutHistoryStore((s) => s.selectedExerciseId);
   const exerciseName = useWorkoutHistoryStore((s) => s.selectedExerciseName);
@@ -52,6 +48,11 @@ export default function ExerciseHistoryScreen({
         0
       );
 
+      const estimatedOneRepMax = completedSets.reduce(
+        (max, set) => Math.max(max, estimateOneRepMax(set.weight, set.reps)),
+        0
+      );
+
       return {
         workoutId: workout.id,
         date: workout.date,
@@ -60,9 +61,18 @@ export default function ExerciseHistoryScreen({
         completedSets,
         volume,
         maxWeight,
+        estimatedOneRepMax,
       };
     })
     .filter((entry): entry is ExerciseHistoryEntry => entry !== null);
+
+  const chronologicalHistory = [...history].reverse();
+
+  const chartData = chronologicalHistory.map((entry) => ({
+    date: entry.date.slice(5),
+    maxWeight: entry.maxWeight,
+    est1RM: entry.estimatedOneRepMax,
+  }));
 
   const allCompletedSets = history.flatMap((entry) => entry.completedSets);
 
@@ -71,9 +81,10 @@ export default function ExerciseHistoryScreen({
     0
   );
 
-  const estimatedOneRepMax = allCompletedSets.reduce((max, set) => {
-    return Math.max(max, estimateOneRepMax(set.weight, set.reps));
-  }, 0);
+  const estimatedOneRepMax = allCompletedSets.reduce(
+    (max, set) => Math.max(max, estimateOneRepMax(set.weight, set.reps)),
+    0
+  );
 
   const totalVolume = history.reduce((sum, entry) => sum + entry.volume, 0);
 
@@ -101,6 +112,50 @@ export default function ExerciseHistoryScreen({
         <Stat label="Total volume" value={`${totalVolume.toLocaleString()} kg`} />
         <Stat label="Sessions" value={`${history.length}`} />
       </div>
+
+      {chartData.length > 0 && (
+        <div
+          className="rounded-[20px] p-4 mb-5"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          <p className="text-sm font-bold mb-1" style={{ color: C.fg }}>
+            Progress chart
+          </p>
+          <p className="text-xs mb-4" style={{ color: C.fg3 }}>
+            Estimated 1RM over time
+          </p>
+
+          <div style={{ height: 160 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: C.fg3, fontSize: 10 }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: C.card2,
+                    border: `1px solid ${C.border}`,
+                    borderRadius: 12,
+                    fontSize: 12,
+                    color: C.fg,
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="est1RM"
+                  stroke={C.accent}
+                  strokeWidth={3}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-3">
         {history.length === 0 ? (
@@ -130,19 +185,13 @@ export default function ExerciseHistoryScreen({
                 </div>
 
                 <p className="text-xs font-bold" style={{ color: C.accent }}>
-                  {entry.maxWeight} kg max
+                  {entry.estimatedOneRepMax} kg est. 1RM
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-2 mb-3">
-                <Stat
-                  label="Volume"
-                  value={`${entry.volume.toLocaleString()} kg`}
-                />
-                <Stat
-                  label="Sets"
-                  value={`${entry.completedSets.length}/${entry.sets.length}`}
-                />
+                <Stat label="Volume" value={`${entry.volume.toLocaleString()} kg`} />
+                <Stat label="Max" value={`${entry.maxWeight} kg`} />
               </div>
 
               <div className="flex flex-col gap-2">
