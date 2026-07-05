@@ -3,6 +3,29 @@ import { ArrowLeft } from "lucide-react";
 import { C } from "@/shared/ui";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 
+type ExerciseHistoryEntry = {
+  workoutId: string;
+  date: string;
+  workoutName: string;
+  sets: {
+    reps: number;
+    weight: number;
+    completed: boolean;
+  }[];
+  completedSets: {
+    reps: number;
+    weight: number;
+    completed: boolean;
+  }[];
+  volume: number;
+  maxWeight: number;
+};
+
+function estimateOneRepMax(weight: number, reps: number) {
+  if (reps <= 1) return weight;
+  return Math.round(weight * (1 + reps / 30));
+}
+
 export default function ExerciseHistoryScreen({
   onBack,
 }: {
@@ -13,16 +36,17 @@ export default function ExerciseHistoryScreen({
   const exerciseName = useWorkoutHistoryStore((s) => s.selectedExerciseName);
 
   const history = workouts
-    .map((workout) => {
+    .map((workout): ExerciseHistoryEntry | null => {
       const exercise = workout.exercises?.find((ex) => ex.id === exerciseId);
-
       if (!exercise) return null;
 
       const completedSets = exercise.sets.filter((set) => set.completed);
+
       const volume = completedSets.reduce(
         (sum, set) => sum + set.weight * set.reps,
         0
       );
+
       const maxWeight = completedSets.reduce(
         (max, set) => Math.max(max, set.weight),
         0
@@ -38,7 +62,20 @@ export default function ExerciseHistoryScreen({
         maxWeight,
       };
     })
-    .filter(Boolean);
+    .filter((entry): entry is ExerciseHistoryEntry => entry !== null);
+
+  const allCompletedSets = history.flatMap((entry) => entry.completedSets);
+
+  const maxWeight = allCompletedSets.reduce(
+    (max, set) => Math.max(max, set.weight),
+    0
+  );
+
+  const estimatedOneRepMax = allCompletedSets.reduce((max, set) => {
+    return Math.max(max, estimateOneRepMax(set.weight, set.reps));
+  }, 0);
+
+  const totalVolume = history.reduce((sum, entry) => sum + entry.volume, 0);
 
   return (
     <div className="px-5 pb-8 pt-4">
@@ -58,6 +95,13 @@ export default function ExerciseHistoryScreen({
         Strength history
       </p>
 
+      <div className="grid grid-cols-2 gap-2 mb-5">
+        <Stat label="Max weight" value={`${maxWeight} kg`} />
+        <Stat label="Est. 1RM" value={`${estimatedOneRepMax} kg`} />
+        <Stat label="Total volume" value={`${totalVolume.toLocaleString()} kg`} />
+        <Stat label="Sessions" value={`${history.length}`} />
+      </div>
+
       <div className="flex flex-col gap-3">
         {history.length === 0 ? (
           <div
@@ -71,38 +115,38 @@ export default function ExerciseHistoryScreen({
         ) : (
           history.map((entry) => (
             <div
-              key={entry!.workoutId}
+              key={entry.workoutId}
               className="rounded-[20px] p-4"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <p className="text-sm font-bold" style={{ color: C.fg }}>
-                    {entry!.date}
+                    {entry.date}
                   </p>
                   <p className="text-xs mt-0.5" style={{ color: C.fg3 }}>
-                    {entry!.workoutName}
+                    {entry.workoutName}
                   </p>
                 </div>
 
                 <p className="text-xs font-bold" style={{ color: C.accent }}>
-                  {entry!.maxWeight} kg max
+                  {entry.maxWeight} kg max
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-2 mb-3">
                 <Stat
                   label="Volume"
-                  value={`${entry!.volume.toLocaleString()} kg`}
+                  value={`${entry.volume.toLocaleString()} kg`}
                 />
                 <Stat
                   label="Sets"
-                  value={`${entry!.completedSets.length}/${entry!.sets.length}`}
+                  value={`${entry.completedSets.length}/${entry.sets.length}`}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                {entry!.sets.map((set, index) => (
+                {entry.sets.map((set, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between rounded-[14px] px-3 py-2"
