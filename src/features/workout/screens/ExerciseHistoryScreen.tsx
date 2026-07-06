@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import {
   LineChart,
@@ -9,6 +10,8 @@ import {
 
 import { C } from "@/shared/ui";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+
+type ChartMode = "est1RM" | "maxWeight" | "volume";
 
 type ExerciseHistoryEntry = {
   workoutId: string;
@@ -27,6 +30,8 @@ function estimateOneRepMax(weight: number, reps: number) {
 }
 
 export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }) {
+  const [chartMode, setChartMode] = useState<ChartMode>("est1RM");
+
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const exerciseId = useWorkoutHistoryStore((s) => s.selectedExerciseId);
   const exerciseName = useWorkoutHistoryStore((s) => s.selectedExerciseName);
@@ -72,6 +77,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
     date: entry.date.slice(5),
     maxWeight: entry.maxWeight,
     est1RM: entry.estimatedOneRepMax,
+    volume: entry.volume,
   }));
 
   const allCompletedSets = history.flatMap((entry) => entry.completedSets);
@@ -88,6 +94,13 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
 
   const totalVolume = history.reduce((sum, entry) => sum + entry.volume, 0);
 
+  const chartTitle =
+    chartMode === "est1RM"
+      ? "Estimated 1RM"
+      : chartMode === "maxWeight"
+        ? "Max weight"
+        : "Volume";
+
   return (
     <div className="px-5 pb-8 pt-4">
       <button
@@ -103,7 +116,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
       </h2>
 
       <p className="text-sm mb-5" style={{ color: C.fg3 }}>
-        Strength history
+        Exercise progress
       </p>
 
       <div className="grid grid-cols-2 gap-2 mb-5">
@@ -118,14 +131,30 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
           className="rounded-[20px] p-4 mb-5"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
-          <p className="text-sm font-bold mb-1" style={{ color: C.fg }}>
-            Progress chart
-          </p>
-          <p className="text-xs mb-4" style={{ color: C.fg3 }}>
-            Estimated 1RM over time
-          </p>
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-sm font-bold mb-1" style={{ color: C.fg }}>
+                {chartTitle}
+              </p>
+              <p className="text-xs" style={{ color: C.fg3 }}>
+                Progress over time
+              </p>
+            </div>
+          </div>
 
-          <div style={{ height: 160 }}>
+          <div className="flex gap-2 mb-4">
+            <ChartPill active={chartMode === "est1RM"} onClick={() => setChartMode("est1RM")}>
+              1RM
+            </ChartPill>
+            <ChartPill active={chartMode === "maxWeight"} onClick={() => setChartMode("maxWeight")}>
+              Max
+            </ChartPill>
+            <ChartPill active={chartMode === "volume"} onClick={() => setChartMode("volume")}>
+              Volume
+            </ChartPill>
+          </div>
+
+          <div style={{ height: 170 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <XAxis
@@ -145,7 +174,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
                 />
                 <Line
                   type="monotone"
-                  dataKey="est1RM"
+                  dataKey={chartMode}
                   stroke={C.accent}
                   strokeWidth={3}
                   dot={{ r: 3 }}
@@ -220,6 +249,30 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
         )}
       </div>
     </div>
+  );
+}
+
+function ChartPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="px-3 py-1.5 rounded-full text-xs font-bold"
+      style={{
+        background: active ? C.accentDim : C.card2,
+        color: active ? C.accent : C.fg3,
+        border: `1px solid ${active ? C.accent : C.border}`,
+      }}
+    >
+      {children}
+    </button>
   );
 }
 

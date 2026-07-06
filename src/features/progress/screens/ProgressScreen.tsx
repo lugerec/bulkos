@@ -1,3 +1,4 @@
+import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import {
     ArrowDownRight,
     ArrowUpRight,
@@ -21,7 +22,49 @@ const weightTrend = [
     { week: "W7", weight: 82.3 }, { week: "W8", weight: 82.4 },
   ];
   
+  type StrengthPR = {
+    lift: string;
+    pr: string;
+    date: string;
+    score: number;
+  };
+  
+  function estimateOneRepMax(weight: number, reps: number) {
+    if (reps <= 1) return weight;
+    return Math.round(weight * (1 + reps / 30));
+  }
+  
+  function getStrengthPRs(workouts: ReturnType<typeof useWorkoutHistoryStore.getState>["workouts"]) {
+    const bestByExercise = new Map<string, StrengthPR>();
+  
+    for (const workout of workouts) {
+      for (const exercise of workout.exercises ?? []) {
+        for (const set of exercise.sets) {
+          if (!set.completed) continue;
+  
+          const score = estimateOneRepMax(set.weight, set.reps);
+          const current = bestByExercise.get(exercise.id);
+  
+          if (!current || score > current.score) {
+            bestByExercise.set(exercise.id, {
+              lift: exercise.name,
+              pr: `${set.weight} kg × ${set.reps}`,
+              date: workout.date,
+              score,
+            });
+          }
+        }
+      }
+    }
+  
+    return Array.from(bestByExercise.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4);
+  }
+
   export default function ProgressScreen() {
+    const workouts = useWorkoutHistoryStore((s) => s.workouts);
+    const strengthPRs = getStrengthPRs(workouts);
     return (
       <div className="px-5 pb-8 pt-4">
         <h2 className="text-2xl font-bold mb-0.5" style={{ color: C.fg }}>Progress</h2>
@@ -114,31 +157,45 @@ const weightTrend = [
   
         {/* Strength PRs */}
         <SectionHeader title="Personal Records" action="View all" />
-        <div className="rounded-[20px] mb-5 overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-          {[
-            { lift: "Bench Press", pr: "102.5 kg", date: "Jun 18", isNew: true },
-            { lift: "Squat", pr: "140 kg", date: "Jun 10", isNew: false },
-            { lift: "Deadlift", pr: "175 kg", date: "May 28", isNew: false },
-            { lift: "Overhead Press", pr: "72.5 kg", date: "Jun 22", isNew: true },
-          ].map(({ lift, pr, date, isNew }, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between px-4 py-3.5"
-              style={{ borderBottom: i < 3 ? `1px solid ${C.border}` : "none" }}
-            >
-              <div className="flex items-center gap-3">
-                <Award size={16} color={isNew ? C.accent : C.fg3} />
-                <div>
-                  <p className="text-sm font-medium" style={{ color: C.fg }}>{lift}</p>
-                  <p className="text-[11px] mt-0.5" style={{ color: C.fg3 }}>{date}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-bold" style={{ color: C.fg }}>{pr}</p>
-                {isNew && <Badge>New PR</Badge>}
-              </div>
+
+        <div
+          className="rounded-[20px] mb-5 overflow-hidden"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          {strengthPRs.length === 0 ? (
+            <div className="px-4 py-5">
+              <p className="text-sm" style={{ color: C.fg3 }}>
+                No personal records yet.
+              </p>
             </div>
-          ))}
+          ) : (
+            strengthPRs.map(({ lift, pr, date }, i) => (
+              <div
+                key={`${lift}-${date}`}
+                className="flex items-center justify-between px-4 py-3.5"
+                style={{
+                  borderBottom:
+                    i < strengthPRs.length - 1 ? `1px solid ${C.border}` : "none",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <Award size={16} color={C.accent} />
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: C.fg }}>
+                      {lift}
+                    </p>
+                    <p className="text-[11px] mt-0.5" style={{ color: C.fg3 }}>
+                      {date}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-sm font-bold" style={{ color: C.fg }}>
+                  {pr}
+                </p>
+              </div>
+            ))
+          )}
         </div>
   
         {/* Photo comparison */}

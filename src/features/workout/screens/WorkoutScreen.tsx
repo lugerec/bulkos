@@ -199,15 +199,39 @@ export default function WorkoutScreen() {
 
   const totalSets = exercises.reduce((a, e) => a + e.sets.length, 0);
   const doneSets = completed.size;
+  const completionPercent =
+  totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0;
 
-  const volumeKg = exercises.reduce((sum, exercise, exIdx) => {
-    const exerciseVolume = exercise.sets.reduce((setSum, set, setIdx) => {
-      const key = `${exIdx}-${setIdx}`;
-      return completed.has(key) ? setSum + set.weight * set.reps : setSum;
+  const workoutRating =
+  completionPercent === 100
+    ? { emoji: "🔥", text: "Perfect Workout" }
+    : completionPercent >= 90
+    ? { emoji: "💪", text: "Great Session" }
+    : completionPercent >= 75
+    ? { emoji: "👍", text: "Solid Work" }
+    : { emoji: "👊", text: "Keep Going" };
+
+    const volumeKg = exercises.reduce((sum, exercise, exIdx) => {
+      const exerciseVolume = exercise.sets.reduce((setSum, set, setIdx) => {
+        const key = `${exIdx}-${setIdx}`;
+        return completed.has(key) ? setSum + set.weight * set.reps : setSum;
+      }, 0);
+    
+      return sum + exerciseVolume;
     }, 0);
-
-    return sum + exerciseVolume;
-  }, 0);
+    
+    const strongestSet = exercises
+      .flatMap((exercise, exIdx) =>
+        exercise.sets
+          .filter((_, setIdx) => completed.has(`${exIdx}-${setIdx}`))
+          .map((set) => ({
+            exercise: exercise.name,
+            weight: set.weight,
+            reps: set.reps,
+            score: set.weight * (1 + set.reps / 30),
+          }))
+      )
+      .sort((a, b) => b.score - a.score)[0];
 
   const handleFinishWorkout = async () => {
     if (!user || saving) return;
@@ -278,86 +302,34 @@ export default function WorkoutScreen() {
         >
           <CheckCircle2 size={48} color={C.accent} />
         </div>
-
+  
         <h2 className="text-3xl font-extrabold mb-2" style={{ color: C.fg }}>
           Workout Complete
         </h2>
 
+        <div className="mb-4">
+        <p
+          className="text-xl font-bold"
+          style={{ color: C.accent }}
+        >
+          {workoutRating.emoji} {workoutRating.text}
+        </p>
+        </div>
+  
         <p className="text-base mb-1" style={{ color: C.fg2 }}>
           {workout.name}
         </p>
-
+  
         <p className="text-sm mb-8" style={{ color: C.fg3 }}>
           {fmt(elapsed)} elapsed · {doneSets} sets completed
         </p>
-
-        {prList.length > 0 && (
-          <div
-            className="w-full rounded-[20px] p-4 mb-6 text-left"
-            style={{
-              background: "rgba(124,255,107,0.07)",
-              border: "1px solid rgba(124,255,107,0.2)",
-            }}
-          >
-            <p className="text-sm font-bold mb-3" style={{ color: C.accent }}>
-              🏆 {prList.length} New Personal Record
-              {prList.length > 1 ? "s" : ""}
-            </p>
-
-            <div className="flex flex-col gap-2">
-              {prList.map((pr, index) => (
-                <div key={`${pr.exerciseId}-${index}`}>
-                  <p className="text-sm font-semibold" style={{ color: C.fg }}>
-                    {pr.exerciseName}
-                  </p>
-                  <p className="text-xs" style={{ color: C.fg3 }}>
-                    {pr.weight} kg × {pr.reps}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {comparison && (
-          <div
-            className="w-full rounded-[20px] p-4 mb-6 text-left"
-            style={{
-              background: C.card,
-              border: `1px solid ${C.border}`,
-            }}
-          >
-            <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>
-              Compared to last time
-            </p>
-
-            <div className="grid grid-cols-3 gap-2">
-            <DiffStat
-              label="Volume"
-              value={`${comparison.volumeDiff > 0 ? "+" : ""}${comparison.volumeDiff.toLocaleString()} kg`}
-              positive={comparison.volumeDiff >= 0}
-            />
-
-            <DiffStat
-              label="Sets"
-              value={`${comparison.setsDiff > 0 ? "+" : ""}${comparison.setsDiff}`}
-              positive={comparison.setsDiff >= 0}
-            />
-
-            <DiffStat
-              label="Duration"
-              value={signedDuration(comparison.durationDiff)}
-              positive={comparison.durationDiff <= 0}
-            />
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-3 gap-3 w-full mb-8">
+  
+        <div className="grid grid-cols-2 gap-3 w-full mb-6">
           {[
             { label: "Volume", val: `${volumeKg.toLocaleString()} kg` },
-            { label: "Sets", val: `${doneSets}` },
+            { label: "Sets", val: `${doneSets}/${totalSets}` },
             { label: "Duration", val: fmt(elapsed) },
+            { label: "Complete", val: `${completionPercent}%` },
           ].map(({ label, val }) => (
             <div
               key={label}
@@ -373,6 +345,99 @@ export default function WorkoutScreen() {
             </div>
           ))}
         </div>
+  
+        {prList.length > 0 && (
+          <div
+            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            style={{
+              background: "rgba(124,255,107,0.07)",
+              border: "1px solid rgba(124,255,107,0.2)",
+            }}
+          >
+            <p className="text-sm font-bold mb-3" style={{ color: C.accent }}>
+              🏆 {prList.length} New Personal Record
+              {prList.length > 1 ? "s" : ""}
+            </p>
+  
+            <div className="flex flex-col gap-2">
+              {prList.map((pr, index) => (
+                <div key={`${pr.exerciseId}-${index}`}>
+                  <p className="text-sm font-semibold" style={{ color: C.fg }}>
+                    {pr.exerciseName}
+                  </p>
+                  <p className="text-xs" style={{ color: C.fg3 }}>
+                    {pr.weight} kg × {pr.reps}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {strongestSet && (
+          <div
+            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            style={{
+              background: C.card,
+              border: `1px solid ${C.border}`,
+            }}
+          >
+            <p
+              className="text-sm font-bold mb-2"
+              style={{ color: C.accent }}
+            >
+              💪 Strongest Lift Today
+            </p>
+
+            <p
+              className="text-base font-semibold"
+              style={{ color: C.fg }}
+            >
+              {strongestSet.exercise}
+            </p>
+
+            <p
+              className="text-sm"
+              style={{ color: C.fg3 }}
+            >
+              {strongestSet.weight} kg × {strongestSet.reps}
+            </p>
+          </div>
+        )}
+  
+        {comparison && (
+          <div
+            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            style={{
+              background: C.card,
+              border: `1px solid ${C.border}`,
+            }}
+          >
+            <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>
+              Compared to last time
+            </p>
+  
+            <div className="grid grid-cols-3 gap-2">
+              <DiffStat
+                label="Volume"
+                value={`${comparison.volumeDiff > 0 ? "+" : ""}${comparison.volumeDiff.toLocaleString()} kg`}
+                positive={comparison.volumeDiff >= 0}
+              />
+  
+              <DiffStat
+                label="Sets"
+                value={`${comparison.setsDiff > 0 ? "+" : ""}${comparison.setsDiff}`}
+                positive={comparison.setsDiff >= 0}
+              />
+  
+              <DiffStat
+                label="Duration"
+                value={signedDuration(comparison.durationDiff)}
+                positive={comparison.durationDiff <= 0}
+              />
+            </div>
+          </div>
+        )}
 
         <button
           onClick={() => {

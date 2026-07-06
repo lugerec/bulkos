@@ -99,15 +99,33 @@ export default function DashboardScreen({
   const latestWorkout = workouts[0];
   const weekStart = getWeekStartKey();
   const workoutsThisWeek = workouts.filter((w) => w.date >= weekStart).length;
+  const workoutsThisWeekList = workouts.filter((w) => w.date >= weekStart);
+
+  const volumeThisWeek = workoutsThisWeekList.reduce(
+    (sum, w) => sum + w.volumeKg,
+    0
+  );
+
+  const trainingTimeThisWeek = workoutsThisWeekList.reduce(
+    (sum, w) => sum + w.durationSeconds,
+    0
+  );
+
+  const weeklyWorkoutGoal = 5;
+
+  const weeklyProgress =
+    weeklyWorkoutGoal > 0 ? workoutsThisWeek / weeklyWorkoutGoal : 0;
+    
   const totalVolume = workouts.reduce((sum, w) => sum + w.volumeKg, 0);
   const totalTrainingTime = workouts.reduce(
     (sum, w) => sum + w.durationSeconds,
     0
   );
-  const bestWorkout = workouts.reduce(
-    (best, w) => (!best || w.volumeKg > best.volumeKg ? w : best),
-    undefined as typeof latestWorkout | undefined
-  );
+    
+    const bestWorkout = workouts.reduce(
+      (best, w) => (!best || w.volumeKg > best.volumeKg ? w : best),
+      undefined as typeof latestWorkout | undefined
+    );
 
   const mealStatus: { name: string; done: boolean; meal: MealType }[] = [
     { name: "Breakfast", meal: "breakfast", done: foodsByMeal.breakfast.length > 0 },
@@ -130,6 +148,43 @@ export default function DashboardScreen({
         <p className="text-sm mt-1.5" style={{ color: C.fg3 }}>
           {dateStr}
         </p>
+      </div>
+
+      <div
+  className="rounded-[24px] p-5 mb-5"
+  style={{
+    background: "linear-gradient(135deg, rgba(124,255,107,0.10), rgba(91,141,239,0.08))",
+    border: "1px solid rgba(124,255,107,0.18)",
+  }}
+>
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: C.accent }}>
+            This Week
+          </p>
+          <p className="text-2xl font-extrabold" style={{ color: C.fg }}>
+            {workoutsThisWeek}/{weeklyWorkoutGoal} workouts
+          </p>
+        </div>
+
+        <Badge>{Math.round(weeklyProgress * 100)}%</Badge>
+      </div>
+
+      <div style={{ height: 5, background: C.border, borderRadius: 99, marginBottom: 14 }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${Math.min(weeklyProgress * 100, 100)}%`,
+            background: C.accent,
+            borderRadius: 99,
+          }}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <MiniStat label="Volume" value={`${volumeThisWeek.toLocaleString()} kg`} />
+        <MiniStat label="Time" value={formatDuration(trainingTimeThisWeek)} />
+      </div>
       </div>
 
       <div className="flex gap-3 mb-5">
@@ -358,6 +413,22 @@ function MetricCard({ label, value }: { label: string; value: string }) {
         {label}
       </p>
       <p className="text-[20px] font-bold leading-none" style={{ color: C.fg }}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      className="rounded-[14px] px-3 py-2"
+      style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}` }}
+    >
+      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+        {label}
+      </p>
+      <p className="text-sm font-bold" style={{ color: C.fg }}>
         {value}
       </p>
     </div>
