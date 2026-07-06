@@ -1,28 +1,45 @@
-import { findSetPRs, type PersonalRecord } from "@/features/workout/utils/pr";
-import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useEffect, useState } from "react";
 import { CheckCircle2, Timer, X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
+import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { saveWorkout } from "@/services/workoutService";
 import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
 import type { WorkoutExercise } from "@/types/workout";
+import { findSetPRs, type PersonalRecord } from "@/features/workout/utils/pr";
 
 const fmt = (s: number) =>
   `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60)
     .toString()
     .padStart(2, "0")}`;
 
-function getTodayKey() {
+    function signedDuration(seconds: number) {
+      if (seconds === 0) return "00:00";
+      return `${seconds > 0 ? "+" : "-"}${fmt(Math.abs(seconds))}`;
+    }
+
+    function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
 }
+
+type WorkoutComparison = {
+  volumeDiff: number;
+  setsDiff: number;
+  durationDiff: number;
+};
 
 export default function WorkoutScreen() {
   const user = useAuthStore((s) => s.user);
   const workout = useWorkoutTemplateStore((s) => s.selected);
-  const [prs, setPrs] = useState<PersonalRecord[]>([]);
+
+  const workouts = useWorkoutHistoryStore((s) => s.workouts);
+  const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
+
+  const [prs, setPrs] = useState<Record<string, PersonalRecord>>({});
+  const [comparison, setComparison] = useState<WorkoutComparison | null>(null);
+  const prList = Object.values(prs);
 
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
@@ -32,79 +49,89 @@ export default function WorkoutScreen() {
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const workouts = useWorkoutHistoryStore((s) => s.workouts);
-  const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
 
-function getPreviousExercise(exerciseId: string) {
-  for (const loggedWorkout of workouts) {
-    const exercise = loggedWorkout.exercises?.find(
-      (e) => e.id === exerciseId
-    );
+  const exerciseHasPR = (exerciseId: string) => Boolean(prs[exerciseId]);
 
-    if (exercise) return exercise;
+  function getPreviousExercise(exerciseId: string) {
+    for (const loggedWorkout of workouts) {
+      const exercise = loggedWorkout.exercises?.find(
+        (e) => e.id === exerciseId
+      );
+
+      if (exercise) return exercise;
+    }
+
+    return undefined;
   }
 
-  return undefined;
-}
+  function getPreviousSameWorkout(templateId: string) {
+    return workouts.find((w) => w.templateId === templateId);
+  }
 
-useEffect(() => {
-  if (!user) return;
-  loadWorkouts(user.uid);
-}, [user, loadWorkouts]);
+  useEffect(() => {
+    if (!user) return;
+    loadWorkouts(user.uid);
+  }, [user, loadWorkouts]);
 
-useEffect(() => {
-  if (!workout) return;
+  useEffect(() => {
+    if (!workout) return;
 
-  setExercises(
-    workout.exercises.map((exercise) => {
-      const previous = getPreviousExercise(exercise.id);
+    setExercises(
+      workout.exercises.map((exercise) => {
+        const previous = getPreviousExercise(exercise.id);
 
-      return {
-        ...exercise,
-        sets: exercise.sets.map((set, index) => {
-          const previousSet = previous?.sets[index];
+        return {
+          ...exercise,
+          sets: exercise.sets.map((set, index) => {
+            const previousSet = previous?.sets[index];
 
-          if (!previousSet) return { ...set };
+            if (!previousSet) return { ...set };
 
-          return {
-            ...set,
-            weight: previousSet.weight,
-            reps: previousSet.reps,
-          };
-        }),
-      };
-    })
-  );
+            return {
+              ...set,
+              weight: previousSet.weight,
+              reps: previousSet.reps,
+            };
+          }),
+        };
+      })
+    );
 
-  setCompleted(new Set());
-  setElapsed(0);
-  setDone(false);
-  setPrs([]);
-}, [workout, workouts]);
+    setCompleted(new Set());
+    setElapsed(0);
+    setDone(false);
+    setPrs({});
+    setComparison(null);
+  }, [workout]);
 
-useEffect(() => {
-  const t = setInterval(() => setElapsed((e) => e + 1), 1000);
-  return () => clearInterval(t);
-}, []);
+  useEffect(() => {
+    if (done) return;
+  
+    const t = setInterval(() => {
+      setElapsed((e) => e + 1);
+    }, 1000);
+  
+    return () => clearInterval(t);
+  }, [done]);
 
-useEffect(() => {
-  if (!isResting) return;
+  useEffect(() => {
+    if (!isResting) return;
 
-  const t = setInterval(() => {
-    setRestTimer((r) => {
-      if (r <= 1) {
-        setIsResting(false);
-        return 0;
-      }
+    const t = setInterval(() => {
+      setRestTimer((r) => {
+        if (r <= 1) {
+          setIsResting(false);
+          return 0;
+        }
 
-      return r - 1;
-    });
-  }, 1000);
+        return r - 1;
+      });
+    }, 1000);
 
-  return () => clearInterval(t);
-}, [isResting]);
+    return () => clearInterval(t);
+  }, [isResting]);
 
-if (!workout) return null;
+  if (!workout) return null;
 
   const toggleSet = (exIdx: number, setIdx: number) => {
     const key = `${exIdx}-${setIdx}`;
@@ -116,10 +143,10 @@ if (!workout) return null;
         next.delete(key);
       } else {
         next.add(key);
-      
+
         const currentSet = exercises[exIdx].sets[setIdx];
         const exercise = exercises[exIdx];
-      
+
         const newPRs = findSetPRs({
           workouts,
           exerciseId: exercise.id,
@@ -127,11 +154,16 @@ if (!workout) return null;
           weight: currentSet.weight,
           reps: currentSet.reps,
         });
-      
+
         if (newPRs.length > 0) {
-          setPrs((prev) => [...prev, ...newPRs]);
+          const bestPr = newPRs[0];
+
+          setPrs((prevPrs) => ({
+            ...prevPrs,
+            [exercise.id]: bestPr,
+          }));
         }
-      
+
         setRestTimer(90);
         setIsResting(true);
       }
@@ -188,14 +220,26 @@ if (!workout) return null;
         ...exercise,
         sets: exercise.sets.map((set, setIdx) => {
           const key = `${exIdx}-${setIdx}`;
-      
+
           return {
             ...set,
             completed: completed.has(key),
           };
         }),
       }));
-      
+
+      const previousWorkout = getPreviousSameWorkout(workout.id);
+
+    setComparison(
+      previousWorkout
+        ? {
+            volumeDiff: volumeKg - previousWorkout.volumeKg,
+            setsDiff: doneSets - previousWorkout.completedSets,
+            durationDiff: elapsed - previousWorkout.durationSeconds,
+          }
+        : null
+    );
+
       await saveWorkout({
         uid: user.uid,
         date: getTodayKey(),
@@ -207,6 +251,8 @@ if (!workout) return null;
         volumeKg,
         exercises: loggedExercises,
       });
+
+      await loadWorkouts(user.uid);
 
       setDone(true);
     } catch (err) {
@@ -245,33 +291,67 @@ if (!workout) return null;
           {fmt(elapsed)} elapsed · {doneSets} sets completed
         </p>
 
-        {prs.length > 0 && (
-        <div
-          className="w-full rounded-[20px] p-4 mb-6 text-left"
-          style={{
-            background: "rgba(124,255,107,0.07)",
-            border: "1px solid rgba(124,255,107,0.2)",
-          }}
-        >
-          <p className="text-sm font-bold mb-3" style={{ color: C.accent }}>
-            🏆 {prs.length} New Personal Record{prs.length > 1 ? "s" : ""}
-          </p>
+        {prList.length > 0 && (
+          <div
+            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            style={{
+              background: "rgba(124,255,107,0.07)",
+              border: "1px solid rgba(124,255,107,0.2)",
+            }}
+          >
+            <p className="text-sm font-bold mb-3" style={{ color: C.accent }}>
+              🏆 {prList.length} New Personal Record
+              {prList.length > 1 ? "s" : ""}
+            </p>
 
-          <div className="flex flex-col gap-2">
-            {prs.map((pr, index) => (
-              <div key={`${pr.exerciseId}-${pr.type}-${index}`}>
-                <p className="text-sm font-semibold" style={{ color: C.fg }}>
-                  {pr.exerciseName}
-                </p>
-                <p className="text-xs" style={{ color: C.fg3 }}>
-                  {pr.type === "maxWeight" ? "Max Weight" : "Rep PR"} ·{" "}
-                  {pr.weight} kg × {pr.reps}
-                </p>
-              </div>
-            ))}
+            <div className="flex flex-col gap-2">
+              {prList.map((pr, index) => (
+                <div key={`${pr.exerciseId}-${index}`}>
+                  <p className="text-sm font-semibold" style={{ color: C.fg }}>
+                    {pr.exerciseName}
+                  </p>
+                  <p className="text-xs" style={{ color: C.fg3 }}>
+                    {pr.weight} kg × {pr.reps}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {comparison && (
+          <div
+            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            style={{
+              background: C.card,
+              border: `1px solid ${C.border}`,
+            }}
+          >
+            <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>
+              Compared to last time
+            </p>
+
+            <div className="grid grid-cols-3 gap-2">
+            <DiffStat
+              label="Volume"
+              value={`${comparison.volumeDiff > 0 ? "+" : ""}${comparison.volumeDiff.toLocaleString()} kg`}
+              positive={comparison.volumeDiff >= 0}
+            />
+
+            <DiffStat
+              label="Sets"
+              value={`${comparison.setsDiff > 0 ? "+" : ""}${comparison.setsDiff}`}
+              positive={comparison.setsDiff >= 0}
+            />
+
+            <DiffStat
+              label="Duration"
+              value={signedDuration(comparison.durationDiff)}
+              positive={comparison.durationDiff <= 0}
+            />
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-3 gap-3 w-full mb-8">
           {[
@@ -299,6 +379,7 @@ if (!workout) return null;
             setDone(false);
             setCompleted(new Set());
             setElapsed(0);
+            setPrs({});
           }}
           className="w-full py-4 rounded-[18px] font-semibold"
           style={{
@@ -339,7 +420,14 @@ if (!workout) return null;
           </div>
         </div>
 
-        <div style={{ height: 4, background: C.border, borderRadius: 99, marginTop: 14 }}>
+        <div
+          style={{
+            height: 4,
+            background: C.border,
+            borderRadius: 99,
+            marginTop: 14,
+          }}
+        >
           <div
             style={{
               height: "100%",
@@ -393,7 +481,7 @@ if (!workout) return null;
         </div>
       )}
 
-            <div className="px-5 flex flex-col gap-4">
+      <div className="px-5 flex flex-col gap-4">
         {exercises.map((ex, exIdx) => {
           const previous = getPreviousExercise(ex.id);
           const previousSets = previous?.sets.filter((set) => set.completed) ?? [];
@@ -406,9 +494,24 @@ if (!workout) return null;
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <p className="text-sm font-bold" style={{ color: C.fg }}>
-                    {ex.name}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold" style={{ color: C.fg }}>
+                      {ex.name}
+                    </p>
+
+                    {exerciseHasPR(ex.id) && (
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                        style={{
+                          background: "rgba(124,255,107,0.15)",
+                          color: C.accent,
+                          border: "1px solid rgba(124,255,107,0.25)",
+                        }}
+                      >
+                        🏆 NEW PR
+                      </span>
+                    )}
+                  </div>
 
                   {previousSets.length > 0 && (
                     <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
@@ -485,6 +588,33 @@ if (!workout) return null;
           {saving ? "Saving Workout..." : "Finish Workout"}
         </button>
       </div>
+    </div>
+  );
+}
+
+function DiffStat({
+  label,
+  value,
+  positive,
+}: {
+  label: string;
+  value: string;
+  positive: boolean;
+}) {
+  return (
+    <div
+      className="rounded-[14px] px-3 py-3"
+      style={{ background: C.card2, border: `1px solid ${C.border}` }}
+    >
+      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+        {label}
+      </p>
+      <p
+        className="text-xs font-bold"
+        style={{ color: positive ? C.accent : "#ff4d4d" }}
+      >
+        {value}
+      </p>
     </div>
   );
 }
