@@ -27,4 +27,5 @@ export const C = {
   | "analytics"
   | "grocery"
   | "exercise-history"
+  | "check-in"
   | "settings";

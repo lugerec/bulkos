@@ -1,3 +1,4 @@
+import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useEffect } from "react";
 import { ArrowUpRight, Target, Play, Check, Droplets } from "lucide-react";
 import { XAxis, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
@@ -54,18 +55,60 @@ export default function DashboardScreen({
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
 
+  const bodyEntries = useBodyMetricsStore((s) => s.entries);
+  const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
+
   useEffect(() => {
     if (!user) return;
     loadDailyLog(user.uid, getTodayKey());
     loadWorkouts(user.uid);
-  }, [user, loadDailyLog, loadWorkouts]);
+    loadBodyMetrics(user.uid);
+  }, [user, loadDailyLog, loadWorkouts, loadBodyMetrics]);
 
   if (!userDoc) return null;
 
   const userProfile = userDoc.profile;
   const nutrition = userDoc.nutrition;
 
-  const currentWeight = userProfile?.weight ?? 0;
+  const sortedBodyEntries = [...bodyEntries].sort((a, b) =>
+    a.date.localeCompare(b.date)
+  );
+  
+  const latestBodyEntry =
+    sortedBodyEntries.length > 0
+      ? sortedBodyEntries[sortedBodyEntries.length - 1]
+      : undefined;
+  
+  const firstBodyEntry = sortedBodyEntries[0];
+
+  const previousBodyEntry =
+  sortedBodyEntries.length > 1
+    ? sortedBodyEntries[sortedBodyEntries.length - 2]
+    : undefined;
+
+  function measurementChange(
+    current?: number,
+    previous?: number
+  ) {
+    if (current == null || previous == null) return undefined;
+    return current - previous;
+  }
+  
+  const currentWeight = latestBodyEntry?.weightKg ?? userProfile?.weight ?? 0;
+  
+  const sevenDaysAgo = new Date();
+sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+const sevenDaysAgoKey = sevenDaysAgo.toISOString().slice(0, 10);
+
+const weekAgoEntry =
+  sortedBodyEntries.find((entry) => entry.date >= sevenDaysAgoKey) ??
+  firstBodyEntry;
+
+const weeklyWeightChange =
+  latestBodyEntry && weekAgoEntry
+    ? latestBodyEntry.weightKg - weekAgoEntry.weightKg
+    : 0;
+
   const goalWeight = userProfile?.goalWeight ?? 0;
   const remainingWeight = Math.max(goalWeight - currentWeight, 0);
 
@@ -195,11 +238,12 @@ export default function DashboardScreen({
             <span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>kg</span>
           </p>
           <div className="flex items-center gap-1 mt-2">
-            <ArrowUpRight size={12} color={C.accent} />
-            <span className="text-[11px] font-semibold" style={{ color: C.accent }}>
-              +0.3 this week
-            </span>
-          </div>
+          <ArrowUpRight size={12} color={C.accent} />
+          <span className="text-[11px] font-semibold" style={{ color: C.accent }}>
+            {weeklyWeightChange >= 0 ? "+" : ""}
+            {weeklyWeightChange.toFixed(1)} kg this week
+          </span>
+        </div>
         </div>
 
         <div className="flex-1 rounded-[20px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>

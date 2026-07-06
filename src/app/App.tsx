@@ -1,3 +1,4 @@
+import CheckInScreen from "@/features/progress/screens/CheckInScreen";
 import ExerciseHistoryScreen from "@/features/workout/screens/ExerciseHistoryScreen";
 import WorkoutDetailScreen from "@/features/workout/screens/WorkoutDetailScreen";
 import WorkoutHistoryScreen from "@/features/workout/screens/WorkoutHistoryScreen";
@@ -826,7 +827,11 @@ export default function App() {
         {screen === "exercise-history" && (
         <ExerciseHistoryScreen onBack={() => navigate("workout-detail")} />
         )}
-          {screen === "progress" && <ProgressScreen />}
+          {screen === "progress" && <ProgressScreen onNavigate={navigate} />}
+
+          {screen === "check-in" && (
+          <CheckInScreen onBack={() => navigate("progress")} />
+        )}
           {screen === "analytics" && <AnalyticsScreen onBack={() => navigate("settings")} />}
           {screen === "grocery" && <GroceryListScreen onBack={() => navigate("settings")} />}
           {screen === "settings" && <SettingsScreen onNavigate={navigate} />}
