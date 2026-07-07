@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -118,13 +118,15 @@ export default function ProgressScreen({
       ? latestBodyEntry.bodyFatPct - previousBodyEntry.bodyFatPct
       : undefined;
 
-  const weightTrend = sortedBodyEntries.map((entry) => ({
-    week: new Date(entry.date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-    weight: entry.weightKg,
-  }));
+      const chartData = sortedBodyEntries.map((entry) => ({
+        week: new Date(entry.date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        weight: entry.weightKg,
+        bodyFat: entry.bodyFatPct,
+        waist: entry.waistCm,
+      }));
 
   const strengthPRs = getStrengthPRs(workouts);
 
@@ -141,6 +143,10 @@ export default function ProgressScreen({
   );
 
   const prCount = strengthPRs.length;
+
+  const [chartMetric, setChartMetric] = useState<
+  "weight" | "bodyFat" | "waist"
+  >("weight");
 
   const measurementCards = [
     {
@@ -235,8 +241,30 @@ export default function ProgressScreen({
           </div>
         </div>
 
+        <div className="flex gap-2 mb-4">
+        {[
+          { key: "weight", label: "Weight" },
+          { key: "bodyFat", label: "Body Fat" },
+          { key: "waist", label: "Waist" },
+        ].map((item) => (
+          <button
+            key={item.key}
+            onClick={() => setChartMetric(item.key as any)}
+            className="px-3 py-1.5 rounded-full text-xs font-semibold"
+            style={{
+              background:
+                chartMetric === item.key ? C.accent : C.card2,
+              color:
+                chartMetric === item.key ? C.bg : C.fg3,
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+        
         <div style={{ height: 120 }}>
-          {weightTrend.length === 0 ? (
+          {chartData.length === 0 ? (
             <div className="h-full flex items-center justify-center">
               <p className="text-sm" style={{ color: C.fg3 }}>
                 Add your first check-in to see weight progress.
@@ -245,7 +273,7 @@ export default function ProgressScreen({
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                data={weightTrend}
+                data={chartData}
                 margin={{ top: 5, right: 0, left: 0, bottom: 0 }}
               >
                 <defs>
@@ -281,7 +309,7 @@ export default function ProgressScreen({
 
                 <Area
                   type="monotone"
-                  dataKey="weight"
+                  dataKey={chartMetric}
                   stroke={C.accent}
                   strokeWidth={2}
                   fill="url(#wGrad)"
@@ -464,26 +492,40 @@ export default function ProgressScreen({
         )}
       </div>
 
-      <SectionHeader title="Progress Photos" action="Upload" />
+      <SectionHeader
+        title="Progress Photos"
+        action="Upload"
+        onAction={() => onNavigate("check-in")}
+      />
 
-      <div
-        className="rounded-[20px] overflow-hidden flex items-center justify-center"
-        style={{
-          height: 140,
-          background: C.card,
-          border: `1px solid ${C.border}`,
-        }}
-      >
-        <div className="text-center">
-          <Camera size={22} color={C.fg3} className="mx-auto mb-2" />
-          <p className="text-sm font-medium" style={{ color: C.fg3 }}>
-            Upload progress photos
-          </p>
-          <p className="text-xs mt-1" style={{ color: C.fg3 }}>
-            Compare your transformation week by week
-          </p>
+      {latestBodyEntry?.frontPhotoUrl ||
+      latestBodyEntry?.sidePhotoUrl ||
+      latestBodyEntry?.backPhotoUrl ? (
+        <div className="grid grid-cols-3 gap-3">
+          <ProgressPhoto label="Front" url={latestBodyEntry.frontPhotoUrl} />
+          <ProgressPhoto label="Side" url={latestBodyEntry.sidePhotoUrl} />
+          <ProgressPhoto label="Back" url={latestBodyEntry.backPhotoUrl} />
         </div>
-      </div>
+      ) : (
+        <div
+          className="rounded-[20px] overflow-hidden flex items-center justify-center"
+          style={{
+            height: 140,
+            background: C.card,
+            border: `1px solid ${C.border}`,
+          }}
+        >
+          <div className="text-center">
+            <Camera size={22} color={C.fg3} className="mx-auto mb-2" />
+            <p className="text-sm font-medium" style={{ color: C.fg3 }}>
+              Upload progress photos
+            </p>
+            <p className="text-xs mt-1" style={{ color: C.fg3 }}>
+              Compare your transformation week by week
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -501,6 +543,35 @@ function Stat({ label, value }: { label: string; value: string }) {
       <p className="text-xl font-bold leading-none" style={{ color: C.fg }}>
         {value}
       </p>
+    </div>
+  );
+}
+
+function ProgressPhoto({
+  label,
+  url,
+}: {
+  label: string;
+  url?: string;
+}) {
+  return (
+    <div
+      className="rounded-[18px] overflow-hidden"
+      style={{
+        background: C.card,
+        border: `1px solid ${C.border}`,
+        height: 150,
+      }}
+    >
+      {url ? (
+        <img src={url} alt={label} className="w-full h-full object-cover" />
+      ) : (
+        <div className="h-full flex items-center justify-center">
+          <p className="text-[11px]" style={{ color: C.fg3 }}>
+            No {label}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
