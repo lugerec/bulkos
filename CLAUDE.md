@@ -29,20 +29,21 @@ Workout history, nutrition log, body metrics, hydration, progress screen, workou
 
 - `features/workout/utils/workoutRecommendation.ts` — recommendation engine:
   - per-muscle recovery (baseline hours × session intensity from weighted sets via `activation`)
-  - split scoring (push/pull/legs/upper/lower/fullBody) = readiness + weekly-volume balance − overlap-with-last-workout − generalist penalty
+  - split scoring (push/pull/legs/upper/lower/fullBody) = readiness + weekly-volume balance + undertrained-muscle bonus − overlap-with-last-workout − generalist penalty
   - recovery day when readiness < 55% or 3+ consecutive training days; rapid weight loss (body metrics) lowers readiness
   - template matching by split classification, least-recently-used tie-break
   - `generateWorkoutTemplate(split)` fallback: builds workout from exercise library (familiar > compound > non-advanced), `isGenerated` flag
   - `getMuscleRecoveryOverview(workouts)` for the Progress screen
+  - `getMuscleSetTargetOverview(workouts)` — RP-style weekly MEV/MAV per muscle (`MUSCLE_SET_TARGETS` constants), status `under`/`optimal`/`high`; feeds `undertrainedMuscles` into `WorkoutRecommendation` and nudges split scoring + reason text
 - `features/dashboard/components/SmartCoachCard.tsx` — dashboard card (reason, readiness %, focus muscle chips, Start button → `selectTemplate`/`selectGenerated` + navigate to workout)
 - `features/progress/components/MuscleRecoveryCard.tsx` — recovery % bars per muscle in Progress screen
+- `features/progress/components/MuscleSetTargetCard.tsx` — weekly sets vs MEV/MAV bars per muscle in Progress screen, sorted under → high → optimal
 - `store/workoutTemplateStore.ts` — has `selectGenerated(template)` (selects without persisting)
 
 ## Next candidates (agreed with owner)
 
-1. Weekly set targets per muscle (RP-style MEV/MAV), surface undertrained muscles, feed into recommendation
-2. Unit tests (Vitest) for recovery math, split classification, template matching
-3. Polish: recovery detail, deload detection
+1. Unit tests (Vitest) for recovery math, split classification, template matching, and MEV/MAV set-target status
+2. Polish: recovery detail, deload detection
 
 ## Workflow
 

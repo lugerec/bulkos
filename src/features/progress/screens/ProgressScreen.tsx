@@ -1,7 +1,11 @@
 import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
+import MuscleSetTargetCard from "../components/MuscleSetTargetCard";
 import { getMuscleVolume } from "../utils/muscleVolume";
-import { getMuscleRecoveryOverview } from "@/features/workout/utils/workoutRecommendation";
+import {
+  getMuscleRecoveryOverview,
+  getMuscleSetTargetOverview,
+} from "@/features/workout/utils/workoutRecommendation";
 
 import WeeklyWorkoutChart from "../components/WeeklyWorkoutChart";
 
@@ -206,6 +210,7 @@ const workoutsPreviousWeek = workouts.filter(
 
 const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek);
 const muscleRecovery = getMuscleRecoveryOverview(workouts);
+const muscleSetTargets = getMuscleSetTargetOverview(workouts);
 const previousWeeklyMuscleVolume = getMuscleVolume(workoutsPreviousWeek);
 
 const weeklyWorkoutCount = workoutsThisWeek.length;
@@ -343,6 +348,7 @@ const averageWorkoutDuration =
       <WeeklyWorkoutChart data={weeklyChartData} />
       <MuscleVolumeCard data={weeklyMuscleVolume} />
       <MuscleRecoveryCard data={muscleRecovery} />
+      <MuscleSetTargetCard data={muscleSetTargets} />
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <Stat label="Workouts" value={`${totalWorkouts}`} />

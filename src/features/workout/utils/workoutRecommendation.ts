@@ -61,6 +61,19 @@ export type MuscleRecoveryInfo = {
   weeklyVolumeKg: number;
 };
 
+export type MuscleSetTargetStatus = "under" | "optimal" | "high";
+
+export type MuscleSetTargetInfo = {
+  muscle: MuscleGroup;
+  /** completed sets in the last 7 days, weighted by muscle activation */
+  weeklySets: number;
+  /** minimum effective volume (RP-style), sets/week */
+  mev: number;
+  /** maximum adaptive volume (RP-style), sets/week */
+  mav: number;
+  status: MuscleSetTargetStatus;
+};
+
 export type WorkoutRecommendation = {
   split: WorkoutSplit;
   title: string;
@@ -72,6 +85,8 @@ export type WorkoutRecommendation = {
   muscleRecovery: MuscleRecoveryInfo[];
   /** 0–100 readiness of the recommended split */
   readinessPercent: number;
+  /** muscles currently below their weekly MEV (RP-style) */
+  undertrainedMuscles: MuscleGroup[];
 };
 
 export type WorkoutRecommendationInput = {
@@ -112,6 +127,27 @@ const RECOVERY_HOURS: Record<MuscleGroup, number> = {
   neck: 24,
   cardio: 20,
   fullBody: 48,
+};
+
+/**
+ * RP-style (Renaissance Periodization) weekly hard-set targets per muscle.
+ * MEV = minimum effective volume, MAV = maximum adaptive volume.
+ * Muscles without a meaningful "sets per week" concept (cardio, fullBody,
+ * neck) are intentionally omitted.
+ */
+const MUSCLE_SET_TARGETS: Partial<
+  Record<MuscleGroup, { mev: number; mav: number }>
+> = {
+  chest: { mev: 8, mav: 20 },
+  back: { mev: 10, mav: 25 },
+  shoulders: { mev: 8, mav: 20 },
+  biceps: { mev: 6, mav: 20 },
+  triceps: { mev: 6, mav: 18 },
+  forearms: { mev: 4, mav: 14 },
+  legs: { mev: 8, mav: 20 },
+  glutes: { mev: 4, mav: 16 },
+  calves: { mev: 8, mav: 20 },
+  abs: { mev: 6, mav: 20 },
 };
 
 const PUSH_MUSCLES: readonly MuscleGroup[] = ["chest", "shoulders", "triceps"];
@@ -638,6 +674,48 @@ export function getMuscleRecoveryOverview(
   });
 }
 
+/**
+ * Weekly RP-style set targets (MEV/MAV) per muscle, used by the Progress
+ * screen and to nudge the Smart Coach towards undertrained muscles.
+ */
+export function getMuscleSetTargetOverview(
+  workouts: readonly RecommendationWorkout[],
+  now: Date = new Date()
+): MuscleSetTargetInfo[] {
+  const lookup = buildDefinitionLookup();
+  const stimuli = collectMuscleStimuli(workouts, lookup, now);
+  const weekAgo = now.getTime() - 7 * MS_PER_DAY;
+  const results: MuscleSetTargetInfo[] = [];
+
+  for (const muscle of ALL_MUSCLES) {
+    const targets = MUSCLE_SET_TARGETS[muscle];
+
+    if (!targets) continue;
+
+    const sessions = stimuli.get(muscle) ?? [];
+    const weeklySets = sessions
+      .filter((session) => session.timestamp >= weekAgo)
+      .reduce((sum, session) => sum + session.weightedSets, 0);
+
+    const status: MuscleSetTargetStatus =
+      weeklySets < targets.mev
+        ? "under"
+        : weeklySets > targets.mav
+        ? "high"
+        : "optimal";
+
+    results.push({
+      muscle,
+      weeklySets: Math.round(weeklySets * 10) / 10,
+      mev: targets.mev,
+      mav: targets.mav,
+      status,
+    });
+  }
+
+  return results;
+}
+
 export function getWorkoutRecommendation(
   input: WorkoutRecommendationInput
 ): WorkoutRecommendation {
@@ -650,6 +728,11 @@ export function getWorkoutRecommendation(
 
     return info ? [info] : [];
   });
+
+  const setTargets = getMuscleSetTargetOverview(input.workouts, now);
+  const undertrainedMuscles = setTargets
+    .filter((target) => target.status === "under")
+    .map((target) => target.muscle);
 
   // Body metrics: rapid weight loss slows recovery a little.
   const weightChange = getWeeklyWeightChangeKg(input.bodyMetrics ?? [], now);
@@ -707,11 +790,22 @@ export function getWorkoutRecommendation(
     );
     const recencyPenalty = overlapsLast ? 12 : 0;
 
+    // Nudge towards splits that would hit muscles behind on weekly sets.
+    const undertrainedCount = SPLIT_MUSCLES[split].filter((muscle) =>
+      undertrainedMuscles.includes(muscle)
+    ).length;
+    const undertrainedBonus = undertrainedCount * 4;
+
     // Specialized splits win unless everything is equally fresh.
     const generalistPenalty =
       split === "fullBody" ? 6 : split === "upper" || split === "lower" ? 3 : 0;
 
-    const score = readiness + balanceBonus - recencyPenalty - generalistPenalty;
+    const score =
+      readiness +
+      balanceBonus +
+      undertrainedBonus -
+      recencyPenalty -
+      generalistPenalty;
 
     if (!best || score > best.score) {
       best = { split, score, readiness };
@@ -743,6 +837,7 @@ export function getWorkoutRecommendation(
       focusMuscles: [],
       muscleRecovery,
       readinessPercent: readiness,
+      undertrainedMuscles,
     };
   }
 
@@ -788,6 +883,19 @@ export function getWorkoutRecommendation(
     ? " Your body weight dropped quickly this week — keep intensity moderate."
     : "";
 
+  const undertrainedInSplit = splitMuscles.filter((muscle) =>
+    undertrainedMuscles.includes(muscle)
+  );
+
+  const undertrainedPart =
+    undertrainedInSplit.length > 0
+      ? ` ${formatMuscleList(undertrainedInSplit.slice(0, 2))} ${
+          undertrainedInSplit.slice(0, 2).length === 1 ? "is" : "are"
+        } also behind on weekly sets, so it's a good day to prioritize ${
+          undertrainedInSplit.length === 1 ? "it" : "them"
+        }.`
+      : "";
+
   const matchedTemplate = pickTemplate(
     split,
     input.templates,
@@ -809,11 +917,12 @@ export function getWorkoutRecommendation(
   return {
     split,
     title: SPLIT_TITLES[split],
-    reason: `Today I recommend ${SPLIT_TITLES[split]} because ${recoveredPart}${recoveringPart}.${weightNote}`,
+    reason: `Today I recommend ${SPLIT_TITLES[split]} because ${recoveredPart}${recoveringPart}.${weightNote}${undertrainedPart}`,
     template,
     isGenerated: matchedTemplate === null && template !== null,
     focusMuscles,
     muscleRecovery,
     readinessPercent: Math.round(Math.max(0, Math.min(100, best.readiness))),
+    undertrainedMuscles,
   };
 }
