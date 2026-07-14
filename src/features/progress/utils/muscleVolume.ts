@@ -1,4 +1,5 @@
 import { exerciseDefinitions } from "@/data/exercises";
+import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import type {
   MuscleGroup,
   WorkoutExercise,
@@ -14,7 +15,8 @@ type MuscleVolumeWorkout = {
 };
 
 export function getMuscleVolume(
-  workouts: readonly MuscleVolumeWorkout[]
+  workouts: readonly MuscleVolumeWorkout[],
+  bodyweightKg?: number
 ): MuscleVolumeItem[] {
   const totals = new Map<MuscleGroup, number>();
 
@@ -31,7 +33,11 @@ export function getMuscleVolume(
       const exerciseVolume = exercise.sets.reduce((sum, set) => {
         if (!set.completed) return sum;
 
-        return sum + set.weight * set.reps;
+        return (
+          sum +
+          getEffectiveSetWeight(definition.equipment, set.weight, bodyweightKg) *
+            set.reps
+        );
       }, 0);
 
       if (exerciseVolume <= 0) continue;

@@ -208,10 +208,13 @@ const workoutsPreviousWeek = workouts.filter(
     workout.date <= previousWeekEndKey
 );
 
-const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek);
+const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek, currentWeight);
 const muscleRecovery = getMuscleRecoveryOverview(workouts);
 const muscleSetTargets = getMuscleSetTargetOverview(workouts);
-const previousWeeklyMuscleVolume = getMuscleVolume(workoutsPreviousWeek);
+const previousWeeklyMuscleVolume = getMuscleVolume(
+  workoutsPreviousWeek,
+  currentWeight
+);
 
 const weeklyWorkoutCount = workoutsThisWeek.length;
 

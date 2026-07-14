@@ -8,9 +8,11 @@ import { CheckCircle2, Dumbbell, Timer, X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
+import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { saveWorkout } from "@/services/workoutService";
+import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
 import type { WorkoutExercise } from "@/types/workout";
 import { findSetPRs, type PersonalRecord } from "@/features/workout/utils/pr";
@@ -91,6 +93,13 @@ export default function WorkoutScreen() {
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
 
+  const bodyEntries = useBodyMetricsStore((s) => s.entries);
+  const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
+
+  const latestBodyweightKg = [...bodyEntries].sort((a, b) =>
+    a.date.localeCompare(b.date)
+  )[bodyEntries.length - 1]?.weightKg;
+
   const [prs, setPrs] = useState<Record<string, PersonalRecord>>({});
   const [comparison, setComparison] = useState<WorkoutComparison | null>(null);
   const prList = Object.values(prs);
@@ -128,7 +137,8 @@ export default function WorkoutScreen() {
   useEffect(() => {
     if (!user) return;
     loadWorkouts(user.uid);
-  }, [user, loadWorkouts]);
+    loadBodyMetrics(user.uid);
+  }, [user, loadWorkouts, loadBodyMetrics]);
 
   useEffect(() => {
     if (!workout) return;
@@ -430,10 +440,27 @@ export default function WorkoutScreen() {
     ? { emoji: "👍", text: "Solid Work" }
     : { emoji: "👊", text: "Keep Going" };
 
+    const setEffectiveWeight = (
+      exercise: WorkoutExercise,
+      setWeight: number
+    ) => {
+      const definition = exerciseDefinitions.find(
+        (item) => item.id === (exercise.exerciseId ?? exercise.id)
+      );
+
+      return getEffectiveSetWeight(
+        definition?.equipment,
+        setWeight,
+        latestBodyweightKg
+      );
+    };
+
     const volumeKg = exercises.reduce((sum, exercise, exIdx) => {
       const exerciseVolume = exercise.sets.reduce((setSum, set, setIdx) => {
         const key = `${exIdx}-${setIdx}`;
-        return completed.has(key) ? setSum + set.weight * set.reps : setSum;
+        return completed.has(key)
+          ? setSum + setEffectiveWeight(exercise, set.weight) * set.reps
+          : setSum;
       }, 0);
     
       return sum + exerciseVolume;
@@ -458,7 +485,9 @@ export default function WorkoutScreen() {
       
           if (!completed.has(key)) return sum;
       
-          return sum + set.weight * set.reps;
+          return (
+            sum + setEffectiveWeight(exercises[exIdx], set.weight) * set.reps
+          );
         }, 0);
       }
 
