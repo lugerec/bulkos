@@ -39,11 +39,11 @@ Workout history, nutrition log, body metrics, hydration, progress screen, workou
 - `features/progress/components/MuscleRecoveryCard.tsx` — recovery % bars per muscle in Progress screen
 - `features/progress/components/MuscleSetTargetCard.tsx` — weekly sets vs MEV/MAV bars per muscle in Progress screen, sorted under → high → optimal
 - `store/workoutTemplateStore.ts` — has `selectGenerated(template)` (selects without persisting)
+- `src/features/workout/utils/workoutRecommendation.test.ts` — Vitest unit tests (23) for recovery math, split classification, MEV/MAV set-target status, template matching (incl. LRU tie-break) and recovery-day trigger. Run with `npm run test` (or `npm run test:watch`). Config in `vitest.config.ts` (separate from `vite.config.ts`, shares only the `@` alias).
 
 ## Next candidates (agreed with owner)
 
-1. Unit tests (Vitest) for recovery math, split classification, template matching, and MEV/MAV set-target status
-2. Polish: recovery detail, deload detection
+1. Polish: recovery detail, deload detection
 
 ## Workflow
 

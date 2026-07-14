@@ -791,10 +791,16 @@ export function getWorkoutRecommendation(
     const recencyPenalty = overlapsLast ? 12 : 0;
 
     // Nudge towards splits that would hit muscles behind on weekly sets.
+    // Uses a share (not a raw count) so splits touching more muscles
+    // (upper/lower/fullBody) aren't unfairly favored over focused ones.
     const undertrainedCount = SPLIT_MUSCLES[split].filter((muscle) =>
       undertrainedMuscles.includes(muscle)
     ).length;
-    const undertrainedBonus = undertrainedCount * 4;
+    const undertrainedShare =
+      SPLIT_MUSCLES[split].length > 0
+        ? undertrainedCount / SPLIT_MUSCLES[split].length
+        : 0;
+    const undertrainedBonus = undertrainedShare * 8;
 
     // Specialized splits win unless everything is equally fresh.
     const generalistPenalty =
