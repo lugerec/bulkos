@@ -245,6 +245,10 @@ function workoutTimestamp(date: string): number {
 
 type SessionStimulus = {
   timestamp: number;
+  workoutId: string;
+  workoutName: string;
+  /** YYYY-MM-DD */
+  date: string;
   /** completed sets weighted by muscle activation (1 set @ 100% = 1) */
   weightedSets: number;
   weightedVolumeKg: number;
@@ -310,6 +314,9 @@ function collectMuscleStimuli(
 
       list.push({
         timestamp,
+        workoutId: workout.id,
+        workoutName: workout.name,
+        date: workout.date,
         weightedSets,
         weightedVolumeKg: perMuscleVolume.get(muscle) ?? 0,
       });
@@ -318,6 +325,22 @@ function collectMuscleStimuli(
   }
 
   return stimuli;
+}
+
+/**
+ * Hours a muscle needs to fully recover from one session: baseline hours
+ * scaled by intensity — light sessions recover faster, hard ones slower.
+ */
+function sessionRecoveryHours(
+  muscle: MuscleGroup,
+  weightedSets: number
+): number {
+  const intensityFactor = Math.min(
+    1.25,
+    Math.max(0.5, weightedSets / 8 + 0.5)
+  );
+
+  return RECOVERY_HOURS[muscle] * intensityFactor;
 }
 
 function getMuscleRecovery(
@@ -350,12 +373,10 @@ function getMuscleRecovery(
         weeklyVolumeKg += session.weightedVolumeKg;
       }
 
-      // Light sessions recover faster, hard sessions a bit slower.
-      const intensityFactor = Math.min(
-        1.25,
-        Math.max(0.5, session.weightedSets / 8 + 0.5)
+      const recoveryNeededHours = sessionRecoveryHours(
+        muscle,
+        session.weightedSets
       );
-      const recoveryNeededHours = RECOVERY_HOURS[muscle] * intensityFactor;
       const remainingFatigue = Math.max(0, 1 - hoursSince / recoveryNeededHours);
 
       maxRemainingFatigue = Math.max(maxRemainingFatigue, remainingFatigue);
@@ -773,6 +794,64 @@ export function getMuscleRecoveryOverview(
 
     return info ? [info] : [];
   });
+}
+
+export type MuscleRecoverySession = {
+  workoutId: string;
+  workoutName: string;
+  /** YYYY-MM-DD */
+  date: string;
+  /** completed sets weighted by muscle activation (1 set @ 100% = 1) */
+  weightedSets: number;
+  weightedVolumeKg: number;
+};
+
+export type MuscleRecoveryDetail = {
+  muscle: MuscleGroup;
+  /** hours until the muscle is back at 100%; 0 = already recovered */
+  hoursToFullRecovery: number;
+  /** recent sessions that loaded this muscle, newest first */
+  sessions: MuscleRecoverySession[];
+};
+
+/**
+ * Per-muscle drill-down for the Progress screen: which recent sessions
+ * loaded the muscle and when it will be back to 100%.
+ */
+export function getMuscleRecoveryDetail(
+  muscle: MuscleGroup,
+  workouts: readonly RecommendationWorkout[],
+  now: Date = new Date()
+): MuscleRecoveryDetail {
+  const lookup = buildDefinitionLookup();
+  const stimuli = collectMuscleStimuli(workouts, lookup, now);
+  const sessions = stimuli.get(muscle) ?? [];
+
+  let hoursToFullRecovery = 0;
+
+  for (const session of sessions) {
+    const recoveredAt =
+      session.timestamp +
+      sessionRecoveryHours(muscle, session.weightedSets) * MS_PER_HOUR;
+    const hoursLeft = (recoveredAt - now.getTime()) / MS_PER_HOUR;
+
+    hoursToFullRecovery = Math.max(hoursToFullRecovery, hoursLeft);
+  }
+
+  return {
+    muscle,
+    hoursToFullRecovery: Math.round(Math.max(0, hoursToFullRecovery)),
+    sessions: [...sessions]
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 5)
+      .map((session) => ({
+        workoutId: session.workoutId,
+        workoutName: session.workoutName,
+        date: session.date,
+        weightedSets: Math.round(session.weightedSets * 10) / 10,
+        weightedVolumeKg: Math.round(session.weightedVolumeKg),
+      })),
+  };
 }
 
 /**

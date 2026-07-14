@@ -39,12 +39,13 @@ Workout history, nutrition log, body metrics, hydration, progress screen, workou
 - `features/progress/components/MuscleRecoveryCard.tsx` — recovery % bars per muscle in Progress screen
 - `features/progress/components/MuscleSetTargetCard.tsx` — weekly sets vs MEV/MAV bars per muscle in Progress screen, sorted under → high → optimal
 - `store/workoutTemplateStore.ts` — has `selectGenerated(template)` (selects without persisting)
-- `src/features/workout/utils/workoutRecommendation.test.ts` — Vitest unit tests (30) for recovery math, split classification, MEV/MAV set-target status, template matching (incl. LRU tie-break), recovery-day trigger and deload detection. Run with `npm run test` (or `npm run test:watch`). Config in `vitest.config.ts` (separate from `vite.config.ts`, shares only the `@` alias).
+- `src/features/workout/utils/workoutRecommendation.test.ts` — Vitest unit tests (35) for recovery math, split classification, MEV/MAV set-target status, template matching (incl. LRU tie-break), recovery-day trigger, deload detection and recovery detail. Run with `npm run test` (or `npm run test:watch`). Config in `vitest.config.ts` (separate from `vite.config.ts`, shares only the `@` alias).
 - Deload detection: `detectDeload(workouts, muscleRecovery)` in `workoutRecommendation.ts` — 7-day weekly buckets, fires after 3+ loaded weeks (≥2 workouts/week) when weekly volume drops ≥15% at equal-or-higher frequency OR average recovery across trained muscles < 60%. Sets `isDeloadWeek` on `WorkoutRecommendation`, swaps the reason for deload advice (half sets, stay short of failure), SmartCoachCard shows an amber "Deload week" badge instead of readiness %.
+- Recovery detail: `getMuscleRecoveryDetail(muscle, workouts)` — last 5 sessions that loaded the muscle (workout name, date, weighted sets/volume) + `hoursToFullRecovery` ETA (shares `sessionRecoveryHours` with the recovery math). `MuscleRecoveryCard` rows expand on tap (accordion, `workouts` prop) showing ETA + session list.
 
 ## Next candidates (agreed with owner)
 
-1. Polish: muscle recovery detail (tap a muscle in MuscleRecoveryCard → recent sessions that loaded it, weighted sets, ETA to 100%)
+Smart Coach roadmap complete. Next feature TBD with owner.
 
 ## Workflow
 

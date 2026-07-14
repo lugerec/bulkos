@@ -347,7 +347,7 @@ const averageWorkoutDuration =
 
       <WeeklyWorkoutChart data={weeklyChartData} />
       <MuscleVolumeCard data={weeklyMuscleVolume} />
-      <MuscleRecoveryCard data={muscleRecovery} />
+      <MuscleRecoveryCard data={muscleRecovery} workouts={workouts} />
       <MuscleSetTargetCard data={muscleSetTargets} />
 
       <div className="grid grid-cols-2 gap-3 mb-5">

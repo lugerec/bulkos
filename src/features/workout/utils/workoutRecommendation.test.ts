@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   classifyWorkoutSplit,
   detectDeload,
+  getMuscleRecoveryDetail,
   getMuscleRecoveryOverview,
   getMuscleSetTargetOverview,
   getWorkoutRecommendation,
@@ -496,5 +497,69 @@ describe("detectDeload", () => {
     });
 
     expect(recommendation.isDeloadWeek).toBe(false);
+  });
+});
+
+describe("getMuscleRecoveryDetail", () => {
+  it("returns no sessions and zero ETA for a never-trained muscle", () => {
+    const detail = getMuscleRecoveryDetail("chest", [], NOW);
+
+    expect(detail.sessions).toHaveLength(0);
+    expect(detail.hoursToFullRecovery).toBe(0);
+  });
+
+  it("lists recent sessions that loaded the muscle with a positive ETA", () => {
+    const workouts = [
+      workout(daysAgo(0), [exercise("bench-press", "Bench Press", 4)], {
+        name: "Push Day A",
+      }),
+    ];
+
+    const detail = getMuscleRecoveryDetail("chest", workouts, NOW);
+
+    expect(detail.sessions).toHaveLength(1);
+    expect(detail.sessions[0].workoutName).toBe("Push Day A");
+    expect(detail.sessions[0].weightedSets).toBe(4);
+    expect(detail.sessions[0].weightedVolumeKg).toBeGreaterThan(0);
+    expect(detail.hoursToFullRecovery).toBeGreaterThan(0);
+  });
+
+  it("reports zero ETA once the recovery window has fully passed", () => {
+    const workouts = [
+      workout(daysAgo(6), [exercise("bench-press", "Bench Press", 4)]),
+    ];
+
+    const detail = getMuscleRecoveryDetail("chest", workouts, NOW);
+
+    expect(detail.sessions).toHaveLength(1);
+    expect(detail.hoursToFullRecovery).toBe(0);
+  });
+
+  it("orders sessions newest first", () => {
+    const workouts = [
+      workout(daysAgo(3), [exercise("bench-press", "Bench Press", 4)], {
+        name: "Older",
+      }),
+      workout(daysAgo(1), [exercise("bench-press", "Bench Press", 4)], {
+        name: "Newer",
+      }),
+    ];
+
+    const detail = getMuscleRecoveryDetail("chest", workouts, NOW);
+
+    expect(detail.sessions.map((session) => session.workoutName)).toEqual([
+      "Newer",
+      "Older",
+    ]);
+  });
+
+  it("excludes sessions that did not load the muscle", () => {
+    const workouts = [
+      workout(daysAgo(1), [exercise("squat", "Squat", 4)]),
+    ];
+
+    const detail = getMuscleRecoveryDetail("chest", workouts, NOW);
+
+    expect(detail.sessions).toHaveLength(0);
   });
 });
