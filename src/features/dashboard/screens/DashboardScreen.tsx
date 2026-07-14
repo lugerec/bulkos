@@ -70,6 +70,7 @@ export default function DashboardScreen({
   const templates = useWorkoutTemplateStore((s) => s.templates);
   const loadTemplates = useWorkoutTemplateStore((s) => s.load);
   const selectTemplate = useWorkoutTemplateStore((s) => s.selectTemplate);
+  const selectGenerated = useWorkoutTemplateStore((s) => s.selectGenerated);
 
   const bodyEntries = useBodyMetricsStore((s) => s.entries);
   const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
@@ -220,7 +221,11 @@ export default function DashboardScreen({
         recommendation={recommendation}
         onStart={() => {
           if (recommendation.template) {
-            selectTemplate(recommendation.template.id);
+            if (recommendation.isGenerated) {
+              selectGenerated(recommendation.template);
+            } else {
+              selectTemplate(recommendation.template.id);
+            }
           }
           onNavigate("workout");
         }}

@@ -81,6 +81,12 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
         </div>
       )}
 
+      {!isRecovery && recommendation.isGenerated && (
+        <p className="text-[11px] mb-2" style={{ color: C.fg3 }}>
+          No matching template — workout generated from your exercise library.
+        </p>
+      )}
+
       {!isRecovery && (
         <button
           onClick={onStart}
