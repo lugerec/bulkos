@@ -45,9 +45,15 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
         {!isRecovery && (
           <span
             className="text-[11px] font-bold px-2.5 py-1 rounded-full"
-            style={{ background: C.accentDim, color: C.accent }}
+            style={
+              recommendation.isDeloadWeek
+                ? { background: "rgba(255,181,71,0.14)", color: C.amber }
+                : { background: C.accentDim, color: C.accent }
+            }
           >
-            {recommendation.readinessPercent}% ready
+            {recommendation.isDeloadWeek
+              ? "Deload week"
+              : `${recommendation.readinessPercent}% ready`}
           </span>
         )}
       </div>

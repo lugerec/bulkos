@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   classifyWorkoutSplit,
+  detectDeload,
   getMuscleRecoveryOverview,
   getMuscleSetTargetOverview,
   getWorkoutRecommendation,
@@ -372,5 +373,128 @@ describe("getWorkoutRecommendation", () => {
 
     expect(recommendation.undertrainedMuscles).not.toContain("chest");
     expect(recommendation.undertrainedMuscles).toContain("back");
+  });
+});
+
+describe("detectDeload", () => {
+  /**
+   * Build a week of training: `count` workouts inside the 7-day window
+   * that starts `weeksAgo` weeks back, each carrying `volumePerWorkout`.
+   * Days are spread out so they never create a 3-day consecutive streak.
+   */
+  function trainingWeek(
+    weeksAgo: number,
+    count: number,
+    volumePerWorkout: number
+  ): RecommendationWorkout[] {
+    return Array.from({ length: count }, (_, index) =>
+      workout(
+        daysAgo(weeksAgo * 7 + index * 2 + 1),
+        [exercise("bench-press", "Bench Press", 4)],
+        { volumeKg: volumePerWorkout }
+      )
+    );
+  }
+
+  it("does not fire with no training history", () => {
+    const signal = detectDeload([], getMuscleRecoveryOverview([], NOW), NOW);
+
+    expect(signal.isDeloadWeek).toBe(false);
+    expect(signal.loadedWeekStreak).toBe(0);
+  });
+
+  it("does not fire after fewer than 3 loaded weeks", () => {
+    const workouts = [
+      ...trainingWeek(0, 3, 5000),
+      ...trainingWeek(1, 3, 5000),
+    ];
+
+    const signal = detectDeload(
+      workouts,
+      getMuscleRecoveryOverview(workouts, NOW),
+      NOW
+    );
+
+    expect(signal.loadedWeekStreak).toBe(2);
+    expect(signal.isDeloadWeek).toBe(false);
+  });
+
+  it("does not fire when volume holds steady over 3+ loaded weeks", () => {
+    const workouts = [
+      ...trainingWeek(0, 3, 5000),
+      ...trainingWeek(1, 3, 5000),
+      ...trainingWeek(2, 3, 5000),
+    ];
+
+    const signal = detectDeload(
+      workouts,
+      getMuscleRecoveryOverview(workouts, NOW),
+      NOW
+    );
+
+    expect(signal.loadedWeekStreak).toBeGreaterThanOrEqual(3);
+    expect(signal.volumeDropping).toBe(false);
+  });
+
+  it("fires when weekly volume drops despite equal frequency after 3 loaded weeks", () => {
+    const workouts = [
+      ...trainingWeek(0, 3, 3000),
+      ...trainingWeek(1, 3, 5000),
+      ...trainingWeek(2, 3, 5000),
+    ];
+
+    const signal = detectDeload(
+      workouts,
+      getMuscleRecoveryOverview(workouts, NOW),
+      NOW
+    );
+
+    expect(signal.loadedWeekStreak).toBeGreaterThanOrEqual(3);
+    expect(signal.volumeDropping).toBe(true);
+    expect(signal.isDeloadWeek).toBe(true);
+  });
+
+  it("does not fire when a volume drop comes from fewer sessions (planned light week)", () => {
+    const workouts = [
+      ...trainingWeek(0, 2, 3500),
+      ...trainingWeek(1, 3, 5000),
+      ...trainingWeek(2, 3, 5000),
+    ];
+
+    const signal = detectDeload(
+      workouts,
+      getMuscleRecoveryOverview(workouts, NOW),
+      NOW
+    );
+
+    expect(signal.volumeDropping).toBe(false);
+  });
+
+  it("propagates the deload flag into the workout recommendation", () => {
+    const workouts = [
+      ...trainingWeek(0, 3, 3000),
+      ...trainingWeek(1, 3, 5000),
+      ...trainingWeek(2, 3, 5000),
+    ];
+
+    const recommendation = getWorkoutRecommendation({
+      workouts,
+      templates: [],
+      now: NOW,
+    });
+
+    expect(recommendation.isDeloadWeek).toBe(true);
+    expect(recommendation.split).not.toBe("recovery");
+    expect(recommendation.reason).toContain("deload");
+  });
+
+  it("keeps isDeloadWeek false for a fresh account", () => {
+    const recommendation = getWorkoutRecommendation({
+      workouts: [],
+      templates: [],
+      now: NOW,
+    });
+
+    expect(recommendation.isDeloadWeek).toBe(false);
   });
 });

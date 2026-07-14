@@ -87,6 +87,8 @@ export type WorkoutRecommendation = {
   readinessPercent: number;
   /** muscles currently below their weekly MEV (RP-style) */
   undertrainedMuscles: MuscleGroup[];
+  /** true when the coach suggests treating this as a light deload week */
+  isDeloadWeek: boolean;
 };
 
 export type WorkoutRecommendationInput = {
@@ -470,6 +472,105 @@ function toDateKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
+const DELOAD_MIN_LOADED_WEEKS = 3;
+const DELOAD_MIN_WORKOUTS_PER_WEEK = 2;
+const DELOAD_VOLUME_DROP_RATIO = 0.85;
+const DELOAD_LOW_RECOVERY_THRESHOLD = 60;
+
+type WeeklyLoad = {
+  workoutCount: number;
+  volumeKg: number;
+};
+
+/** Bucket workouts into 7-day windows: index 0 = the most recent 7 days. */
+function getWeeklyLoads(
+  workouts: readonly RecommendationWorkout[],
+  now: Date,
+  weeks: number
+): WeeklyLoad[] {
+  const buckets: WeeklyLoad[] = Array.from({ length: weeks }, () => ({
+    workoutCount: 0,
+    volumeKg: 0,
+  }));
+
+  for (const workout of workouts) {
+    const timestamp = workoutTimestamp(workout.date);
+
+    if (Number.isNaN(timestamp)) continue;
+
+    const daysAgo = (now.getTime() - timestamp) / MS_PER_DAY;
+
+    if (daysAgo < 0) continue;
+
+    const index = Math.floor(daysAgo / 7);
+
+    if (index >= weeks) continue;
+
+    buckets[index].workoutCount += 1;
+    buckets[index].volumeKg += workout.volumeKg;
+  }
+
+  return buckets;
+}
+
+export type DeloadSignal = {
+  isDeloadWeek: boolean;
+  /** consecutive 7-day windows with sustained training, counted from now */
+  loadedWeekStreak: number;
+  /** true when this week's volume dropped despite equal-or-higher frequency */
+  volumeDropping: boolean;
+  /** true when average recovery across trained muscles is low */
+  lowRecovery: boolean;
+};
+
+/**
+ * Week-level fatigue detection: after 3+ consecutive loaded training weeks,
+ * a deload is suggested when performance signals appear — weekly volume
+ * dropping despite the same (or higher) session count, or persistently low
+ * recovery across trained muscles.
+ */
+export function detectDeload(
+  workouts: readonly RecommendationWorkout[],
+  muscleRecovery: readonly MuscleRecoveryInfo[],
+  now: Date = new Date()
+): DeloadSignal {
+  const weekly = getWeeklyLoads(workouts, now, 4);
+
+  let loadedWeekStreak = 0;
+
+  for (const week of weekly) {
+    if (week.workoutCount < DELOAD_MIN_WORKOUTS_PER_WEEK) break;
+
+    loadedWeekStreak += 1;
+  }
+
+  const [current, previous] = weekly;
+  const volumeDropping =
+    loadedWeekStreak >= DELOAD_MIN_LOADED_WEEKS &&
+    previous.volumeKg > 0 &&
+    current.volumeKg < previous.volumeKg * DELOAD_VOLUME_DROP_RATIO &&
+    current.workoutCount >= previous.workoutCount;
+
+  const trained = muscleRecovery.filter(
+    (item) => item.hoursSinceTrained !== null
+  );
+  const averageRecovery =
+    trained.length > 0
+      ? trained.reduce((sum, item) => sum + item.recoveryPercent, 0) /
+        trained.length
+      : 100;
+  const lowRecovery =
+    loadedWeekStreak >= DELOAD_MIN_LOADED_WEEKS &&
+    averageRecovery < DELOAD_LOW_RECOVERY_THRESHOLD;
+
+  return {
+    isDeloadWeek: volumeDropping || lowRecovery,
+    loadedWeekStreak,
+    volumeDropping,
+    lowRecovery,
+  };
+}
+
 function pickTemplate(
   split: WorkoutSplit,
   templates: readonly WorkoutTemplate[],
@@ -819,6 +920,7 @@ export function getWorkoutRecommendation(
   }
 
   const consecutiveDays = countConsecutiveTrainingDays(input.workouts, now);
+  const deload = detectDeload(input.workouts, muscleRecovery, now);
   const needsRecovery =
     best === null ||
     best.readiness < READINESS_RECOVERY_THRESHOLD ||
@@ -833,17 +935,21 @@ export function getWorkoutRecommendation(
     const weightNote = rapidWeightLoss
       ? " Your body weight also dropped quickly this week, so prioritize food and sleep."
       : "";
+    const deloadNote = deload.isDeloadWeek
+      ? ` You've also carried ${deload.loadedWeekStreak} straight weeks of training — treat the whole week as a deload.`
+      : "";
 
     return {
       split: "recovery",
       title: SPLIT_TITLES.recovery,
-      reason: `Today I recommend a recovery day because ${streakNote}. Light cardio, stretching or a walk is ideal.${weightNote}`,
+      reason: `Today I recommend a recovery day because ${streakNote}. Light cardio, stretching or a walk is ideal.${weightNote}${deloadNote}`,
       template: null,
       isGenerated: false,
       focusMuscles: [],
       muscleRecovery,
       readinessPercent: readiness,
       undertrainedMuscles,
+      isDeloadWeek: deload.isDeloadWeek,
     };
   }
 
@@ -920,15 +1026,28 @@ export function getWorkoutRecommendation(
       ? generatedTemplate
       : null);
 
+  const baseReason = `Today I recommend ${SPLIT_TITLES[split]} because ${recoveredPart}${recoveringPart}.${weightNote}${undertrainedPart}`;
+
+  const deloadReason = `You've trained hard for ${
+    deload.loadedWeekStreak
+  } straight weeks and ${
+    deload.volumeDropping
+      ? "your weekly volume is dropping despite the same effort"
+      : "your muscles are staying fatigued between sessions"
+  } — time for a deload. Do ${
+    SPLIT_TITLES[split]
+  }, but cut your sets to about half and stop 3-4 reps short of failure.`;
+
   return {
     split,
     title: SPLIT_TITLES[split],
-    reason: `Today I recommend ${SPLIT_TITLES[split]} because ${recoveredPart}${recoveringPart}.${weightNote}${undertrainedPart}`,
+    reason: deload.isDeloadWeek ? deloadReason : baseReason,
     template,
     isGenerated: matchedTemplate === null && template !== null,
     focusMuscles,
     muscleRecovery,
     readinessPercent: Math.round(Math.max(0, Math.min(100, best.readiness))),
     undertrainedMuscles,
+    isDeloadWeek: deload.isDeloadWeek,
   };
 }
