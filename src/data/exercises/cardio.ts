@@ -1,0 +1,220 @@
+import type { ExerciseDefinition } from "@/types/workout";
+
+export const cardioExercises: ExerciseDefinition[] = [
+  {
+    id: "walking",
+    name: "Walking",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["legs", "calves"],
+    equipment: "bodyweight",
+    category: "cardio",
+    difficulty: "beginner",
+    defaultRestSeconds: 0,
+    defaultSets: 1,
+    defaultReps: 30,
+    media: {
+      thumbnail: "/exercises/walking/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      legs: 35,
+      calves: 25,
+    },
+    tags: ["walking", "steps", "liss"],
+  },
+
+  {
+    id: "treadmill-walk",
+    name: "Treadmill Walk",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["legs", "calves"],
+    equipment: "machine",
+    category: "cardio",
+    difficulty: "beginner",
+    defaultRestSeconds: 0,
+    defaultSets: 1,
+    defaultReps: 30,
+    media: {
+      thumbnail: "/exercises/treadmill-walk/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      legs: 35,
+      calves: 30,
+    },
+    tags: ["treadmill", "liss"],
+  },
+
+  {
+    id: "running",
+    name: "Running",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["legs", "calves"],
+    equipment: "bodyweight",
+    category: "cardio",
+    difficulty: "intermediate",
+    defaultRestSeconds: 0,
+    defaultSets: 1,
+    defaultReps: 20,
+    media: {
+      thumbnail: "/exercises/running/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      legs: 55,
+      calves: 45,
+    },
+    tags: ["running", "conditioning"],
+  },
+
+  {
+    id: "cycling",
+    name: "Cycling",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["legs"],
+    equipment: "machine",
+    category: "cardio",
+    difficulty: "beginner",
+    defaultRestSeconds: 0,
+    defaultSets: 1,
+    defaultReps: 30,
+    media: {
+      thumbnail: "/exercises/cycling/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      legs: 70,
+    },
+    tags: ["bike", "cycling"],
+  },
+
+  {
+    id: "rowing",
+    name: "Rowing",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["back", "legs"],
+    equipment: "machine",
+    category: "cardio",
+    difficulty: "intermediate",
+    defaultRestSeconds: 0,
+    defaultSets: 1,
+    defaultReps: 20,
+    media: {
+      thumbnail: "/exercises/rowing/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      back: 45,
+      legs: 45,
+    },
+    tags: ["rowing", "ergometer"],
+  },
+
+  {
+    id: "stairmaster",
+    name: "StairMaster",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["legs", "glutes", "calves"],
+    equipment: "machine",
+    category: "cardio",
+    difficulty: "intermediate",
+    defaultRestSeconds: 0,
+    defaultSets: 1,
+    defaultReps: 20,
+    media: {
+      thumbnail: "/exercises/stairmaster/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      legs: 70,
+      glutes: 60,
+      calves: 40,
+    },
+    tags: ["stairs", "fat loss"],
+  },
+
+  {
+    id: "elliptical",
+    name: "Elliptical",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["legs"],
+    equipment: "machine",
+    category: "cardio",
+    difficulty: "beginner",
+    defaultRestSeconds: 0,
+    defaultSets: 1,
+    defaultReps: 25,
+    media: {
+      thumbnail: "/exercises/elliptical/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      legs: 50,
+    },
+    tags: ["cross trainer"],
+  },
+
+  {
+    id: "jump-rope",
+    name: "Jump Rope",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["calves", "shoulders"],
+    equipment: "bodyweight",
+    category: "cardio",
+    difficulty: "intermediate",
+    defaultRestSeconds: 60,
+    defaultSets: 5,
+    defaultReps: 1,
+    media: {
+      thumbnail: "/exercises/jump-rope/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      calves: 70,
+      shoulders: 20,
+    },
+    tags: ["rope", "conditioning"],
+  },
+
+  {
+    id: "burpees",
+    name: "Burpees",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["fullBody"],
+    equipment: "bodyweight",
+    category: "cardio",
+    difficulty: "advanced",
+    defaultRestSeconds: 90,
+    defaultSets: 4,
+    defaultReps: 12,
+    media: {
+      thumbnail: "/exercises/burpees/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      fullBody: 100,
+    },
+    tags: ["hiit", "conditioning"],
+  },
+
+  {
+    id: "assault-bike",
+    name: "Assault Bike",
+    primaryMuscle: "cardio",
+    secondaryMuscles: ["fullBody"],
+    equipment: "machine",
+    category: "cardio",
+    difficulty: "advanced",
+    defaultRestSeconds: 90,
+    defaultSets: 8,
+    defaultReps: 1,
+    media: {
+      thumbnail: "/exercises/assault-bike/thumbnail.webp",
+    },
+    activation: {
+      cardio: 100,
+      fullBody: 100,
+    },
+    tags: ["hiit", "air bike"],
+  },
+];

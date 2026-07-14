@@ -28,4 +28,6 @@ export const C = {
   | "grocery"
   | "exercise-history"
   | "check-in"
+  | "template-builder"
+  | "template-editor"
   | "settings";

@@ -1,5 +1,10 @@
+import { exerciseDefinitions } from "@/data/exercises";
+import { getProgressionSuggestion } from "@/features/workout/utils/progression";
+
+import ExerciseDetailsSheet from "@/features/workout/components/ExerciseDetailsSheet";
+
 import { useEffect, useState } from "react";
-import { CheckCircle2, Timer, X } from "lucide-react";
+import { CheckCircle2, Dumbbell, Timer, X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
@@ -14,6 +19,53 @@ const fmt = (s: number) =>
   `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60)
     .toString()
     .padStart(2, "0")}`;
+
+    function getRestTime(exerciseName: string) {
+      const name = exerciseName.toLowerCase();
+    
+      if (
+        name.includes("deadlift") ||
+        name.includes("mŕtvy") ||
+        name.includes("rack pull")
+      ) {
+        return 240;
+      }
+    
+      if (
+        name.includes("bench") ||
+        name.includes("squat") ||
+        name.includes("drep")
+      ) {
+        return 180;
+      }
+    
+      if (
+        name.includes("row") ||
+        name.includes("pull") ||
+        name.includes("ohp") ||
+        name.includes("shoulder press")
+      ) {
+        return 150;
+      }
+    
+      if (
+        name.includes("curl") ||
+        name.includes("triceps") ||
+        name.includes("pushdown")
+      ) {
+        return 90;
+      }
+    
+      if (
+        name.includes("lateral") ||
+        name.includes("calf") ||
+        name.includes("abs")
+      ) {
+        return 60;
+      }
+    
+      return 90;
+    }
 
     function signedDuration(seconds: number) {
       if (seconds === 0) return "00:00";
@@ -33,6 +85,8 @@ type WorkoutComparison = {
 export default function WorkoutScreen() {
   const user = useAuthStore((s) => s.user);
   const workout = useWorkoutTemplateStore((s) => s.selected);
+  const templates = useWorkoutTemplateStore((s) => s.templates);
+  const selectTemplate = useWorkoutTemplateStore((s) => s.selectTemplate);
 
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
@@ -49,6 +103,9 @@ export default function WorkoutScreen() {
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [workoutStarted, setWorkoutStarted] = useState(false);
+
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
 
   const exerciseHasPR = (exerciseId: string) => Boolean(prs[exerciseId]);
 
@@ -131,7 +188,90 @@ export default function WorkoutScreen() {
     return () => clearInterval(t);
   }, [isResting]);
 
-  if (!workout) return null;
+  if (!workoutStarted || !workout) {
+    return (
+      <div className="px-5 pt-4 pb-8">
+        <div className="mb-6">
+          <p
+            className="text-[11px] font-bold uppercase tracking-widest mb-1"
+            style={{ color: C.accent }}
+          >
+            Train
+          </p>
+  
+          <h2 className="text-2xl font-extrabold" style={{ color: C.fg }}>
+            Select Workout
+          </h2>
+  
+          <p className="text-sm mt-1" style={{ color: C.fg3 }}>
+            Choose a template to start your session.
+          </p>
+        </div>
+  
+        {templates.length === 0 ? (
+          <div
+            className="rounded-[20px] p-5 text-center"
+            style={{
+              background: C.card,
+              border: `1px solid ${C.border}`,
+            }}
+          >
+            <Dumbbell size={24} color={C.fg3} className="mx-auto mb-3" />
+  
+            <p className="text-sm font-semibold" style={{ color: C.fg }}>
+              No workout templates yet.
+            </p>
+  
+            <p className="text-xs mt-2" style={{ color: C.fg3 }}>
+              Create one in Settings → Workout Templates.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {templates.map((template) => (
+              <button
+                key={template.id}
+                onClick={() => {
+                  selectTemplate(template.id);
+                  setWorkoutStarted(true);
+                }}
+                className="rounded-[20px] p-4 text-left flex items-center justify-between gap-3"
+                style={{
+                  background: C.card,
+                  border: `1px solid ${C.border}`,
+                }}
+              >
+                <div>
+                  <p className="text-base font-bold" style={{ color: C.fg }}>
+                    {template.name}
+                  </p>
+  
+                  <p className="text-xs mt-1" style={{ color: C.fg3 }}>
+                    {template.exercises.length} exercises ·{" "}
+                    {template.exercises.reduce(
+                      (sum, exercise) => sum + exercise.sets.length,
+                      0
+                    )}{" "}
+                    sets
+                  </p>
+                </div>
+  
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{
+                    background: C.accent,
+                    color: C.bg,
+                  }}
+                >
+                  <Dumbbell size={17} />
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const toggleSet = (exIdx: number, setIdx: number) => {
     const key = `${exIdx}-${setIdx}`;
@@ -143,6 +283,29 @@ export default function WorkoutScreen() {
         next.delete(key);
       } else {
         next.add(key);
+
+        const current = exercises[exIdx].sets[setIdx];
+
+        if (setIdx + 1 < exercises[exIdx].sets.length) {
+          setExercises((prev) =>
+            prev.map((exercise, exerciseIndex) => {
+              if (exerciseIndex !== exIdx) return exercise;
+
+              return {
+                ...exercise,
+                sets: exercise.sets.map((set, index) => {
+                  if (index !== setIdx + 1) return set;
+
+                  return {
+                    ...set,
+                    weight: current.weight,
+                    reps: current.reps,
+                  };
+                }),
+              };
+            })
+          );
+        }
 
         const currentSet = exercises[exIdx].sets[setIdx];
         const exercise = exercises[exIdx];
@@ -164,7 +327,7 @@ export default function WorkoutScreen() {
           }));
         }
 
-        setRestTimer(90);
+        setRestTimer(exercise.restSeconds ?? getRestTime(exercise.name));
         setIsResting(true);
       }
 
@@ -196,6 +359,62 @@ export default function WorkoutScreen() {
       })
     );
   };
+
+  function applySuggested(
+    exIdx: number,
+    weight: number,
+    reps: number
+  ) {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+  
+        const firstIncomplete = exercise.sets.findIndex(
+          (_, setIndex) => !completed.has(`${exerciseIndex}-${setIndex}`)
+        );
+  
+        if (firstIncomplete === -1) return exercise;
+  
+        return {
+          ...exercise,
+          sets: exercise.sets.map((set, setIndex) =>
+            setIndex === firstIncomplete
+              ? {
+                  ...set,
+                  weight,
+                  reps,
+                }
+              : set
+          ),
+        };
+      })
+    );
+  }
+
+  function applySuggestedAll(
+    exIdx: number,
+    weight: number,
+    reps: number
+  ) {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+  
+        return {
+          ...exercise,
+          sets: exercise.sets.map((set, setIndex) =>
+            completed.has(`${exerciseIndex}-${setIndex}`)
+              ? set
+              : {
+                  ...set,
+                  weight,
+                  reps,
+                }
+          ),
+        };
+      })
+    );
+  }
 
   const totalSets = exercises.reduce((a, e) => a + e.sets.length, 0);
   const doneSets = completed.size;
@@ -232,6 +451,20 @@ export default function WorkoutScreen() {
           }))
       )
       .sort((a, b) => b.score - a.score)[0];
+
+      function getExerciseVolume(exIdx: number) {
+        return exercises[exIdx].sets.reduce((sum, set, setIdx) => {
+          const key = `${exIdx}-${setIdx}`;
+      
+          if (!completed.has(key)) return sum;
+      
+          return sum + set.weight * set.reps;
+        }, 0);
+      }
+
+      const estimatedOneRepMax = strongestSet
+      ? Math.round(strongestSet.weight * (1 + strongestSet.reps / 30))
+      : 0;
 
   const handleFinishWorkout = async () => {
     if (!user || saving) return;
@@ -512,7 +745,25 @@ export default function WorkoutScreen() {
             {totalSets - doneSets} remaining
           </span>
         </div>
+        <div className="grid grid-cols-3 gap-2 mt-4">
+        <LiveStat label="Volume" value={`${volumeKg.toLocaleString()} kg`} />
+
+        <LiveStat
+          label="Best set"
+          value={
+            strongestSet
+              ? `${strongestSet.weight}×${strongestSet.reps}`
+              : "—"
+          }
+        />
+
+        <LiveStat
+          label="Est. 1RM"
+          value={estimatedOneRepMax > 0 ? `${estimatedOneRepMax} kg` : "—"}
+        />
       </div>
+      </div>
+      
 
       {isResting && (
         <div
@@ -534,6 +785,9 @@ export default function WorkoutScreen() {
 
           <p className="text-2xl font-bold font-mono" style={{ color: C.accent }}>
             {fmt(restTimer)}
+            <p className="text-[10px] mt-1 text-center" style={{ color: C.fg3 }}>
+              Recommended rest
+            </p>
           </p>
 
           <button
@@ -548,8 +802,16 @@ export default function WorkoutScreen() {
 
       <div className="px-5 flex flex-col gap-4">
         {exercises.map((ex, exIdx) => {
+          const exerciseVolume = getExerciseVolume(exIdx);
           const previous = getPreviousExercise(ex.id);
           const previousSets = previous?.sets.filter((set) => set.completed) ?? [];
+          const exerciseDefinition = exerciseDefinitions.find(
+            (definition) => definition.id === (ex.exerciseId ?? ex.id)
+          );
+          
+          const suggested = exerciseDefinition
+            ? getProgressionSuggestion(exerciseDefinition, previous?.sets ?? [])
+            : null;
 
           return (
             <div
@@ -560,9 +822,18 @@ export default function WorkoutScreen() {
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold" style={{ color: C.fg }}>
-                      {ex.name}
-                    </p>
+                  <button
+                  type="button"
+                  onClick={() => {
+                    if (ex.exerciseId) {setSelectedExerciseId(ex.exerciseId);
+                    }
+                  }}
+                  className="text-left hover:underline">
+                  <p className="text-sm font-bold"
+                    style={{ color: C.fg }}>
+                    {ex.name}
+                  </p>
+                </button>
 
                     {exerciseHasPR(ex.id) && (
                       <span
@@ -586,11 +857,71 @@ export default function WorkoutScreen() {
                         .join(" • ")}
                     </p>
                   )}
+
+                  {suggested && (
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() =>
+                          applySuggested(
+                            exIdx,
+                            suggested.weight,
+                            suggested.reps
+                          )
+                        }
+                        className="px-2 py-1 rounded-lg text-[11px] font-semibold"
+                        style={{
+                          background: "rgba(124,255,107,0.12)",
+                          color: C.accent,
+                          border: "1px solid rgba(124,255,107,0.25)",
+                        }}
+                      >
+                        ⭐ Apply
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          applySuggestedAll(
+                            exIdx,
+                            suggested.weight,
+                            suggested.reps
+                          )
+                        }
+                        className="px-2 py-1 rounded-lg text-[11px] font-semibold"
+                        style={{
+                          background: C.card2,
+                          color: C.fg,
+                          border: `1px solid ${C.border}`,
+                        }}
+                      >
+                        Apply All
+                      </button>
+
+                      <span
+                        className="flex items-center text-[11px] font-semibold"
+                        style={{ color: C.accent }}
+                      >
+                        {suggested.weight} × {suggested.reps}
+                        <span
+                          className="ml-1"
+                          style={{ color: C.fg3 }}
+                        >
+                          · {suggested.reason === "increase_weight"
+                            ? "add weight"
+                            : suggested.reason === "increase_reps"
+                            ? "add reps"
+                            : suggested.reason}
+                        </span>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <span className="text-[11px]" style={{ color: C.fg3 }}>
                   {ex.sets.length} sets
                 </span>
+                <p className="text-[11px] mt-1 text-right" style={{ color: C.accent }}>
+                  {exerciseVolume.toLocaleString()} kg
+                </p>
               </div>
 
               <div className="flex items-center gap-2 mb-2 px-1">
@@ -653,6 +984,11 @@ export default function WorkoutScreen() {
           {saving ? "Saving Workout..." : "Finish Workout"}
         </button>
       </div>
+
+      <ExerciseDetailsSheet
+        exerciseId={selectedExerciseId}
+        onClose={() => setSelectedExerciseId(null)}
+      />
     </div>
   );
 }
@@ -678,6 +1014,25 @@ function DiffStat({
         className="text-xs font-bold"
         style={{ color: positive ? C.accent : "#ff4d4d" }}
       >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function LiveStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      className="rounded-[14px] px-3 py-2"
+      style={{
+        background: C.card,
+        border: `1px solid ${C.border}`,
+      }}
+    >
+      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+        {label}
+      </p>
+      <p className="text-xs font-bold" style={{ color: C.fg }}>
         {value}
       </p>
     </div>

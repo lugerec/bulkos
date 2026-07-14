@@ -1,0 +1,680 @@
+import { exerciseDefinitions } from "@/data/exercises";
+import type { MuscleGroup, WorkoutTemplate } from "@/types/workout";
+
+/**
+ * Structural input types.
+ *
+ * The app has two shapes of workout logs (`types/workout.ts` and the one
+ * stored in `workoutHistoryStore`). Instead of forcing one onto the other,
+ * the recommendation engine only asks for the fields it actually needs —
+ * both shapes satisfy these types without any casts (same pattern as
+ * `getMuscleVolume`).
+ */
+export type RecommendationSet = {
+  reps: number;
+  weight: number;
+  completed?: boolean;
+};
+
+export type RecommendationExercise = {
+  id: string;
+  exerciseId?: string;
+  name: string;
+  sets: readonly RecommendationSet[];
+};
+
+export type RecommendationWorkout = {
+  id: string;
+  /** YYYY-MM-DD */
+  date: string;
+  name: string;
+  templateId?: string;
+  volumeKg: number;
+  exercises?: readonly RecommendationExercise[];
+};
+
+export type RecommendationBodyMetrics = {
+  /** YYYY-MM-DD */
+  date: string;
+  weightKg: number;
+};
+
+export type WorkoutSplit =
+  | "push"
+  | "pull"
+  | "legs"
+  | "upper"
+  | "lower"
+  | "fullBody"
+  | "recovery";
+
+export type MuscleRecoveryInfo = {
+  muscle: MuscleGroup;
+  /** 0–100, 100 = fully recovered */
+  recoveryPercent: number;
+  /** null = never trained */
+  hoursSinceTrained: number | null;
+  weeklyVolumeKg: number;
+};
+
+export type WorkoutRecommendation = {
+  split: WorkoutSplit;
+  title: string;
+  reason: string;
+  template: WorkoutTemplate | null;
+  focusMuscles: MuscleGroup[];
+  muscleRecovery: MuscleRecoveryInfo[];
+  /** 0–100 readiness of the recommended split */
+  readinessPercent: number;
+};
+
+export type WorkoutRecommendationInput = {
+  workouts: readonly RecommendationWorkout[];
+  templates: readonly WorkoutTemplate[];
+  bodyMetrics?: readonly RecommendationBodyMetrics[];
+  now?: Date;
+};
+
+const ALL_MUSCLES: readonly MuscleGroup[] = [
+  "chest",
+  "back",
+  "shoulders",
+  "biceps",
+  "triceps",
+  "forearms",
+  "legs",
+  "glutes",
+  "calves",
+  "abs",
+  "neck",
+  "cardio",
+  "fullBody",
+];
+
+/** Baseline hours a muscle needs to fully recover after a hard session. */
+const RECOVERY_HOURS: Record<MuscleGroup, number> = {
+  chest: 48,
+  back: 48,
+  shoulders: 44,
+  biceps: 36,
+  triceps: 36,
+  forearms: 24,
+  legs: 72,
+  glutes: 60,
+  calves: 36,
+  abs: 24,
+  neck: 24,
+  cardio: 20,
+  fullBody: 48,
+};
+
+const PUSH_MUSCLES: readonly MuscleGroup[] = ["chest", "shoulders", "triceps"];
+const PULL_MUSCLES: readonly MuscleGroup[] = ["back", "biceps", "forearms"];
+const LOWER_MUSCLES: readonly MuscleGroup[] = ["legs", "glutes", "calves"];
+const UPPER_MUSCLES: readonly MuscleGroup[] = [
+  ...PUSH_MUSCLES,
+  ...PULL_MUSCLES,
+];
+
+const SPLIT_MUSCLES: Record<Exclude<WorkoutSplit, "recovery">, readonly MuscleGroup[]> = {
+  push: PUSH_MUSCLES,
+  pull: PULL_MUSCLES,
+  legs: LOWER_MUSCLES,
+  upper: UPPER_MUSCLES,
+  lower: LOWER_MUSCLES,
+  fullBody: [...UPPER_MUSCLES, ...LOWER_MUSCLES],
+};
+
+const SPLIT_TITLES: Record<WorkoutSplit, string> = {
+  push: "Push Day",
+  pull: "Pull Day",
+  legs: "Leg Day",
+  upper: "Upper Body",
+  lower: "Lower Body",
+  fullBody: "Full Body",
+  recovery: "Recovery Day",
+};
+
+const MUSCLE_LABELS: Record<MuscleGroup, string> = {
+  chest: "Chest",
+  back: "Back",
+  shoulders: "Shoulders",
+  biceps: "Biceps",
+  triceps: "Triceps",
+  forearms: "Forearms",
+  legs: "Legs",
+  glutes: "Glutes",
+  calves: "Calves",
+  abs: "Abs",
+  neck: "Neck",
+  cardio: "Cardio",
+  fullBody: "Full Body",
+};
+
+/** Which template classifications satisfy a recommended split (in order of preference). */
+const SPLIT_TEMPLATE_MATCHES: Record<WorkoutSplit, readonly WorkoutSplit[]> = {
+  push: ["push", "upper", "fullBody"],
+  pull: ["pull", "upper", "fullBody"],
+  legs: ["legs", "lower", "fullBody"],
+  upper: ["upper", "push", "pull", "fullBody"],
+  lower: ["lower", "legs", "fullBody"],
+  fullBody: ["fullBody", "upper", "lower"],
+  recovery: [],
+};
+
+const READINESS_RECOVERY_THRESHOLD = 55;
+const MAX_CONSECUTIVE_TRAINING_DAYS = 3;
+const MS_PER_HOUR = 3_600_000;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
+
+type DefinitionLookup = Map<string, (typeof exerciseDefinitions)[number]>;
+
+function buildDefinitionLookup(): DefinitionLookup {
+  const lookup: DefinitionLookup = new Map();
+
+  for (const definition of exerciseDefinitions) {
+    lookup.set(definition.id, definition);
+    lookup.set(definition.name.toLowerCase(), definition);
+
+    for (const alias of definition.aliases ?? []) {
+      lookup.set(alias.toLowerCase(), definition);
+    }
+  }
+
+  return lookup;
+}
+
+function findDefinition(
+  lookup: DefinitionLookup,
+  exercise: { id: string; exerciseId?: string; name: string }
+) {
+  return (
+    lookup.get(exercise.exerciseId ?? exercise.id) ??
+    lookup.get(exercise.name.toLowerCase())
+  );
+}
+
+function workoutTimestamp(date: string): number {
+  // Assume midday so "yesterday" counts as ~24h ago, not ~36h.
+  return new Date(`${date}T12:00:00`).getTime();
+}
+
+type SessionStimulus = {
+  timestamp: number;
+  /** completed sets weighted by muscle activation (1 set @ 100% = 1) */
+  weightedSets: number;
+  weightedVolumeKg: number;
+};
+
+/** Per-muscle training stimulus extracted from workout logs. */
+function collectMuscleStimuli(
+  workouts: readonly RecommendationWorkout[],
+  lookup: DefinitionLookup,
+  now: Date
+): Map<MuscleGroup, SessionStimulus[]> {
+  const stimuli = new Map<MuscleGroup, SessionStimulus[]>();
+  const horizon = now.getTime() - 10 * MS_PER_DAY;
+
+  for (const workout of workouts) {
+    const timestamp = workoutTimestamp(workout.date);
+
+    if (Number.isNaN(timestamp) || timestamp < horizon) continue;
+
+    const perMuscleSets = new Map<MuscleGroup, number>();
+    const perMuscleVolume = new Map<MuscleGroup, number>();
+
+    for (const exercise of workout.exercises ?? []) {
+      const definition = findDefinition(lookup, exercise);
+
+      if (!definition) continue;
+
+      let completedSets = 0;
+      let volumeKg = 0;
+
+      for (const set of exercise.sets) {
+        if (!set.completed) continue;
+        completedSets += 1;
+        volumeKg += set.weight * set.reps;
+      }
+
+      if (completedSets === 0) continue;
+
+      const activation = definition.activation ?? {
+        [definition.primaryMuscle]: 100,
+      };
+
+      for (const muscle of ALL_MUSCLES) {
+        const percentage = activation[muscle];
+
+        if (typeof percentage !== "number" || percentage <= 0) continue;
+
+        const factor = Math.min(percentage, 100) / 100;
+
+        perMuscleSets.set(
+          muscle,
+          (perMuscleSets.get(muscle) ?? 0) + completedSets * factor
+        );
+        perMuscleVolume.set(
+          muscle,
+          (perMuscleVolume.get(muscle) ?? 0) + volumeKg * factor
+        );
+      }
+    }
+
+    perMuscleSets.forEach((weightedSets, muscle) => {
+      const list = stimuli.get(muscle) ?? [];
+
+      list.push({
+        timestamp,
+        weightedSets,
+        weightedVolumeKg: perMuscleVolume.get(muscle) ?? 0,
+      });
+      stimuli.set(muscle, list);
+    });
+  }
+
+  return stimuli;
+}
+
+function getMuscleRecovery(
+  workouts: readonly RecommendationWorkout[],
+  lookup: DefinitionLookup,
+  now: Date
+): Map<MuscleGroup, MuscleRecoveryInfo> {
+  const stimuli = collectMuscleStimuli(workouts, lookup, now);
+  const weekAgo = now.getTime() - 7 * MS_PER_DAY;
+  const recovery = new Map<MuscleGroup, MuscleRecoveryInfo>();
+
+  for (const muscle of ALL_MUSCLES) {
+    const sessions = stimuli.get(muscle) ?? [];
+
+    let hoursSinceTrained: number | null = null;
+    let weeklyVolumeKg = 0;
+    let maxRemainingFatigue = 0;
+
+    for (const session of sessions) {
+      const hoursSince = Math.max(
+        0,
+        (now.getTime() - session.timestamp) / MS_PER_HOUR
+      );
+
+      if (hoursSinceTrained === null || hoursSince < hoursSinceTrained) {
+        hoursSinceTrained = hoursSince;
+      }
+
+      if (session.timestamp >= weekAgo) {
+        weeklyVolumeKg += session.weightedVolumeKg;
+      }
+
+      // Light sessions recover faster, hard sessions a bit slower.
+      const intensityFactor = Math.min(
+        1.25,
+        Math.max(0.5, session.weightedSets / 8 + 0.5)
+      );
+      const recoveryNeededHours = RECOVERY_HOURS[muscle] * intensityFactor;
+      const remainingFatigue = Math.max(0, 1 - hoursSince / recoveryNeededHours);
+
+      maxRemainingFatigue = Math.max(maxRemainingFatigue, remainingFatigue);
+    }
+
+    recovery.set(muscle, {
+      muscle,
+      recoveryPercent: Math.round((1 - maxRemainingFatigue) * 100),
+      hoursSinceTrained,
+      weeklyVolumeKg: Math.round(weeklyVolumeKg),
+    });
+  }
+
+  return recovery;
+}
+
+function splitReadiness(
+  split: Exclude<WorkoutSplit, "recovery">,
+  recovery: Map<MuscleGroup, MuscleRecoveryInfo>
+): number {
+  const muscles = SPLIT_MUSCLES[split];
+
+  if (muscles.length === 0) return 100;
+
+  const total = muscles.reduce(
+    (sum, muscle) => sum + (recovery.get(muscle)?.recoveryPercent ?? 100),
+    0
+  );
+
+  return total / muscles.length;
+}
+
+function splitWeeklyVolume(
+  split: Exclude<WorkoutSplit, "recovery">,
+  recovery: Map<MuscleGroup, MuscleRecoveryInfo>
+): number {
+  return SPLIT_MUSCLES[split].reduce(
+    (sum, muscle) => sum + (recovery.get(muscle)?.weeklyVolumeKg ?? 0),
+    0
+  );
+}
+
+type ClassifiableWorkout = {
+  exercises?: readonly RecommendationExercise[];
+};
+
+/**
+ * Classify a workout or template into a split by where its sets land.
+ * Uses planned sets (templates) or all sets (logs) — completion not required.
+ */
+export function classifyWorkoutSplit(
+  workout: ClassifiableWorkout,
+  lookup: DefinitionLookup = buildDefinitionLookup()
+): Exclude<WorkoutSplit, "recovery"> | null {
+  let pushSets = 0;
+  let pullSets = 0;
+  let lowerSets = 0;
+  let otherSets = 0;
+
+  for (const exercise of workout.exercises ?? []) {
+    const definition = findDefinition(lookup, exercise);
+
+    if (!definition) continue;
+
+    const sets = exercise.sets.length;
+    const muscle = definition.primaryMuscle;
+
+    if (PUSH_MUSCLES.includes(muscle)) pushSets += sets;
+    else if (PULL_MUSCLES.includes(muscle)) pullSets += sets;
+    else if (LOWER_MUSCLES.includes(muscle)) lowerSets += sets;
+    else otherSets += sets;
+  }
+
+  const total = pushSets + pullSets + lowerSets + otherSets;
+
+  if (total === 0) return null;
+
+  const pushShare = pushSets / total;
+  const pullShare = pullSets / total;
+  const lowerShare = lowerSets / total;
+
+  if (pushShare >= 0.6) return "push";
+  if (pullShare >= 0.6) return "pull";
+  if (lowerShare >= 0.6) return "legs";
+  if (lowerShare <= 0.15 && pushShare + pullShare >= 0.7) return "upper";
+  if (lowerShare >= 0.5) return "lower";
+
+  return "fullBody";
+}
+
+function countConsecutiveTrainingDays(
+  workouts: readonly RecommendationWorkout[],
+  now: Date
+): number {
+  const trainedDates = new Set(workouts.map((workout) => workout.date));
+
+  let streak = 0;
+  const cursor = new Date(now);
+
+  // A streak only matters if it includes today or yesterday.
+  if (!trainedDates.has(toDateKey(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  while (trainedDates.has(toDateKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return streak;
+}
+
+function toDateKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function pickTemplate(
+  split: WorkoutSplit,
+  templates: readonly WorkoutTemplate[],
+  workouts: readonly RecommendationWorkout[],
+  lookup: DefinitionLookup
+): WorkoutTemplate | null {
+  const preferences = SPLIT_TEMPLATE_MATCHES[split];
+
+  if (preferences.length === 0 || templates.length === 0) return null;
+
+  const lastUsed = new Map<string, string>();
+
+  for (const workout of workouts) {
+    if (!workout.templateId) continue;
+
+    const previous = lastUsed.get(workout.templateId);
+
+    if (!previous || workout.date > previous) {
+      lastUsed.set(workout.templateId, workout.date);
+    }
+  }
+
+  const classified = templates.map((template) => ({
+    template,
+    split: classifyWorkoutSplit(template, lookup),
+  }));
+
+  for (const preferred of preferences) {
+    const candidates = classified.filter((item) => item.split === preferred);
+
+    if (candidates.length === 0) continue;
+
+    // Least recently used first; never used wins outright.
+    candidates.sort((a, b) => {
+      const aDate = lastUsed.get(a.template.id) ?? "";
+      const bDate = lastUsed.get(b.template.id) ?? "";
+
+      return aDate.localeCompare(bDate);
+    });
+
+    return candidates[0].template;
+  }
+
+  return null;
+}
+
+function formatMuscleList(muscles: readonly MuscleGroup[]): string {
+  const labels = muscles.map((muscle) => MUSCLE_LABELS[muscle]);
+
+  if (labels.length <= 1) return labels[0] ?? "";
+  if (labels.length === 2) return `${labels[0]} and ${labels[1]}`;
+
+  return `${labels.slice(0, -1).join(", ")} and ${labels[labels.length - 1]}`;
+}
+
+function getWeeklyWeightChangeKg(
+  bodyMetrics: readonly RecommendationBodyMetrics[],
+  now: Date
+): number | null {
+  if (bodyMetrics.length < 2) return null;
+
+  const sorted = [...bodyMetrics].sort((a, b) => a.date.localeCompare(b.date));
+  const latest = sorted[sorted.length - 1];
+  const weekAgoKey = toDateKey(new Date(now.getTime() - 7 * MS_PER_DAY));
+  const reference =
+    sorted.find((entry) => entry.date >= weekAgoKey) ?? sorted[0];
+
+  if (reference === latest) return null;
+
+  return latest.weightKg - reference.weightKg;
+}
+
+/**
+ * Standalone recovery overview (used by the Progress screen).
+ */
+export function getMuscleRecoveryOverview(
+  workouts: readonly RecommendationWorkout[],
+  now: Date = new Date()
+): MuscleRecoveryInfo[] {
+  const lookup = buildDefinitionLookup();
+  const recovery = getMuscleRecovery(workouts, lookup, now);
+
+  return ALL_MUSCLES.flatMap((muscle) => {
+    const info = recovery.get(muscle);
+
+    return info ? [info] : [];
+  });
+}
+
+export function getWorkoutRecommendation(
+  input: WorkoutRecommendationInput
+): WorkoutRecommendation {
+  const now = input.now ?? new Date();
+  const lookup = buildDefinitionLookup();
+
+  const recovery = getMuscleRecovery(input.workouts, lookup, now);
+  const muscleRecovery = ALL_MUSCLES.flatMap((muscle) => {
+    const info = recovery.get(muscle);
+
+    return info ? [info] : [];
+  });
+
+  // Body metrics: rapid weight loss slows recovery a little.
+  const weightChange = getWeeklyWeightChangeKg(input.bodyMetrics ?? [], now);
+  const latestWeight = input.bodyMetrics?.length
+    ? [...input.bodyMetrics].sort((a, b) => a.date.localeCompare(b.date))[
+        input.bodyMetrics.length - 1
+      ].weightKg
+    : null;
+  const rapidWeightLoss =
+    weightChange !== null &&
+    latestWeight !== null &&
+    latestWeight > 0 &&
+    weightChange < -0.01 * latestWeight;
+  const readinessModifier = rapidWeightLoss ? -5 : 0;
+
+  // Score every trainable split.
+  const lastWorkout = input.workouts.reduce<RecommendationWorkout | null>(
+    (latest, workout) =>
+      !latest || workout.date > latest.date ? workout : latest,
+    null
+  );
+  const lastSplit = lastWorkout ? classifyWorkoutSplit(lastWorkout, lookup) : null;
+  const lastSplitMuscles = lastSplit ? SPLIT_MUSCLES[lastSplit] : [];
+
+  const candidates: Exclude<WorkoutSplit, "recovery">[] = [
+    "push",
+    "pull",
+    "legs",
+    "upper",
+    "lower",
+    "fullBody",
+  ];
+
+  const totalWeeklyVolume = candidates
+    .slice(0, 3)
+    .reduce((sum, split) => sum + splitWeeklyVolume(split, recovery), 0);
+
+  let best: {
+    split: Exclude<WorkoutSplit, "recovery">;
+    score: number;
+    readiness: number;
+  } | null = null;
+
+  for (const split of candidates) {
+    const readiness = splitReadiness(split, recovery) + readinessModifier;
+
+    // Prefer splits that received less volume this week (balance).
+    const volume = splitWeeklyVolume(split, recovery);
+    const share = totalWeeklyVolume > 0 ? volume / totalWeeklyVolume : 1 / 3;
+    const balanceBonus = Math.max(-10, Math.min(10, (1 / 3 - share) * 30));
+
+    // Avoid hitting the same muscles as the previous session.
+    const overlapsLast = SPLIT_MUSCLES[split].some((muscle) =>
+      lastSplitMuscles.includes(muscle)
+    );
+    const recencyPenalty = overlapsLast ? 12 : 0;
+
+    // Specialized splits win unless everything is equally fresh.
+    const generalistPenalty =
+      split === "fullBody" ? 6 : split === "upper" || split === "lower" ? 3 : 0;
+
+    const score = readiness + balanceBonus - recencyPenalty - generalistPenalty;
+
+    if (!best || score > best.score) {
+      best = { split, score, readiness };
+    }
+  }
+
+  const consecutiveDays = countConsecutiveTrainingDays(input.workouts, now);
+  const needsRecovery =
+    best === null ||
+    best.readiness < READINESS_RECOVERY_THRESHOLD ||
+    consecutiveDays >= MAX_CONSECUTIVE_TRAINING_DAYS;
+
+  if (needsRecovery || best === null) {
+    const readiness = Math.round(Math.max(0, best?.readiness ?? 100));
+    const streakNote =
+      consecutiveDays >= MAX_CONSECUTIVE_TRAINING_DAYS
+        ? `you've trained ${consecutiveDays} days in a row`
+        : `overall recovery is at ${readiness}%`;
+    const weightNote = rapidWeightLoss
+      ? " Your body weight also dropped quickly this week, so prioritize food and sleep."
+      : "";
+
+    return {
+      split: "recovery",
+      title: SPLIT_TITLES.recovery,
+      reason: `Today I recommend a recovery day because ${streakNote}. Light cardio, stretching or a walk is ideal.${weightNote}`,
+      template: null,
+      focusMuscles: [],
+      muscleRecovery,
+      readinessPercent: readiness,
+    };
+  }
+
+  const split = best.split;
+  const splitMuscles = SPLIT_MUSCLES[split];
+
+  const focusMuscles = [...splitMuscles].sort(
+    (a, b) =>
+      (recovery.get(b)?.recoveryPercent ?? 100) -
+      (recovery.get(a)?.recoveryPercent ?? 100)
+  );
+
+  const recovered = focusMuscles
+    .filter((muscle) => (recovery.get(muscle)?.recoveryPercent ?? 100) >= 85)
+    .slice(0, 2);
+
+  const stillRecovering = ALL_MUSCLES.filter(
+    (muscle) =>
+      !splitMuscles.includes(muscle) &&
+      (recovery.get(muscle)?.recoveryPercent ?? 100) < 70 &&
+      (recovery.get(muscle)?.hoursSinceTrained ?? null) !== null
+  ).sort(
+    (a, b) =>
+      (recovery.get(a)?.recoveryPercent ?? 100) -
+      (recovery.get(b)?.recoveryPercent ?? 100)
+  );
+
+  const recoveredPart =
+    recovered.length > 0
+      ? `${formatMuscleList(recovered)} ${
+          recovered.length === 1 ? "is" : "are"
+        } fully recovered`
+      : `your ${SPLIT_TITLES[split].toLowerCase()} muscles are the most recovered`;
+
+  const recoveringPart =
+    stillRecovering.length > 0
+      ? `, while ${formatMuscleList(stillRecovering.slice(0, 2))} ${
+          stillRecovering.slice(0, 2).length === 1 ? "is" : "are"
+        } still recovering`
+      : "";
+
+  const weightNote = rapidWeightLoss
+    ? " Your body weight dropped quickly this week — keep intensity moderate."
+    : "";
+
+  const template = pickTemplate(split, input.templates, input.workouts, lookup);
+
+  return {
+    split,
+    title: SPLIT_TITLES[split],
+    reason: `Today I recommend ${SPLIT_TITLES[split]} because ${recoveredPart}${recoveringPart}.${weightNote}`,
+    template,
+    focusMuscles,
+    muscleRecovery,
+    readinessPercent: Math.round(Math.max(0, Math.min(100, best.readiness))),
+  };
+}

@@ -1,3 +1,5 @@
+import TemplateEditorScreen from "@/features/workout/screens/TemplateEditorScreen";
+import TemplateBuilderScreen from "@/features/workout/screens/TemplateBuilderScreen";
 import CheckInScreen from "@/features/progress/screens/CheckInScreen";
 import ExerciseHistoryScreen from "@/features/workout/screens/ExerciseHistoryScreen";
 import WorkoutDetailScreen from "@/features/workout/screens/WorkoutDetailScreen";
@@ -754,9 +756,12 @@ export default function App() {
   return initAuth();
   }, [initAuth]);
 
+  const loadTemplates = useWorkoutTemplateStore((s) => s.load);
+
   useEffect(() => {
-    useWorkoutTemplateStore.getState().setTemplates([pushA]);
-  }, []);
+    if (!user) return;
+    loadTemplates(user.uid);
+  }, [user, loadTemplates]);
 
   const screen = useAppStore((s) => s.screen);
   const navigate = useAppStore((s) => s.navigate);
@@ -810,14 +815,15 @@ export default function App() {
           {screen === "nutrition" && <NutritionScreen onNavigate={navigate} />}
           {screen === "food-db" && <FoodDatabaseScreenNew />}
           
+          {screen === "template-editor" && (<TemplateEditorScreen onBack={() => navigate("template-builder")} />
+          )}
+          
           {screen === "meal-detail" && <MealDetailScreen onBack={() => navigate("food-db")} />}
           {screen === "workout" && <WorkoutScreen />}
-          {screen === "workout-history" && (
-          <WorkoutHistoryScreen
-          onBack={() => navigate("dashboard")}
-            onNavigate={navigate}
-        />
-        )}
+          {screen === "template-builder" && (<TemplateBuilderScreen onBack={() => navigate("workout")} onNavigate={navigate}/>
+          )}
+          {screen === "workout-history" && (<WorkoutHistoryScreen onBack={() => navigate("dashboard")} onNavigate={navigate} />
+          )}
 
         {screen === "workout-detail" && (
         <WorkoutDetailScreen onBack={() => navigate("workout-history")} onNavigate={navigate}

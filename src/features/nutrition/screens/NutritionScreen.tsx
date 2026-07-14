@@ -77,10 +77,6 @@ export default function NutritionScreen({
             day: "numeric",
           })}
         </p>
-
-        <p style={{ color: "white", fontSize: 12, marginTop: 12 }}>
-          Foods loaded: {loading ? "Loading..." : foods.length}
-        </p>
       </div>
 
       <div

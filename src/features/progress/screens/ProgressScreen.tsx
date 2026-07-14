@@ -1,3 +1,11 @@
+import MuscleVolumeCard from "../components/MuscleVolumeCard";
+import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
+import { getMuscleVolume } from "../utils/muscleVolume";
+import { getMuscleRecoveryOverview } from "@/features/workout/utils/workoutRecommendation";
+
+import WeeklyWorkoutChart from "../components/WeeklyWorkoutChart";
+
+import BodyweightChartCard from "../components/BodyweightChartCard";
 import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
@@ -5,13 +13,6 @@ import {
   Award,
   Camera,
 } from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 
 import { C, type Screen } from "@/shared/ui";
 import { ProgressRing, SectionHeader } from "@/shared/components";
@@ -61,6 +62,36 @@ function getStrengthPRs(
     .slice(0, 4);
 }
 
+function getStrengthPRCount(
+  workouts: ReturnType<typeof useWorkoutHistoryStore.getState>["workouts"]
+) {
+  const exerciseIds = new Set<string>();
+
+  for (const workout of workouts) {
+    for (const exercise of workout.exercises ?? []) {
+      const hasCompletedSet = exercise.sets.some((set) => set.completed);
+
+      if (hasCompletedSet) {
+        exerciseIds.add(exercise.id);
+      }
+    }
+  }
+
+  return exerciseIds.size;
+}
+
+function getWeekStartKey() {
+  const date = new Date();
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+
+  const monday = new Date(date);
+  monday.setDate(diff);
+  monday.setHours(0, 0, 0, 0);
+
+  return monday.toISOString().slice(0, 10);
+}
+
 function formatTrainingTime(seconds: number) {
   if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
 
@@ -81,14 +112,17 @@ export default function ProgressScreen({
 }) {
   const user = useAuthStore((s) => s.user);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
+  const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
 
   const bodyEntries = useBodyMetricsStore((s) => s.entries);
   const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
 
   useEffect(() => {
     if (!user) return;
+  
     loadBodyMetrics(user.uid);
-  }, [user, loadBodyMetrics]);
+    loadWorkouts(user.uid);
+  }, [user, loadBodyMetrics, loadWorkouts]);
 
   const sortedBodyEntries = [...bodyEntries].sort((a, b) =>
     a.date.localeCompare(b.date)
@@ -142,7 +176,78 @@ export default function ProgressScreen({
     0
   );
 
-  const prCount = strengthPRs.length;
+  const weekStartKey = getWeekStartKey();
+
+const workoutsThisWeek = workouts.filter(
+  (workout) => workout.date >= weekStartKey
+);
+
+const currentWeekStart = new Date(`${weekStartKey}T00:00:00`);
+
+const previousWeekStart = new Date(currentWeekStart);
+previousWeekStart.setDate(previousWeekStart.getDate() - 7);
+
+const previousWeekEnd = new Date(currentWeekStart);
+previousWeekEnd.setDate(previousWeekEnd.getDate() - 1);
+
+const previousWeekStartKey = previousWeekStart
+  .toISOString()
+  .slice(0, 10);
+
+const previousWeekEndKey = previousWeekEnd
+  .toISOString()
+  .slice(0, 10);
+
+const workoutsPreviousWeek = workouts.filter(
+  (workout) =>
+    workout.date >= previousWeekStartKey &&
+    workout.date <= previousWeekEndKey
+);
+
+const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek);
+const muscleRecovery = getMuscleRecoveryOverview(workouts);
+const previousWeeklyMuscleVolume = getMuscleVolume(workoutsPreviousWeek);
+
+const weeklyWorkoutCount = workoutsThisWeek.length;
+
+const weeklyVolume = workoutsThisWeek.reduce(
+  (sum, workout) => sum + workout.volumeKg,
+  0
+);
+
+const weeklyTrainingTime = workoutsThisWeek.reduce(
+  (sum, workout) => sum + workout.durationSeconds,
+  0
+);
+
+const averageWorkoutDuration =
+  weeklyWorkoutCount > 0
+    ? Math.round(weeklyTrainingTime / weeklyWorkoutCount)
+    : 0;
+
+  const prCount = getStrengthPRCount(workouts);
+
+  const weeklyChartData = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - index));
+  
+    const dateKey = date.toISOString().slice(0, 10);
+  
+    const dayWorkouts = workouts.filter(
+      (workout) => workout.date === dateKey
+    );
+  
+    return {
+      day: date.toLocaleDateString("en-US", {
+        weekday: "short",
+      }),
+      volume: dayWorkouts.reduce(
+        (sum, workout) => sum + workout.volumeKg,
+        0
+      ),
+      workouts: dayWorkouts.length,
+    };
+  });
 
   const [chartMetric, setChartMetric] = useState<
   "weight" | "bodyFat" | "waist"
@@ -199,129 +304,45 @@ export default function ProgressScreen({
         </button>
       </div>
 
-      <div
-        className="rounded-[22px] p-4 mb-5"
-        style={{ background: C.card, border: `1px solid ${C.border}` }}
-      >
-        <div className="flex justify-between items-end mb-4">
-          <div>
-            <p
-              className="text-[11px] uppercase tracking-wider font-semibold"
-              style={{ color: C.fg2 }}
-            >
-              Bodyweight
-            </p>
-            <p
-              className="text-2xl font-extrabold mt-0.5 leading-none"
-              style={{ color: C.fg }}
-            >
-              {currentWeight ?? "--"}
-              <span
-                className="text-sm font-medium ml-1"
-                style={{ color: C.fg3 }}
-              >
-                kg
-              </span>
-            </p>
-          </div>
+      <BodyweightChartCard
+        currentWeight={currentWeight}
+        weightChange={weightChange}
+        chartData={chartData}
+        chartMetric={chartMetric}
+        setChartMetric={setChartMetric}
+      />
 
-          <div className="flex items-center gap-1 pb-0.5">
-            {weightChange >= 0 ? (
-              <ArrowUpRight size={14} color={C.accent} />
-            ) : (
-              <ArrowDownRight size={14} color={C.red} />
-            )}
+      <SectionHeader title="This Week" />
 
-            <span
-              className="text-sm font-bold"
-              style={{ color: weightChange >= 0 ? C.accent : C.red }}
-            >
-              {formatChange(weightChange, "kg")}
-            </span>
-          </div>
-        </div>
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        <Stat
+          label="Workouts"
+          value={`${weeklyWorkoutCount}`}
+        />
 
-        <div className="flex gap-2 mb-4">
-        {[
-          { key: "weight", label: "Weight" },
-          { key: "bodyFat", label: "Body Fat" },
-          { key: "waist", label: "Waist" },
-        ].map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setChartMetric(item.key as any)}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold"
-            style={{
-              background:
-                chartMetric === item.key ? C.accent : C.card2,
-              color:
-                chartMetric === item.key ? C.bg : C.fg3,
-            }}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-        
-        <div style={{ height: 120 }}>
-          {chartData.length === 0 ? (
-            <div className="h-full flex items-center justify-center">
-              <p className="text-sm" style={{ color: C.fg3 }}>
-                Add your first check-in to see weight progress.
-              </p>
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={chartData}
-                margin={{ top: 5, right: 0, left: 0, bottom: 0 }}
-              >
-                <defs>
-                  <linearGradient id="wGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.accent} stopOpacity={0.25} />
-                    <stop offset="100%" stopColor={C.accent} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+        <Stat
+          label="Volume"
+          value={`${weeklyVolume.toLocaleString()} kg`}
+        />
 
-                <XAxis
-                  dataKey="week"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fill: C.fg3,
-                    fontSize: 10,
-                    fontFamily: "Inter",
-                  }}
-                />
+        <Stat
+          label="Training time"
+          value={formatTrainingTime(weeklyTrainingTime)}
+        />
 
-                <Tooltip
-                  contentStyle={{
-                    background: C.card2,
-                    border: `1px solid ${C.border}`,
-                    borderRadius: 10,
-                    color: C.fg,
-                    fontSize: 12,
-                    fontFamily: "Inter",
-                  }}
-                  labelStyle={{ color: C.fg2 }}
-                  cursor={{ stroke: C.border }}
-                />
-
-                <Area
-                  type="monotone"
-                  dataKey={chartMetric}
-                  stroke={C.accent}
-                  strokeWidth={2}
-                  fill="url(#wGrad)"
-                  dot={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          )}
-        </div>
+        <Stat
+          label="Average session"
+          value={
+            averageWorkoutDuration > 0
+              ? formatTrainingTime(averageWorkoutDuration)
+              : "—"
+          }
+        />
       </div>
 
-      <SectionHeader title="Training Stats" />
+      <WeeklyWorkoutChart data={weeklyChartData} />
+      <MuscleVolumeCard data={weeklyMuscleVolume} />
+      <MuscleRecoveryCard data={muscleRecovery} />
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <Stat label="Workouts" value={`${totalWorkouts}`} />

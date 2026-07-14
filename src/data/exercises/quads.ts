@@ -1,0 +1,341 @@
+import type { ExerciseDefinition } from "@/types/workout";
+
+export const quadsExercises: ExerciseDefinition[] = [
+  {
+    id: "squat",
+    name: "Squat",
+    aliases: ["Back Squat", "Barbell Squat"],
+    primaryMuscle: "legs",
+    secondaryMuscles: ["glutes", "fullBody"],
+    equipment: "barbell",
+    category: "compound",
+    difficulty: "intermediate",
+    defaultRestSeconds: 180,
+    defaultSets: 4,
+    defaultReps: 6,
+    media: {
+      thumbnail: "/exercises/squat/thumbnail.webp",
+    },
+    progression: {
+      minReps: 5,
+      maxReps: 8,
+      weightStep: 5,
+    },
+    activation: {
+      legs: 100,
+      glutes: 70,
+      fullBody: 80,
+    },
+    instructions: [
+      "Place the bar on your upper traps.",
+      "Stand with feet about shoulder-width apart.",
+      "Brace your core and keep your chest up.",
+      "Squat until your hips are below your knees.",
+      "Drive through your whole foot to stand up.",
+    ],
+    tips: [
+      "Keep your knees tracking over your toes.",
+      "Brace before every rep.",
+      "Control the descent.",
+    ],
+    mistakes: [
+      "Knees collapsing inward.",
+      "Rounding the lower back.",
+      "Cutting depth short.",
+    ],
+    tags: ["compound", "strength", "legs"],
+  },
+
+  {
+    id: "front-squat",
+    name: "Front Squat",
+    primaryMuscle: "legs",
+    secondaryMuscles: ["glutes", "fullBody"],
+    equipment: "barbell",
+    category: "compound",
+    difficulty: "advanced",
+    defaultRestSeconds: 180,
+    defaultSets: 3,
+    defaultReps: 6,
+    media: {
+      thumbnail: "/exercises/front-squat/thumbnail.webp",
+    },
+    progression: {
+      minReps: 5,
+      maxReps: 8,
+      weightStep: 5,
+    },
+    activation: {
+      legs: 100,
+      glutes: 55,
+      fullBody: 75,
+    },
+    instructions: [
+      "Rest the bar on your front delts.",
+      "Keep elbows high.",
+      "Stay upright throughout the squat.",
+      "Descend until full depth.",
+      "Drive upward through the mid-foot.",
+    ],
+    tips: [
+      "Keep elbows high.",
+      "Brace your core.",
+      "Maintain an upright torso.",
+    ],
+    mistakes: [
+      "Dropping elbows.",
+      "Leaning forward.",
+      "Heels lifting.",
+    ],
+    tags: ["front squat", "barbell"],
+  },
+
+  {
+    id: "leg-press",
+    name: "Leg Press",
+    primaryMuscle: "legs",
+    secondaryMuscles: ["glutes"],
+    equipment: "machine",
+    category: "compound",
+    difficulty: "beginner",
+    defaultRestSeconds: 150,
+    defaultSets: 4,
+    defaultReps: 10,
+    media: {
+      thumbnail: "/exercises/leg-press/thumbnail.webp",
+    },
+    progression: {
+      minReps: 8,
+      maxReps: 12,
+      weightStep: 10,
+    },
+    activation: {
+      legs: 100,
+      glutes: 40,
+    },
+    instructions: [
+      "Place feet shoulder-width on the platform.",
+      "Lower until knees reach about 90°.",
+      "Press through your whole foot.",
+      "Stop just before locking your knees.",
+    ],
+    tips: [
+      "Keep lower back against the pad.",
+      "Control every rep.",
+      "Don't bounce.",
+    ],
+    mistakes: [
+      "Locking knees.",
+      "Lifting hips.",
+      "Too short range of motion.",
+    ],
+    tags: ["machine", "hypertrophy"],
+  },
+
+  {
+    id: "hack-squat",
+    name: "Hack Squat",
+    primaryMuscle: "legs",
+    secondaryMuscles: ["glutes"],
+    equipment: "machine",
+    category: "compound",
+    difficulty: "beginner",
+    defaultRestSeconds: 150,
+    defaultSets: 3,
+    defaultReps: 10,
+    media: {
+      thumbnail: "/exercises/hack-squat/thumbnail.webp",
+    },
+    progression: {
+      minReps: 8,
+      maxReps: 12,
+      weightStep: 10,
+    },
+    activation: {
+      legs: 100,
+      glutes: 35,
+    },
+    instructions: [
+      "Position shoulders under the pads.",
+      "Keep feet shoulder-width apart.",
+      "Lower until thighs are below parallel.",
+      "Drive upward without locking knees.",
+    ],
+    tips: [
+      "Stay controlled.",
+      "Keep heels flat.",
+      "Brace throughout.",
+    ],
+    mistakes: [
+      "Shallow reps.",
+      "Knees collapsing inward.",
+      "Locking knees.",
+    ],
+    tags: ["machine", "quad focus"],
+  },
+
+  {
+    id: "bulgarian-split-squat",
+    name: "Bulgarian Split Squat",
+    primaryMuscle: "legs",
+    secondaryMuscles: ["glutes"],
+    equipment: "dumbbell",
+    category: "compound",
+    difficulty: "intermediate",
+    defaultRestSeconds: 120,
+    defaultSets: 3,
+    defaultReps: 10,
+    media: {
+      thumbnail: "/exercises/bulgarian-split-squat/thumbnail.webp",
+    },
+    progression: {
+      minReps: 8,
+      maxReps: 12,
+      weightStep: 2.5,
+    },
+    activation: {
+      legs: 100,
+      glutes: 50,
+    },
+    instructions: [
+      "Place one foot on a bench behind you.",
+      "Lower under control.",
+      "Drive through the front heel.",
+      "Repeat on both sides.",
+    ],
+    tips: [
+      "Stay balanced.",
+      "Use full range.",
+      "Keep torso slightly forward.",
+    ],
+    mistakes: [
+      "Pushing off the rear leg.",
+      "Losing balance.",
+      "Short reps.",
+    ],
+    tags: ["unilateral", "balance"],
+  },
+
+  {
+    id: "leg-extension",
+    name: "Leg Extension",
+    primaryMuscle: "legs",
+    equipment: "machine",
+    category: "isolation",
+    difficulty: "beginner",
+    defaultRestSeconds: 75,
+    defaultSets: 3,
+    defaultReps: 12,
+    media: {
+      thumbnail: "/exercises/leg-extension/thumbnail.webp",
+    },
+    progression: {
+      minReps: 12,
+      maxReps: 15,
+      weightStep: 5,
+    },
+    activation: {
+      legs: 100,
+    },
+    instructions: [
+      "Adjust the pad above your ankles.",
+      "Extend your knees until straight.",
+      "Pause briefly.",
+      "Lower under control.",
+    ],
+    tips: [
+      "Squeeze at the top.",
+      "Use controlled reps.",
+      "Don't swing.",
+    ],
+    mistakes: [
+      "Using momentum.",
+      "Dropping the weight.",
+      "Partial reps.",
+    ],
+    tags: ["machine", "isolation"],
+  },
+
+  {
+    id: "walking-lunge",
+    name: "Walking Lunge",
+    primaryMuscle: "legs",
+    secondaryMuscles: ["glutes"],
+    equipment: "dumbbell",
+    category: "compound",
+    difficulty: "beginner",
+    defaultRestSeconds: 90,
+    defaultSets: 3,
+    defaultReps: 20,
+    media: {
+      thumbnail: "/exercises/walking-lunge/thumbnail.webp",
+    },
+    progression: {
+      minReps: 16,
+      maxReps: 24,
+      weightStep: 2.5,
+    },
+    activation: {
+      legs: 100,
+      glutes: 55,
+    },
+    instructions: [
+      "Take a long step forward.",
+      "Lower until both knees are around 90°.",
+      "Push into the next step.",
+    ],
+    tips: [
+      "Stay upright.",
+      "Control every step.",
+      "Keep knees stable.",
+    ],
+    mistakes: [
+      "Very short steps.",
+      "Knees collapsing.",
+      "Losing balance.",
+    ],
+    tags: ["unilateral", "conditioning"],
+  },
+
+  {
+    id: "step-up",
+    name: "Step-Up",
+    primaryMuscle: "legs",
+    secondaryMuscles: ["glutes"],
+    equipment: "dumbbell",
+    category: "compound",
+    difficulty: "beginner",
+    defaultRestSeconds: 90,
+    defaultSets: 3,
+    defaultReps: 10,
+    media: {
+      thumbnail: "/exercises/step-up/thumbnail.webp",
+    },
+    progression: {
+      minReps: 8,
+      maxReps: 12,
+      weightStep: 2.5,
+    },
+    activation: {
+      legs: 100,
+      glutes: 45,
+    },
+    instructions: [
+      "Step onto a stable box.",
+      "Drive through the front heel.",
+      "Stand fully.",
+      "Lower slowly.",
+    ],
+    tips: [
+      "Avoid pushing off the back foot.",
+      "Control the descent.",
+      "Keep hips level.",
+    ],
+    mistakes: [
+      "Jumping.",
+      "Using momentum.",
+      "Unstable box.",
+    ],
+    tags: ["functional", "unilateral"],
+  },
+];

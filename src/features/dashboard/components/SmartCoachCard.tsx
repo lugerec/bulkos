@@ -1,0 +1,101 @@
+import { Sparkles, Moon, ChevronRight } from "lucide-react";
+
+import { C } from "@/shared/ui";
+import type { WorkoutRecommendation } from "@/features/workout/utils/workoutRecommendation";
+
+type Props = {
+  recommendation: WorkoutRecommendation;
+  onStart: () => void;
+};
+
+export default function SmartCoachCard({ recommendation, onStart }: Props) {
+  const isRecovery = recommendation.split === "recovery";
+
+  return (
+    <div
+      className="rounded-[24px] p-5 mb-5"
+      style={{
+        background: isRecovery
+          ? "linear-gradient(135deg, rgba(91,141,239,0.14), rgba(168,85,247,0.08))"
+          : "linear-gradient(135deg, rgba(168,85,247,0.14), rgba(124,255,107,0.08))",
+        border: `1px solid ${
+          isRecovery ? "rgba(91,141,239,0.25)" : "rgba(168,85,247,0.25)"
+        }`,
+      }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        {isRecovery ? (
+          <Moon size={15} color={C.blue} />
+        ) : (
+          <Sparkles size={15} color={C.purple} />
+        )}
+        <p
+          className="text-[11px] font-bold uppercase tracking-widest"
+          style={{ color: isRecovery ? C.blue : C.purple }}
+        >
+          Smart Coach
+        </p>
+      </div>
+
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-2xl font-extrabold" style={{ color: C.fg }}>
+          {recommendation.title}
+        </p>
+
+        {!isRecovery && (
+          <span
+            className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+            style={{ background: C.accentDim, color: C.accent }}
+          >
+            {recommendation.readinessPercent}% ready
+          </span>
+        )}
+      </div>
+
+      <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg2 }}>
+        {recommendation.reason}
+      </p>
+
+      {recommendation.focusMuscles.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {recommendation.focusMuscles.slice(0, 4).map((muscle) => {
+            const info = recommendation.muscleRecovery.find(
+              (item) => item.muscle === muscle
+            );
+
+            return (
+              <span
+                key={muscle}
+                className="text-[11px] font-medium px-2.5 py-1 rounded-full capitalize"
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  border: `1px solid ${C.border}`,
+                  color: C.fg2,
+                }}
+              >
+                {muscle}
+                {info ? ` · ${info.recoveryPercent}%` : ""}
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      {!isRecovery && (
+        <button
+          onClick={onStart}
+          className="w-full py-3 rounded-[16px] text-sm font-bold flex items-center justify-center gap-1.5"
+          style={{
+            background: C.accent,
+            color: C.bg,
+          }}
+        >
+          {recommendation.template
+            ? `Start "${recommendation.template.name}"`
+            : `Start ${recommendation.title}`}
+          <ChevronRight size={16} strokeWidth={2.5} />
+        </button>
+      )}
+    </div>
+  );
+}
