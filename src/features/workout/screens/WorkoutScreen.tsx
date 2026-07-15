@@ -14,6 +14,7 @@ import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
+import WarmupHint from "@/features/workout/components/WarmupHint";
 import type { WorkoutExercise } from "@/types/workout";
 import { findSetPRs, type PersonalRecord } from "@/features/workout/utils/pr";
 
@@ -956,6 +957,15 @@ export default function WorkoutScreen() {
                   {exerciseVolume.toLocaleString()} kg
                 </p>
               </div>
+
+              <WarmupHint
+                workingWeight={Math.max(
+                  0,
+                  ...ex.sets.map((set) => set.weight),
+                  suggested?.weight ?? 0
+                )}
+                equipment={exerciseDefinition?.equipment}
+              />
 
               <div className="flex items-center gap-2 mb-2 px-1">
                 <span className="text-[10px] uppercase tracking-wide w-8 text-center" style={{ color: C.fg3 }}>
