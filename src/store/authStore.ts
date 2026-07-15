@@ -20,13 +20,25 @@ type AuthState = {
   register: (email: string, password: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  /** Re-fetch the user document (e.g. after targets were updated). */
+  refreshProfile: () => Promise<void>;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   profile: null,
   loading: true,
   error: null,
+
+  refreshProfile: async () => {
+    const { user } = get();
+
+    if (!user) return;
+
+    const profile = await getUserProfile(user.uid);
+
+    set({ profile });
+  },
 
   initAuth: () => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {

@@ -6,6 +6,7 @@ import TodayGoalCard from "@/features/dashboard/components/TodayGoalCard";
 import GreetingCard from "@/features/dashboard/components/GreetingCard";
 import NextTargetCard from "@/features/dashboard/components/NextTargetCard";
 import SmartCoachCard from "@/features/dashboard/components/SmartCoachCard";
+import TargetUpdateCard from "@/features/dashboard/components/TargetUpdateCard";
 
 import { useHydrationStore } from "@/store/hydrationStore";
 import type { ReactNode } from "react";
@@ -62,6 +63,7 @@ export default function DashboardScreen({
 }) {
   const user = useAuthStore((s) => s.user);
   const userDoc = useAuthStore((s) => s.profile);
+  const refreshProfile = useAuthStore((s) => s.refreshProfile);
 
   const foodsByMeal = useDailyLogStore((s) => s.foodsByMeal);
   const loadDailyLog = useDailyLogStore((s) => s.loadDailyLog);
@@ -219,6 +221,16 @@ export default function DashboardScreen({
     />
 
       <NextTargetCard />
+
+      {user && userProfile && latestBodyEntry && (
+        <TargetUpdateCard
+          uid={user.uid}
+          profile={userProfile}
+          currentNutrition={nutrition}
+          currentWeightKg={latestBodyEntry.weightKg}
+          onUpdated={refreshProfile}
+        />
+      )}
 
       <SmartCoachCard
         recommendation={recommendation}

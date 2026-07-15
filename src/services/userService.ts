@@ -52,3 +52,25 @@ export async function updateUserOnboarding(
     { merge: true }
   );
 }
+
+/**
+ * Persist recalibrated macro targets together with the body weight they
+ * were computed from, so future drift is measured against it.
+ */
+export async function updateNutritionTargets(
+  uid: string,
+  weightKg: number,
+  nutrition: MacroTargets
+) {
+  const ref = doc(db, "users", uid);
+
+  await setDoc(
+    ref,
+    {
+      profile: { weight: weightKg },
+      nutrition,
+      updatedAt: new Date(),
+    },
+    { merge: true }
+  );
+}

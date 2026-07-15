@@ -33,3 +33,33 @@ export function calculateMacroTargets(profile: UserProfile): MacroTargets {
     fat,
   };
 }
+
+/** Weight drift (kg) from the profile before suggesting a target update. */
+export const TARGET_UPDATE_WEIGHT_DRIFT_KG = 2;
+
+/**
+ * Macro targets recalculated for the lifter's current body weight (from
+ * check-ins) instead of the weight captured at onboarding.
+ */
+export function getRecalibratedTargets(
+  profile: UserProfile,
+  currentWeightKg: number
+): MacroTargets {
+  return calculateMacroTargets({ ...profile, weight: currentWeightKg });
+}
+
+/**
+ * True once the current body weight has drifted far enough from the weight
+ * the targets were computed with to make an update worthwhile.
+ */
+export function shouldSuggestTargetUpdate(
+  profileWeightKg: number,
+  currentWeightKg: number
+): boolean {
+  if (profileWeightKg <= 0 || currentWeightKg <= 0) return false;
+
+  return (
+    Math.abs(currentWeightKg - profileWeightKg) >=
+    TARGET_UPDATE_WEIGHT_DRIFT_KG
+  );
+}
