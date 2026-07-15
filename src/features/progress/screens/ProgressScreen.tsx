@@ -1,7 +1,9 @@
 import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
 import MuscleSetTargetCard from "../components/MuscleSetTargetCard";
+import StallingLiftsCard from "../components/StallingLiftsCard";
 import { getMuscleVolume } from "../utils/muscleVolume";
+import { detectPlateaus } from "@/features/workout/utils/plateauDetection";
 import {
   getMuscleRecoveryOverview,
   getMuscleSetTargetOverview,
@@ -211,6 +213,7 @@ const workoutsPreviousWeek = workouts.filter(
 const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek, currentWeight);
 const muscleRecovery = getMuscleRecoveryOverview(workouts);
 const muscleSetTargets = getMuscleSetTargetOverview(workouts);
+const plateaus = detectPlateaus(workouts);
 const previousWeeklyMuscleVolume = getMuscleVolume(
   workoutsPreviousWeek,
   currentWeight
@@ -352,6 +355,7 @@ const averageWorkoutDuration =
       <MuscleVolumeCard data={weeklyMuscleVolume} />
       <MuscleRecoveryCard data={muscleRecovery} workouts={workouts} />
       <MuscleSetTargetCard data={muscleSetTargets} />
+      <StallingLiftsCard plateaus={plateaus} />
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <Stat label="Workouts" value={`${totalWorkouts}`} />
