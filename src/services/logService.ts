@@ -87,3 +87,44 @@ export async function getDailyCalories(
     .flat()
     .reduce((sum, food) => sum + (food.calories ?? 0), 0);
 }
+
+/**
+ * Names of foods logged in the last `days` days with how often each was
+ * logged — the basis for grocery-list suggestions.
+ */
+export async function getRecentFoodNames(
+  uid: string,
+  days: number
+): Promise<Array<{ name: string; count: number }>> {
+  const dates = Array.from({ length: days }, (_, index) => {
+    const date = new Date();
+
+    date.setDate(date.getDate() - index);
+
+    return date.toISOString().slice(0, 10);
+  });
+
+  const meals = await Promise.all(
+    dates.flatMap((date) =>
+      ALL_MEAL_TYPES.map((meal) => getMealFoods(uid, date, meal))
+    )
+  );
+
+  const counts = new Map<string, { name: string; count: number }>();
+
+  for (const food of meals.flat()) {
+    const key = food.name.trim().toLowerCase();
+
+    if (!key) continue;
+
+    const existing = counts.get(key);
+
+    if (existing) {
+      existing.count += 1;
+    } else {
+      counts.set(key, { name: food.name.trim(), count: 1 });
+    }
+  }
+
+  return [...counts.values()].sort((a, b) => b.count - a.count);
+}

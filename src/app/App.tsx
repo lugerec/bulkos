@@ -19,7 +19,17 @@ import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { useAuthStore } from "../store/authStore";
 import { useWorkoutHistoryStore } from "../store/workoutHistoryStore";
 import { useBodyMetricsStore } from "../store/bodyMetricsStore";
-import { getDailyCalories } from "../services/logService";
+import { getDailyCalories, getRecentFoodNames } from "../services/logService";
+import {
+  addGroceryItem,
+  deleteGroceryItem,
+  getGroceryItems,
+  setGroceryItemChecked,
+  type GroceryItem,
+  type GroceryItemSource,
+} from "../services/groceryService";
+import { searchOpenFoodFacts } from "../services/openFoodFactsService";
+import { buildGrocerySuggestions } from "../lib/grocerySuggestions";
 import { getAnalyticsScores } from "../lib/analyticsScores";
 import { getBulkPace } from "../lib/bulkPace";
 import { getFrequencyAdherence } from "../features/workout/utils/frequencyAdherence";
@@ -616,58 +626,109 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
 // ─── Grocery List ─────────────────────────────────────────────────────────────
 
-const groceryData = [
-  {
-    section: "Protein",
-    items: [
-      { name: "Chicken Breast", qty: "1.5 kg", price: 12.50, mealPrep: true },
-      { name: "Atlantic Salmon", qty: "600g", price: 14.80, mealPrep: true },
-      { name: "Whole Eggs (12)", qty: "1 pack", price: 5.20, mealPrep: false },
-      { name: "Whey Protein Isolate", qty: "1 tub", price: 42.00, mealPrep: false },
-    ],
-  },
-  {
-    section: "Carbohydrates",
-    items: [
-      { name: "Brown Rice", qty: "2 kg", price: 4.50, mealPrep: true },
-      { name: "Rolled Oats", qty: "1 kg", price: 3.80, mealPrep: true },
-      { name: "Sweet Potato", qty: "1 kg", price: 3.20, mealPrep: false },
-      { name: "Quinoa", qty: "500g", price: 6.90, mealPrep: true },
-    ],
-  },
-  {
-    section: "Produce",
-    items: [
-      { name: "Baby Spinach", qty: "300g", price: 3.50, mealPrep: true },
-      { name: "Broccoli", qty: "600g", price: 2.80, mealPrep: false },
-      { name: "Banana", qty: "6 pcs", price: 2.20, mealPrep: false },
-      { name: "Cherry Tomatoes", qty: "400g", price: 4.10, mealPrep: true },
-    ],
-  },
-  {
-    section: "Healthy Fats",
-    items: [
-      { name: "Avocado", qty: "4 pcs", price: 5.60, mealPrep: false },
-      { name: "Extra Virgin Olive Oil", qty: "500ml", price: 8.90, mealPrep: false },
-      { name: "Almonds", qty: "200g", price: 6.40, mealPrep: false },
-    ],
-  },
-];
-
 function GroceryListScreen({ onBack }: { onBack: () => void }) {
-  const allItems = groceryData.flatMap((s) => s.items.map((i) => i.name));
-  const [checked, setChecked] = useState<Set<string>>(new Set(["Whole Eggs (12)", "Quinoa"]));
+  const user = useAuthStore((s) => s.user);
 
-  const toggle = (name: string) => {
-    setChecked((prev) => {
-      const n = new Set(prev);
-      n.has(name) ? n.delete(name) : n.add(name);
-      return n;
-    });
+  const [items, setItems] = useState<GroceryItem[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<string[]>([]);
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const [list, recent] = await Promise.all([
+        getGroceryItems(user.uid),
+        getRecentFoodNames(user.uid, 5),
+      ]);
+
+      if (cancelled) return;
+
+      setItems(list);
+      setSuggestions(
+        buildGrocerySuggestions(recent, list.map((item) => item.name))
+      );
+      setLoadingList(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  useEffect(() => {
+    const query = searchTerm.trim();
+
+    if (query.length < 3) {
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
+
+    setSearching(true);
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      const results = await searchOpenFoodFacts(query);
+
+      if (cancelled) return;
+
+      setSearchResults(results.map((item) => item.name).slice(0, 6));
+      setSearching(false);
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
+
+  const addItem = async (name: string, source: GroceryItemSource) => {
+    if (!user) return;
+
+    const trimmed = name.trim();
+
+    if (!trimmed) return;
+    if (items.some((item) => item.name.toLowerCase() === trimmed.toLowerCase()))
+      return;
+
+    const created = await addGroceryItem(user.uid, trimmed, source);
+
+    setItems((prev) => [...prev, created]);
+    setSuggestions((prev) =>
+      prev.filter((item) => item.toLowerCase() !== trimmed.toLowerCase())
+    );
+    setSearchTerm("");
+    setSearchResults([]);
   };
 
-  const total = groceryData.flatMap((s) => s.items).reduce((a, i) => a + i.price, 0);
-  const doneCount = checked.size;
+  const toggleItem = async (item: GroceryItem) => {
+    if (!user) return;
+
+    setItems((prev) =>
+      prev.map((existing) =>
+        existing.id === item.id
+          ? { ...existing, checked: !existing.checked }
+          : existing
+      )
+    );
+    await setGroceryItemChecked(user.uid, item.id, !item.checked);
+  };
+
+  const removeItem = async (item: GroceryItem) => {
+    if (!user) return;
+
+    setItems((prev) => prev.filter((existing) => existing.id !== item.id));
+    await deleteGroceryItem(user.uid, item.id);
+  };
+
+  const doneCount = items.filter((item) => item.checked).length;
+  const progress = items.length > 0 ? (doneCount / items.length) * 100 : 0;
 
   return (
     <div className="pb-8">
@@ -679,93 +740,152 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold" style={{ color: C.fg }}>Shopping progress</span>
             <span className="text-sm font-bold" style={{ color: C.accent }}>
-              {Math.round((doneCount / allItems.length) * 100)}%
+              {Math.round(progress)}%
             </span>
           </div>
           <div style={{ height: 4, background: C.border, borderRadius: 99, marginBottom: 12 }}>
             <div
               style={{
                 height: "100%",
-                width: `${(doneCount / allItems.length) * 100}%`,
+                width: `${progress}%`,
                 background: C.accent,
                 borderRadius: 99,
                 transition: "width 0.4s",
               }}
             />
           </div>
-          <div className="flex justify-between">
-            <span className="text-sm" style={{ color: C.fg2 }}>
-              {doneCount} of {allItems.length} items
-            </span>
-            <span className="text-sm font-bold" style={{ color: C.fg }}>
-              £{total.toFixed(2)} est.
-            </span>
-          </div>
+          <span className="text-sm" style={{ color: C.fg2 }}>
+            {doneCount} of {items.length} items
+          </span>
         </div>
 
-        {/* Items by section */}
-        <div className="flex flex-col gap-5">
-          {groceryData.map(({ section, items }) => (
-            <div key={section}>
-              <p
-                className="text-[11px] font-bold uppercase tracking-widest mb-3"
-                style={{ color: C.fg2 }}
+        {/* Add item */}
+        <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Search size={14} color={C.fg3} />
+            <input
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") addItem(searchTerm, "custom");
+              }}
+              placeholder="Search products or add your own…"
+              className="flex-1 bg-transparent outline-none text-sm py-1.5"
+              style={{ color: C.fg }}
+            />
+          </div>
+
+          {searching && (
+            <p className="text-xs mt-2" style={{ color: C.fg3 }}>
+              Searching Open Food Facts…
+            </p>
+          )}
+
+          {!searching && searchTerm.trim().length >= 3 && (
+            <div className="flex flex-col gap-1 mt-2">
+              <button
+                onClick={() => addItem(searchTerm, "custom")}
+                className="text-left text-sm py-2 px-2 rounded-xl"
+                style={{ color: C.accent }}
               >
-                {section}
-              </p>
-              <div
-                className="rounded-[20px] overflow-hidden"
-                style={{ background: C.card, border: `1px solid ${C.border}` }}
-              >
-                {items.map(({ name, qty, price, mealPrep }, i) => {
-                  const isDone = checked.has(name);
-                  return (
-                    <div
-                      key={name}
-                      className="flex items-center gap-3 px-4 py-3.5"
-                      style={{
-                        borderBottom: i < items.length - 1 ? `1px solid ${C.border}` : "none",
-                        opacity: isDone ? 0.4 : 1,
-                        transition: "opacity 0.2s",
-                      }}
-                    >
-                      <button
-                        onClick={() => toggle(name)}
-                        className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{
-                          background: isDone ? C.accentDim : "transparent",
-                          border: `1.5px solid ${isDone ? C.accent : C.fg3}`,
-                        }}
-                      >
-                        {isDone && <Check size={12} color={C.accent} strokeWidth={2.5} />}
-                      </button>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p
-                            className="text-sm font-medium truncate"
-                            style={{ color: C.fg, textDecoration: isDone ? "line-through" : "none" }}
-                          >
-                            {name}
-                          </p>
-                          {mealPrep && (
-                            <span
-                              className="text-[9px] font-bold px-1.5 py-0.5 rounded"
-                              style={{ background: "rgba(91,141,239,0.15)", color: C.blue, flexShrink: 0 }}
-                            >
-                              PREP
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs" style={{ color: C.fg3 }}>{qty}</p>
-                      </div>
-                      <p className="text-sm font-semibold" style={{ color: C.fg }}>£{price.toFixed(2)}</p>
-                    </div>
-                  );
-                })}
-              </div>
+                + Add "{searchTerm.trim()}"
+              </button>
+
+              {searchResults.map((name) => (
+                <button
+                  key={name}
+                  onClick={() => addItem(name, "off")}
+                  className="text-left text-sm py-2 px-2 rounded-xl truncate"
+                  style={{ color: C.fg2 }}
+                >
+                  + {name}
+                </button>
+              ))}
             </div>
-          ))}
+          )}
         </div>
+
+        {/* Suggestions from meals */}
+        {suggestions.length > 0 && (
+          <div className="mb-5">
+            <p className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: C.fg2 }}>
+              From your recent meals
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((name) => (
+                <button
+                  key={name}
+                  onClick={() => addItem(name, "meal")}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full"
+                  style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg2 }}
+                >
+                  + {name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Items */}
+        {loadingList ? (
+          <p className="text-sm" style={{ color: C.fg3 }}>Loading list…</p>
+        ) : items.length === 0 ? (
+          <div className="rounded-[20px] p-5 text-center" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+            <p className="text-sm font-semibold" style={{ color: C.fg }}>Your list is empty</p>
+            <p className="text-xs mt-1" style={{ color: C.fg3 }}>
+              Search real products above or tap a suggestion from your meals.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-[20px] overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+            {items.map((item, index) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-3 px-4 py-3.5"
+                style={{
+                  borderBottom: index < items.length - 1 ? `1px solid ${C.border}` : "none",
+                  opacity: item.checked ? 0.4 : 1,
+                  transition: "opacity 0.2s",
+                }}
+              >
+                <button
+                  onClick={() => toggleItem(item)}
+                  className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: item.checked ? C.accentDim : "transparent",
+                    border: `1.5px solid ${item.checked ? C.accent : C.fg3}`,
+                  }}
+                >
+                  {item.checked && <Check size={12} color={C.accent} strokeWidth={2.5} />}
+                </button>
+
+                <p
+                  className="flex-1 min-w-0 text-sm font-medium truncate"
+                  style={{ color: C.fg, textDecoration: item.checked ? "line-through" : "none" }}
+                >
+                  {item.name}
+                </p>
+
+                {item.source === "off" && (
+                  <span
+                    className="text-[9px] font-bold px-1.5 py-0.5 rounded flex-shrink-0"
+                    style={{ background: "rgba(91,141,239,0.15)", color: C.blue }}
+                  >
+                    STORE
+                  </span>
+                )}
+
+                <button
+                  onClick={() => removeItem(item)}
+                  className="flex-shrink-0 px-1"
+                  style={{ color: C.fg3 }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
