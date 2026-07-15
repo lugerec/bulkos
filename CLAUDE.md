@@ -23,6 +23,10 @@ Owner: Lukáš. Goal: premium-level fitness app (Strong, Hevy, RP Hypertrophy ti
 
 Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `store/workoutHistoryStore.ts`). Do NOT unify them. Utils that consume workouts define their own minimal structural input types instead (see `RecommendationWorkout` in `workoutRecommendation.ts`, `MuscleVolumeWorkout` in `muscleVolume.ts`).
 
+## Known minor issues / follow-ups
+
+- `progression.ts` `ProgressionSuggestion.reason` type includes `"maintain"` and `"deload"`, but `getProgressionSuggestion` never returns them (only `increase_reps` / `increase_weight`). There's no "repeat this session" state when a set fell short of `minReps`. Documented by `progression.test.ts`; changing it would alter behaviour, so left for owner sign-off.
+
 ## Completed features
 
 Workout history, nutrition log, body metrics, hydration, progress screen, workout templates, and the Smart Coach:
