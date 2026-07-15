@@ -2,7 +2,9 @@ import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
 import MuscleSetTargetCard from "../components/MuscleSetTargetCard";
 import StallingLiftsCard from "../components/StallingLiftsCard";
+import WeeklyReportCard from "../components/WeeklyReportCard";
 import { getMuscleVolume } from "../utils/muscleVolume";
+import { getWeeklyReport } from "../utils/weeklyReport";
 import { detectPlateaus } from "@/features/workout/utils/plateauDetection";
 import {
   getMuscleRecoveryOverview,
@@ -117,6 +119,7 @@ export default function ProgressScreen({
   onNavigate: (screen: Screen) => void;
 }) {
   const user = useAuthStore((s) => s.user);
+  const userDoc = useAuthStore((s) => s.profile);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
 
@@ -214,6 +217,11 @@ const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek, currentWeight);
 const muscleRecovery = getMuscleRecoveryOverview(workouts);
 const muscleSetTargets = getMuscleSetTargetOverview(workouts);
 const plateaus = detectPlateaus(workouts);
+const weeklyReport = getWeeklyReport(
+  workouts,
+  bodyEntries,
+  userDoc?.profile?.trainingFrequency ?? 4
+);
 const previousWeeklyMuscleVolume = getMuscleVolume(
   workoutsPreviousWeek,
   currentWeight
@@ -351,6 +359,7 @@ const averageWorkoutDuration =
         />
       </div>
 
+      <WeeklyReportCard report={weeklyReport} />
       <WeeklyWorkoutChart data={weeklyChartData} />
       <MuscleVolumeCard data={weeklyMuscleVolume} />
       <MuscleRecoveryCard data={muscleRecovery} workouts={workouts} />
