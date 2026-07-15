@@ -26,6 +26,7 @@ export const C = {
   | "progress"
   | "analytics"
   | "grocery"
+  | "one-rep-max"
   | "exercise-history"
   | "check-in"
   | "template-builder"

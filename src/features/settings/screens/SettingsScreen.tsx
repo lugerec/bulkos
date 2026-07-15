@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   BarChart3,
+  Calculator,
   ChevronRight,
   Download,
   Dumbbell,
@@ -126,6 +127,12 @@ export default function SettingsScreen({
             icon: Flame,
             screen: "grocery" as Screen,
             color: C.amber,
+          },
+          {
+            label: "1RM Calculator",
+            icon: Calculator,
+            screen: "one-rep-max" as Screen,
+            color: C.purple,
           },
         ].map(({ label, icon: Icon, screen, color }, i, arr) => (
           <button

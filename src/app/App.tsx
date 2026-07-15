@@ -7,6 +7,7 @@ import WorkoutHistoryScreen from "@/features/workout/screens/WorkoutHistoryScree
 import SettingsScreen from "@/features/settings/screens/SettingsScreen";
 import ProgressScreen from "@/features/progress/screens/ProgressScreen";
 import WorkoutScreen from "@/features/workout/screens/WorkoutScreen";
+import OneRepMaxScreen from "@/features/workout/screens/OneRepMaxScreen";
 import FoodDatabaseScreenNew from "../features/nutrition/screens/FoodDatabaseScreen";
 import OnboardingScreen from "../features/onboarding/screens/OnboardingScreen";
 import LoginScreen from "../features/auth/screens/LoginScreen";
@@ -975,6 +976,7 @@ export default function App() {
         )}
           {screen === "analytics" && <AnalyticsScreen onBack={() => navigate("settings")} />}
           {screen === "grocery" && <GroceryListScreen onBack={() => navigate("settings")} />}
+          {screen === "one-rep-max" && <OneRepMaxScreen onBack={() => navigate("settings")} />}
           {screen === "settings" && <SettingsScreen onNavigate={navigate} />}
         </div>
 
