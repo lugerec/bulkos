@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyDeloadToTemplate,
   classifyWorkoutSplit,
   detectDeload,
   getMuscleRecoveryDetail,
@@ -561,5 +562,58 @@ describe("getMuscleRecoveryDetail", () => {
     const detail = getMuscleRecoveryDetail("chest", workouts, NOW);
 
     expect(detail.sessions).toHaveLength(0);
+  });
+});
+
+describe("applyDeloadToTemplate", () => {
+  const source: WorkoutTemplate = {
+    id: "template-push",
+    name: "My Push Day",
+    description: "Regular push day",
+    exercises: [
+      templateExercise("bench-press", "Bench Press", 4),
+      templateExercise("pull-up", "Pull-up", 3),
+      templateExercise("squat", "Squat", 1),
+    ],
+  };
+
+  it("halves the sets per exercise, keeping at least one", () => {
+    const deload = applyDeloadToTemplate(source, NOW);
+
+    expect(deload.exercises[0].sets).toHaveLength(2);
+    expect(deload.exercises[1].sets).toHaveLength(2);
+    expect(deload.exercises[2].sets).toHaveLength(1);
+  });
+
+  it("marks all remaining sets as not completed", () => {
+    const deload = applyDeloadToTemplate(source, NOW);
+
+    for (const exercise of deload.exercises) {
+      for (const set of exercise.sets) {
+        expect(set.completed).toBe(false);
+      }
+    }
+  });
+
+  it("labels the copy and gives it a new id without mutating the source", () => {
+    const deload = applyDeloadToTemplate(source, NOW);
+
+    expect(deload.id).not.toBe(source.id);
+    expect(deload.name).toBe("My Push Day · Deload");
+    expect(source.exercises[0].sets).toHaveLength(4);
+    expect(source.name).toBe("My Push Day");
+  });
+
+  it("increases rest time by 25% when rest is defined", () => {
+    const withRest: WorkoutTemplate = {
+      ...source,
+      exercises: [
+        { ...templateExercise("bench-press", "Bench Press", 4), restSeconds: 120 },
+      ],
+    };
+
+    const deload = applyDeloadToTemplate(withRest, NOW);
+
+    expect(deload.exercises[0].restSeconds).toBe(150);
   });
 });

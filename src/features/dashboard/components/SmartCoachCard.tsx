@@ -103,7 +103,9 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
           }}
         >
           {recommendation.template
-            ? `Start "${recommendation.template.name}"`
+            ? recommendation.isDeloadWeek
+              ? `Start "${recommendation.template.name}" (deload)`
+              : `Start "${recommendation.template.name}"`
             : `Start ${recommendation.title}`}
           <ChevronRight size={16} strokeWidth={2.5} />
         </button>

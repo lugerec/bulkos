@@ -753,6 +753,34 @@ export function generateWorkoutTemplate(
   };
 }
 
+/**
+ * Deload version of a template: half the sets per exercise (minimum 1,
+ * keeping earlier sets since they're usually the heavy ones), a bit more
+ * rest, and a "Deload" label. Returns a new template — the original (and
+ * any persisted user template) is never mutated.
+ */
+export function applyDeloadToTemplate(
+  template: WorkoutTemplate,
+  now: Date = new Date()
+): WorkoutTemplate {
+  return {
+    id: `deload-${template.id}-${now.getTime()}`,
+    name: `${template.name} · Deload`,
+    description:
+      "Deload week: about half the usual sets — stay 3-4 reps short of failure.",
+    exercises: template.exercises.map((exercise) => ({
+      ...exercise,
+      sets: exercise.sets
+        .slice(0, Math.max(1, Math.ceil(exercise.sets.length / 2)))
+        .map((set) => ({ ...set, completed: false })),
+      restSeconds:
+        typeof exercise.restSeconds === "number"
+          ? Math.round(exercise.restSeconds * 1.25)
+          : exercise.restSeconds,
+    })),
+  };
+}
+
 function formatMuscleList(muscles: readonly MuscleGroup[]): string {
   const labels = muscles.map((muscle) => MUSCLE_LABELS[muscle]);
 

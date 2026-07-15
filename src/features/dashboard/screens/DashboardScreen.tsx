@@ -30,7 +30,10 @@ import { useDailyLogStore } from "@/store/dailyLogStore";
 import { useDailyTotalsStore } from "@/store/dailyTotalsStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
-import { getWorkoutRecommendation } from "@/features/workout/utils/workoutRecommendation";
+import {
+  applyDeloadToTemplate,
+  getWorkoutRecommendation,
+} from "@/features/workout/utils/workoutRecommendation";
 import type { MealType } from "@/store/appStore";
 
 function getTodayKey() {
@@ -221,7 +224,11 @@ export default function DashboardScreen({
         recommendation={recommendation}
         onStart={() => {
           if (recommendation.template) {
-            if (recommendation.isGenerated) {
+            if (recommendation.isDeloadWeek) {
+              // Never mutate the user's saved template — start an adjusted
+              // copy that isn't persisted.
+              selectGenerated(applyDeloadToTemplate(recommendation.template));
+            } else if (recommendation.isGenerated) {
               selectGenerated(recommendation.template);
             } else {
               selectTemplate(recommendation.template.id);
