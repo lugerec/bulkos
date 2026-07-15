@@ -11,6 +11,7 @@ import BulkPaceCard from "@/features/dashboard/components/BulkPaceCard";
 import FrequencyCard from "@/features/dashboard/components/FrequencyCard";
 import { getBulkPace } from "@/lib/bulkPace";
 import { getFrequencyAdherence } from "@/features/workout/utils/frequencyAdherence";
+import { getWaterGoalLiters } from "@/lib/hydration";
 
 import { useHydrationStore } from "@/store/hydrationStore";
 import type { ReactNode } from "react";
@@ -169,7 +170,12 @@ export default function DashboardScreen({
       : "Let's get more protein today.";
 
     const water = waterMl / 1000;
-    const waterGoal = 3.5;
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const trainedToday = workouts.some((w) => w.date === todayKey);
+    const waterGoal = getWaterGoalLiters(
+      latestBodyEntry?.weightKg ?? userProfile?.weight,
+      trainedToday
+    );
 
   const dateStr = new Date().toLocaleDateString("en-US", {
     weekday: "long",
