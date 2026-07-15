@@ -8,7 +8,9 @@ import NextTargetCard from "@/features/dashboard/components/NextTargetCard";
 import SmartCoachCard from "@/features/dashboard/components/SmartCoachCard";
 import TargetUpdateCard from "@/features/dashboard/components/TargetUpdateCard";
 import BulkPaceCard from "@/features/dashboard/components/BulkPaceCard";
+import FrequencyCard from "@/features/dashboard/components/FrequencyCard";
 import { getBulkPace } from "@/lib/bulkPace";
+import { getFrequencyAdherence } from "@/features/workout/utils/frequencyAdherence";
 
 import { useHydrationStore } from "@/store/hydrationStore";
 import type { ReactNode } from "react";
@@ -238,6 +240,15 @@ export default function DashboardScreen({
         <BulkPaceCard
           pace={getBulkPace(bodyEntries, userProfile.goal)}
           goal={userProfile.goal}
+        />
+      )}
+
+      {userProfile && (
+        <FrequencyCard
+          adherence={getFrequencyAdherence(
+            workouts.map((w) => w.date),
+            userProfile.trainingFrequency
+          )}
         />
       )}
 
