@@ -3,6 +3,7 @@ import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
 import MuscleSetTargetCard from "../components/MuscleSetTargetCard";
 import StallingLiftsCard from "../components/StallingLiftsCard";
 import WeeklyReportCard from "../components/WeeklyReportCard";
+import PhotoComparisonCard from "../components/PhotoComparisonCard";
 import { getMuscleVolume } from "../utils/muscleVolume";
 import { getWeeklyReport } from "../utils/weeklyReport";
 import { detectPlateaus } from "@/features/workout/utils/plateauDetection";
@@ -569,6 +570,10 @@ const averageWorkoutDuration =
           </div>
         </div>
       )}
+
+      <div className="mt-5">
+        <PhotoComparisonCard entries={bodyEntries} />
+      </div>
     </div>
   );
 }

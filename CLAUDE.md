@@ -53,10 +53,12 @@ Workout history, nutrition log, body metrics, hydration, progress screen, workou
 - CI: `.github/workflows/ci.yml` — GitHub Action on push/PR to main: Node 22, `npm ci`, `npm run test`, `npm run build`.
 - Settings profile editing: `ProfileGoalsCard` (features/settings/components) — edits goal / training frequency / activity / goal weight after onboarding; Save recomputes macros via `calculateMacroTargets` and persists both in one write through the existing `updateUserOnboarding`, then `refreshProfile()`. Save button only appears when dirty; invalid goal weight blocks save.
 - CSV export: `src/lib/exportCsv.ts` — `buildWorkoutsCsv` (one row per set: date, workout, exercise, set #, weight, reps, completed; chronological; proper quoting/escaping), `buildBodyMetricsCsv` (row per check-in, blanks for missing measurements), `downloadTextFile` (Blob + anchor). Settings "Export Data (CSV)" button downloads both files; the screen loads workouts + body metrics on mount. Tests in `exportCsv.test.ts`.
+- Photo comparison: `PhotoComparisonCard` (features/progress/components) — progress-photo upload already existed via check-ins (`uploadProgressPhoto`, photo URLs on `BodyMetrics`); this adds before/after: two date selectors over all photo check-ins (defaults oldest vs newest), front/side/back toggle, weight under each photo and the kg delta between them. Shown only with ≥2 photo check-ins; rendered under the latest-photos grid on the Progress screen.
+- Open Food Facts: `src/services/openFoodFactsService.ts` — `searchOpenFoodFacts(query)` (cgi/search.pl text search, no API key) with a pure `mapOffProductToFoodItem` mapper (per-100g FoodItem, `off-<barcode>` id, brand appended, null when name/barcode/kcal missing, failures degrade to []). FoodDatabaseScreen shows an "Online results" section under local foods (≥3 chars, 500 ms debounce, exact-name dedupe vs local). Logging works unchanged since `addFoodToMeal` denormalizes macros. Tests in `openFoodFactsService.test.ts`. NOTE: photo→macro AI estimation intentionally postponed to a future release (needs a backend proxy for the vision API key).
 
 ## Next candidates (agreed with owner)
 
-Infra/UX batch (CI, settings editing, CSV export) complete. Next feature TBD with owner.
+1. Photo→macro estimation via vision AI (postponed by owner to a future app version; requires Cloud Function proxy for the API key)
 
 ## Workflow
 
