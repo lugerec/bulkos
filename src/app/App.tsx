@@ -17,6 +17,17 @@ import { pushA } from "@/data/workouts/pushA";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 
 import { useAuthStore } from "../store/authStore";
+import { useWorkoutHistoryStore } from "../store/workoutHistoryStore";
+import { useBodyMetricsStore } from "../store/bodyMetricsStore";
+import { getDailyCalories } from "../services/logService";
+import { getAnalyticsScores } from "../lib/analyticsScores";
+import { getBulkPace } from "../lib/bulkPace";
+import { getFrequencyAdherence } from "../features/workout/utils/frequencyAdherence";
+import {
+  getMuscleRecoveryOverview,
+  getMuscleSetTargetOverview,
+} from "../features/workout/utils/workoutRecommendation";
+import type { Goal } from "../types/profile";
 import { useAppStore } from "../store/appStore";
 
 import "../config/firebase";
@@ -399,23 +410,84 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
 
 // ─── Analytics ────────────────────────────────────────────────────────────────
 
-const calData = [
-  { day: "Mon", cal: 95 },
-  { day: "Tue", cal: 102 },
-  { day: "Wed", cal: 88 },
-  { day: "Thu", cal: 105 },
-  { day: "Fri", cal: 79 },
-  { day: "Sat", cal: 98 },
-  { day: "Sun", cal: 58 },
-];
-
 function AnalyticsScreen({ onBack }: { onBack: () => void }) {
-  const scores = [
-    { label: "Lean Bulk Score", val: 87, color: C.accent, desc: "Excellent" },
-    { label: "Training Consistency", val: 92, color: C.blue, desc: "Outstanding" },
-    { label: "Recovery Score", val: 74, color: C.amber, desc: "Good" },
-    { label: "Sleep Score", val: 68, color: C.purple, desc: "Improve" },
-  ];
+  const user = useAuthStore((s) => s.user);
+  const userDoc = useAuthStore((s) => s.profile);
+  const workouts = useWorkoutHistoryStore((s) => s.workouts);
+  const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
+  const bodyEntries = useBodyMetricsStore((s) => s.entries);
+  const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
+
+  const [weekCalories, setWeekCalories] = useState<
+    Array<{ day: string; cal: number }>
+  >([]);
+
+  useEffect(() => {
+    if (!user) return;
+    loadWorkouts(user.uid);
+    loadBodyMetrics(user.uid);
+  }, [user, loadWorkouts, loadBodyMetrics]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const days = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date();
+
+        date.setDate(date.getDate() - (6 - index));
+
+        return date;
+      });
+
+      const totals = await Promise.all(
+        days.map((day) =>
+          getDailyCalories(user.uid, day.toISOString().slice(0, 10))
+        )
+      );
+
+      if (cancelled) return;
+
+      setWeekCalories(
+        days.map((day, index) => ({
+          day: day.toLocaleDateString("en-US", { weekday: "short" }),
+          cal: totals[index],
+        }))
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const goal: Goal = userDoc?.profile?.goal ?? "bulk";
+  const targetFrequency: number = userDoc?.profile?.trainingFrequency ?? 4;
+  const calorieTarget: number = userDoc?.nutrition?.calories ?? 0;
+
+  const scores = getAnalyticsScores({
+    pace: getBulkPace(bodyEntries, goal),
+    goal,
+    adherence: getFrequencyAdherence(
+      workouts.map((w) => w.date),
+      targetFrequency
+    ),
+    muscleRecovery: getMuscleRecoveryOverview(workouts),
+    setTargets: getMuscleSetTargetOverview(workouts),
+  });
+
+  const loggedDays = weekCalories.filter((day) => day.cal > 0);
+  const weeklyAvgCalories =
+    loggedDays.length > 0
+      ? Math.round(
+          loggedDays.reduce((sum, day) => sum + day.cal, 0) /
+            loggedDays.length
+        )
+      : 0;
+
+  const scoreColors = [C.accent, C.blue, C.amber, C.purple];
 
   return (
     <div className="pb-8">
@@ -424,17 +496,21 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
       <div className="px-5">
         {/* Score grid */}
         <div className="grid grid-cols-2 gap-3 mb-5">
-          {scores.map(({ label, val, color, desc }) => (
-            <div key={label} className="rounded-[20px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-              <div className="flex justify-between items-start mb-3">
-                <p className="text-[11px] leading-tight" style={{ color: C.fg2, maxWidth: 72 }}>{label}</p>
-                <ProgressRing value={val} max={100} size={38} stroke={4} color={color}>
-                  <span className="text-[10px] font-bold" style={{ color: C.fg }}>{val}</span>
-                </ProgressRing>
+          {scores.map(({ label, value, description }, index) => {
+            const color = scoreColors[index % scoreColors.length];
+
+            return (
+              <div key={label} className="rounded-[20px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+                <div className="flex justify-between items-start mb-3">
+                  <p className="text-[11px] leading-tight" style={{ color: C.fg2, maxWidth: 72 }}>{label}</p>
+                  <ProgressRing value={value ?? 0} max={100} size={38} stroke={4} color={color}>
+                    <span className="text-[10px] font-bold" style={{ color: C.fg }}>{value ?? "—"}</span>
+                  </ProgressRing>
+                </div>
+                <p className="text-sm font-bold" style={{ color }}>{description}</p>
               </div>
-              <p className="text-sm font-bold" style={{ color }}>{desc}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Calorie chart */}
@@ -445,17 +521,17 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
                 Weekly Avg Calories
               </p>
               <p className="text-2xl font-extrabold mt-0.5 leading-none" style={{ color: C.fg }}>
-                2,971<span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>kcal</span>
+                {weeklyAvgCalories.toLocaleString()}<span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>kcal</span>
               </p>
             </div>
             <div className="text-right">
               <p className="text-[11px]" style={{ color: C.fg3 }}>Target</p>
-              <p className="text-sm font-bold mt-0.5" style={{ color: C.fg }}>3,100 kcal</p>
+              <p className="text-sm font-bold mt-0.5" style={{ color: C.fg }}>{calorieTarget.toLocaleString()} kcal</p>
             </div>
           </div>
           <div style={{ height: 90 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={calData} barSize={22} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+              <BarChart data={weekCalories} barSize={22} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
                 <XAxis
                   dataKey="day" axisLine={false} tickLine={false}
                   tick={{ fill: C.fg3, fontSize: 10, fontFamily: "Inter" }}

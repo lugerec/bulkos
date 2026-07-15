@@ -65,3 +65,25 @@ import {
       createdAt: new Date(),
     }));
   }
+const ALL_MEAL_TYPES: readonly MealType[] = [
+  "breakfast",
+  "snack",
+  "lunch",
+  "preWorkout",
+  "postWorkout",
+  "dinner",
+];
+
+/** Total logged calories for one day across all meals. */
+export async function getDailyCalories(
+  uid: string,
+  date: string
+): Promise<number> {
+  const meals = await Promise.all(
+    ALL_MEAL_TYPES.map((meal) => getMealFoods(uid, date, meal))
+  );
+
+  return meals
+    .flat()
+    .reduce((sum, food) => sum + (food.calories ?? 0), 0);
+}
