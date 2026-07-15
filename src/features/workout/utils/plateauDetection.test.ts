@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { detectPlateaus } from "./plateauDetection";
+import { detectPlateaus, suggestVariations } from "./plateauDetection";
+import { exerciseDefinitions } from "@/data/exercises";
 import type {
   RecommendationExercise,
   RecommendationWorkout,
@@ -148,5 +149,41 @@ describe("detectPlateaus", () => {
       "bench-press",
       "squat",
     ]);
+  });
+});
+
+describe("suggestVariations", () => {
+  it("returns nothing for an unknown exercise", () => {
+    expect(suggestVariations("not-a-real-id")).toHaveLength(0);
+  });
+
+  it("suggests other exercises for the same primary muscle", () => {
+    const variations = suggestVariations("bench-press", 3);
+
+    expect(variations.length).toBeGreaterThan(0);
+    expect(variations.map((v) => v.exerciseId)).not.toContain("bench-press");
+
+    for (const variation of variations) {
+      const definition = exerciseDefinitions.find(
+        (item) => item.id === variation.exerciseId
+      );
+
+      expect(definition?.primaryMuscle).toBe("chest");
+      expect(definition?.difficulty).not.toBe("advanced");
+    }
+  });
+
+  it("prefers a different equipment stimulus first", () => {
+    const [first] = suggestVariations("bench-press", 1);
+    const definition = exerciseDefinitions.find(
+      (item) => item.id === first.exerciseId
+    );
+
+    expect(definition?.equipment).not.toBe("barbell");
+  });
+
+  it("respects the requested count", () => {
+    expect(suggestVariations("bench-press", 1)).toHaveLength(1);
+    expect(suggestVariations("bench-press", 2)).toHaveLength(2);
   });
 });

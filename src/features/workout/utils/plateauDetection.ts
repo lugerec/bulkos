@@ -1,6 +1,50 @@
+import { exerciseDefinitions } from "@/data/exercises";
 import type {
   RecommendationWorkout,
 } from "@/features/workout/utils/workoutRecommendation";
+
+export type VariationSuggestion = {
+  exerciseId: string;
+  name: string;
+};
+
+/**
+ * Alternatives for a stalling lift: same primary muscle, different
+ * exercise, preferring a different movement stimulus (other equipment
+ * first, then same-equipment variations), compounds before isolation,
+ * skipping advanced-difficulty movements.
+ */
+export function suggestVariations(
+  exerciseId: string,
+  count = 2
+): VariationSuggestion[] {
+  const source = exerciseDefinitions.find((item) => item.id === exerciseId);
+
+  if (!source) return [];
+
+  return exerciseDefinitions
+    .filter(
+      (item) =>
+        item.id !== source.id &&
+        item.primaryMuscle === source.primaryMuscle &&
+        item.difficulty !== "advanced"
+    )
+    .sort((a, b) => {
+      const aDifferentEquipment = a.equipment !== source.equipment ? 0 : 1;
+      const bDifferentEquipment = b.equipment !== source.equipment ? 0 : 1;
+
+      if (aDifferentEquipment !== bDifferentEquipment) {
+        return aDifferentEquipment - bDifferentEquipment;
+      }
+
+      const aCompound = a.category === "compound" ? 0 : 1;
+      const bCompound = b.category === "compound" ? 0 : 1;
+
+      return aCompound - bCompound;
+    })
+    .slice(0, count)
+    .map((item) => ({ exerciseId: item.id, name: item.name }));
+}
 
 export type ExercisePlateau = {
   exerciseId: string;

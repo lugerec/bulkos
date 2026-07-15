@@ -2,7 +2,10 @@ import { TrendingDown } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
-import type { ExercisePlateau } from "@/features/workout/utils/plateauDetection";
+import {
+  suggestVariations,
+  type ExercisePlateau,
+} from "@/features/workout/utils/plateauDetection";
 
 type Props = {
   plateaus: ExercisePlateau[];
@@ -33,34 +36,44 @@ export default function StallingLiftsCard({ plateaus }: Props) {
         </div>
 
         <div className="flex flex-col gap-2.5">
-          {plateaus.map((item) => (
-            <div
-              key={item.exerciseId}
-              className="flex items-center justify-between"
-            >
-              <div className="min-w-0">
-                <p
-                  className="text-xs font-medium truncate"
-                  style={{ color: C.fg }}
-                >
-                  {item.exerciseName}
-                </p>
-                <p className="text-[10px]" style={{ color: C.fg3 }}>
-                  Best est. 1RM {item.bestEst1RM} kg · recent{" "}
-                  {item.recentBestEst1RM} kg
-                </p>
-              </div>
+          {plateaus.map((item) => {
+            const variations = suggestVariations(item.exerciseId);
 
-              <span
-                className="text-[11px] font-bold whitespace-nowrap ml-2"
-                style={{ color: C.amber }}
-              >
-                {item.sessionsSinceBest}{" "}
-                {item.sessionsSinceBest === 1 ? "session" : "sessions"} since
-                PR
-              </span>
-            </div>
-          ))}
+            return (
+              <div key={item.exerciseId}>
+                <div className="flex items-center justify-between">
+                  <div className="min-w-0">
+                    <p
+                      className="text-xs font-medium truncate"
+                      style={{ color: C.fg }}
+                    >
+                      {item.exerciseName}
+                    </p>
+                    <p className="text-[10px]" style={{ color: C.fg3 }}>
+                      Best est. 1RM {item.bestEst1RM} kg · recent{" "}
+                      {item.recentBestEst1RM} kg
+                    </p>
+                  </div>
+
+                  <span
+                    className="text-[11px] font-bold whitespace-nowrap ml-2"
+                    style={{ color: C.amber }}
+                  >
+                    {item.sessionsSinceBest}{" "}
+                    {item.sessionsSinceBest === 1 ? "session" : "sessions"}{" "}
+                    since PR
+                  </span>
+                </div>
+
+                {variations.length > 0 && (
+                  <p className="text-[10px] mt-0.5" style={{ color: C.fg2 }}>
+                    Try:{" "}
+                    {variations.map((variation) => variation.name).join(" · ")}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <p className="text-[10px] mt-3" style={{ color: C.fg3 }}>
