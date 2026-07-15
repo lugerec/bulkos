@@ -2,10 +2,12 @@ import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
 import MuscleSetTargetCard from "../components/MuscleSetTargetCard";
 import StallingLiftsCard from "../components/StallingLiftsCard";
+import StrengthStandardsCard from "../components/StrengthStandardsCard";
 import WeeklyReportCard from "../components/WeeklyReportCard";
 import PhotoComparisonCard from "../components/PhotoComparisonCard";
 import { getMuscleVolume } from "../utils/muscleVolume";
 import { getWeeklyReport } from "../utils/weeklyReport";
+import { getStrengthStandards } from "../utils/strengthStandards";
 import { detectPlateaus } from "@/features/workout/utils/plateauDetection";
 import {
   getMuscleRecoveryOverview,
@@ -218,6 +220,10 @@ const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek, currentWeight);
 const muscleRecovery = getMuscleRecoveryOverview(workouts);
 const muscleSetTargets = getMuscleSetTargetOverview(workouts);
 const plateaus = detectPlateaus(workouts);
+const strengthStandards =
+  currentWeight && userDoc?.profile?.sex
+    ? getStrengthStandards(workouts, currentWeight, userDoc.profile.sex)
+    : [];
 const weeklyReport = getWeeklyReport(
   workouts,
   bodyEntries,
@@ -366,6 +372,7 @@ const averageWorkoutDuration =
       <MuscleRecoveryCard data={muscleRecovery} workouts={workouts} />
       <MuscleSetTargetCard data={muscleSetTargets} />
       <StallingLiftsCard plateaus={plateaus} />
+      <StrengthStandardsCard standards={strengthStandards} />
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <Stat label="Workouts" value={`${totalWorkouts}`} />
