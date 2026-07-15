@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getMacroAdherence,
   getAnalyticsScores,
   getConsistencyScore,
   getPaceScore,
@@ -156,5 +157,37 @@ describe("getAnalyticsScores", () => {
     expect(scores[0].value).toBeNull();
     expect(scores[0].description).toBe("Not enough data");
     expect(scores[3].value).toBeNull();
+  });
+});
+
+describe("getMacroAdherence", () => {
+  const targets = { protein: 180, carbs: 350, fat: 90 };
+
+  it("returns null without targets or logged days", () => {
+    expect(getMacroAdherence([], targets)).toBeNull();
+    expect(
+      getMacroAdherence(
+        [{ calories: 2000, protein: 150, carbs: 200, fat: 70 }],
+        null
+      )
+    ).toBeNull();
+  });
+
+  it("averages only days with logged food and caps at 100", () => {
+    const adherence = getMacroAdherence(
+      [
+        { calories: 3000, protein: 180, carbs: 175, fat: 45 },
+        { calories: 0, protein: 0, carbs: 0, fat: 0 },
+        { calories: 3000, protein: 270, carbs: 175, fat: 45 },
+      ],
+      targets
+    );
+
+    // protein avg 225/180 -> capped 100; carbs 175/350 -> 50; fat 45/90 -> 50
+    expect(adherence).toEqual([
+      { label: "Protein", percent: 100 },
+      { label: "Carbohydrates", percent: 50 },
+      { label: "Fat", percent: 50 },
+    ]);
   });
 });

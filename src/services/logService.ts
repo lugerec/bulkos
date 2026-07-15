@@ -128,3 +128,30 @@ export async function getRecentFoodNames(
 
   return [...counts.values()].sort((a, b) => b.count - a.count);
 }
+
+export type DailyMacros = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+/** Total logged macros for one day across all meals. */
+export async function getDailyMacros(
+  uid: string,
+  date: string
+): Promise<DailyMacros> {
+  const meals = await Promise.all(
+    ALL_MEAL_TYPES.map((meal) => getMealFoods(uid, date, meal))
+  );
+
+  return meals.flat().reduce<DailyMacros>(
+    (sum, food) => ({
+      calories: sum.calories + (food.calories ?? 0),
+      protein: sum.protein + (food.protein ?? 0),
+      carbs: sum.carbs + (food.carbs ?? 0),
+      fat: sum.fat + (food.fat ?? 0),
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+}

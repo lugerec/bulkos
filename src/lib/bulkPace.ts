@@ -119,3 +119,73 @@ export function getBulkPace(
     suggestedDailyKcalDelta,
   };
 }
+
+export type PaceInsight = {
+  message: string;
+  /** daily kcal adjustment worth applying; 0 = nothing to apply */
+  kcalDelta: number;
+};
+
+const GOAL_PHRASES: Record<Goal, string> = {
+  bulk: "lean bulk",
+  cut: "cut",
+  maintain: "maintenance",
+};
+
+function signedKg(value: number): string {
+  return `${value > 0 ? "+" : ""}${value} kg/week`;
+}
+
+/**
+ * Plain-language summary of the pace with a concrete, applicable calorie
+ * adjustment (0 when on track or without enough data).
+ */
+export function getPaceInsight(pace: BulkPace, goal: Goal): PaceInsight {
+  if (pace.status === "insufficient_data") {
+    return {
+      message:
+        "Not enough weight data yet — log your body weight at least twice a week (5+ days apart) to unlock trend insights.",
+      kcalDelta: 0,
+    };
+  }
+
+  const phrase = GOAL_PHRASES[goal];
+  const trend = signedKg(pace.weeklyChangeKg);
+
+  if (pace.status === "on_track") {
+    return {
+      message: `Your ${phrase} is progressing well at ${trend} — right inside the recommended ${pace.targetMinPercent}% to ${pace.targetMaxPercent}% per week range. Keep your current intake.`,
+      kcalDelta: 0,
+    };
+  }
+
+  const direction = pace.suggestedDailyKcalDelta > 0 ? "increasing" : "decreasing";
+  const amount = Math.abs(pace.suggestedDailyKcalDelta);
+
+  return {
+    message: `Your weight is trending ${trend}, outside the recommended range for a ${phrase}. Based on the last two weeks, consider ${direction} daily calories by about ${amount} kcal.`,
+    kcalDelta: pace.suggestedDailyKcalDelta,
+  };
+}
+
+type AdjustableTargets = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+/**
+ * Apply a daily kcal adjustment to macro targets: calories shift by the
+ * delta and carbs absorb it (4 kcal/g); protein and fat stay untouched.
+ */
+export function applyKcalDeltaToTargets<T extends AdjustableTargets>(
+  targets: T,
+  kcalDelta: number
+): T {
+  return {
+    ...targets,
+    calories: Math.max(0, Math.round(targets.calories + kcalDelta)),
+    carbs: Math.max(0, Math.round(targets.carbs + kcalDelta / 4)),
+  };
+}

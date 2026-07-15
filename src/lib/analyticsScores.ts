@@ -133,3 +133,49 @@ export function getAnalyticsScores(input: {
     },
   ];
 }
+
+export type MacroAdherenceItem = {
+  label: string;
+  /** 0–100: average intake as a share of the target, capped at 100 */
+  percent: number;
+};
+
+type MacroDay = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+type MacroTargetsLike = {
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+/**
+ * Average macro intake over days with logged food, as a share of the
+ * targets. Returns null when nothing was logged or targets are missing.
+ */
+export function getMacroAdherence(
+  days: readonly MacroDay[],
+  targets: MacroTargetsLike | null | undefined
+): MacroAdherenceItem[] | null {
+  if (!targets) return null;
+
+  const logged = days.filter((day) => day.calories > 0);
+
+  if (logged.length === 0) return null;
+
+  const average = (select: (day: MacroDay) => number) =>
+    logged.reduce((sum, day) => sum + select(day), 0) / logged.length;
+
+  const percent = (value: number, target: number) =>
+    target > 0 ? clampScore((value / target) * 100) : 0;
+
+  return [
+    { label: "Protein", percent: percent(average((d) => d.protein), targets.protein) },
+    { label: "Carbohydrates", percent: percent(average((d) => d.carbs), targets.carbs) },
+    { label: "Fat", percent: percent(average((d) => d.fat), targets.fat) },
+  ];
+}

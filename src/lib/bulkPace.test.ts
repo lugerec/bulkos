@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getBulkPace } from "./bulkPace";
+import { applyKcalDeltaToTargets, getBulkPace, getPaceInsight } from "./bulkPace";
 
 const NOW = new Date("2026-07-14T12:00:00");
 
@@ -75,5 +75,61 @@ describe("getBulkPace", () => {
     // (80.6 - 80) / 13 days * 7 ≈ +0.32 kg/week
     expect(pace.weeklyChangeKg).toBeCloseTo(0.32, 1);
     expect(pace.status).toBe("on_track");
+  });
+});
+
+describe("getPaceInsight", () => {
+  it("asks for more data when the trend cannot be computed", () => {
+    const insight = getPaceInsight(getBulkPace([], "bulk", NOW), "bulk");
+
+    expect(insight.kcalDelta).toBe(0);
+    expect(insight.message).toContain("Not enough weight data");
+  });
+
+  it("confirms an on-track pace with no adjustment", () => {
+    const pace = getBulkPace([entry(7, 80), entry(0, 80.3)], "bulk", NOW);
+    const insight = getPaceInsight(pace, "bulk");
+
+    expect(insight.kcalDelta).toBe(0);
+    expect(insight.message).toContain("progressing well");
+  });
+
+  it("proposes the pace's kcal delta when off track", () => {
+    const pace = getBulkPace([entry(7, 80), entry(0, 81)], "bulk", NOW);
+    const insight = getPaceInsight(pace, "bulk");
+
+    expect(insight.kcalDelta).toBe(pace.suggestedDailyKcalDelta);
+    expect(insight.kcalDelta).toBeLessThan(0);
+    expect(insight.message).toContain("decreasing daily calories");
+  });
+});
+
+describe("applyKcalDeltaToTargets", () => {
+  const targets = { calories: 3000, protein: 180, carbs: 350, fat: 90 };
+
+  it("shifts calories and lets carbs absorb the delta", () => {
+    const next = applyKcalDeltaToTargets(targets, -200);
+
+    expect(next.calories).toBe(2800);
+    expect(next.carbs).toBe(300);
+    expect(next.protein).toBe(180);
+    expect(next.fat).toBe(90);
+  });
+
+  it("never goes below zero", () => {
+    const next = applyKcalDeltaToTargets(
+      { calories: 100, protein: 50, carbs: 10, fat: 5 },
+      -500
+    );
+
+    expect(next.calories).toBe(0);
+    expect(next.carbs).toBe(0);
+  });
+
+  it("does not mutate the source targets", () => {
+    applyKcalDeltaToTargets(targets, 200);
+
+    expect(targets.calories).toBe(3000);
+    expect(targets.carbs).toBe(350);
   });
 });

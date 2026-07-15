@@ -19,7 +19,8 @@ import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { useAuthStore } from "../store/authStore";
 import { useWorkoutHistoryStore } from "../store/workoutHistoryStore";
 import { useBodyMetricsStore } from "../store/bodyMetricsStore";
-import { getDailyCalories, getRecentFoodNames } from "../services/logService";
+import { getDailyMacros, getRecentFoodNames } from "../services/logService";
+import { updateNutritionTargets } from "../services/userService";
 import {
   addGroceryItem,
   deleteGroceryItem,
@@ -30,8 +31,8 @@ import {
 } from "../services/groceryService";
 import { searchOpenFoodFacts } from "../services/openFoodFactsService";
 import { buildGrocerySuggestions } from "../lib/grocerySuggestions";
-import { getAnalyticsScores } from "../lib/analyticsScores";
-import { getBulkPace } from "../lib/bulkPace";
+import { getAnalyticsScores, getMacroAdherence } from "../lib/analyticsScores";
+import { applyKcalDeltaToTargets, getBulkPace, getPaceInsight } from "../lib/bulkPace";
 import { getFrequencyAdherence } from "../features/workout/utils/frequencyAdherence";
 import {
   getMuscleRecoveryOverview,
@@ -423,14 +424,17 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
 function AnalyticsScreen({ onBack }: { onBack: () => void }) {
   const user = useAuthStore((s) => s.user);
   const userDoc = useAuthStore((s) => s.profile);
+  const refreshProfile = useAuthStore((s) => s.refreshProfile);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
   const bodyEntries = useBodyMetricsStore((s) => s.entries);
   const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
 
-  const [weekCalories, setWeekCalories] = useState<
-    Array<{ day: string; cal: number }>
+  const [weekMacros, setWeekMacros] = useState<
+    Array<{ day: string; calories: number; protein: number; carbs: number; fat: number }>
   >([]);
+  const [insightApplied, setInsightApplied] = useState(false);
+  const [applyingInsight, setApplyingInsight] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -454,16 +458,19 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
       const totals = await Promise.all(
         days.map((day) =>
-          getDailyCalories(user.uid, day.toISOString().slice(0, 10))
+          getDailyMacros(user.uid, day.toISOString().slice(0, 10))
         )
       );
 
       if (cancelled) return;
 
-      setWeekCalories(
+      setWeekMacros(
         days.map((day, index) => ({
           day: day.toLocaleDateString("en-US", { weekday: "short" }),
-          cal: totals[index],
+          calories: totals[index].calories,
+          protein: totals[index].protein,
+          carbs: totals[index].carbs,
+          fat: totals[index].fat,
         }))
       );
     })();
@@ -477,8 +484,35 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
   const targetFrequency: number = userDoc?.profile?.trainingFrequency ?? 4;
   const calorieTarget: number = userDoc?.nutrition?.calories ?? 0;
 
+  const pace = getBulkPace(bodyEntries, goal);
+  const insight = getPaceInsight(pace, goal);
+  const macroAdherence = getMacroAdherence(weekMacros, userDoc?.nutrition);
+
+  const applyInsight = async () => {
+    if (!user || !userDoc?.nutrition || applyingInsight) return;
+
+    const latestWeight = [...bodyEntries].sort((a, b) =>
+      a.date.localeCompare(b.date)
+    )[bodyEntries.length - 1]?.weightKg;
+
+    if (!latestWeight) return;
+
+    try {
+      setApplyingInsight(true);
+      await updateNutritionTargets(
+        user.uid,
+        latestWeight,
+        applyKcalDeltaToTargets(userDoc.nutrition, insight.kcalDelta)
+      );
+      await refreshProfile();
+      setInsightApplied(true);
+    } finally {
+      setApplyingInsight(false);
+    }
+  };
+
   const scores = getAnalyticsScores({
-    pace: getBulkPace(bodyEntries, goal),
+    pace,
     goal,
     adherence: getFrequencyAdherence(
       workouts.map((w) => w.date),
@@ -488,11 +522,11 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
     setTargets: getMuscleSetTargetOverview(workouts),
   });
 
-  const loggedDays = weekCalories.filter((day) => day.cal > 0);
+  const loggedDays = weekMacros.filter((day) => day.calories > 0);
   const weeklyAvgCalories =
     loggedDays.length > 0
       ? Math.round(
-          loggedDays.reduce((sum, day) => sum + day.cal, 0) /
+          loggedDays.reduce((sum, day) => sum + day.calories, 0) /
             loggedDays.length
         )
       : 0;
@@ -541,7 +575,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
           </div>
           <div style={{ height: 90 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weekCalories} barSize={22} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+              <BarChart data={weekMacros} barSize={22} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
                 <XAxis
                   dataKey="day" axisLine={false} tickLine={false}
                   tick={{ fill: C.fg3, fontSize: 10, fontFamily: "Inter" }}
@@ -554,35 +588,40 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
                   labelStyle={{ color: C.fg2 }}
                   cursor={{ fill: "rgba(255,255,255,0.02)" }}
                 />
-                <Bar dataKey="cal" fill={C.accentDim} radius={[5, 5, 0, 0]} />
+                <Bar dataKey="calories" fill={C.accentDim} radius={[5, 5, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Macro adherence */}
-        <div className="rounded-[22px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-          <SectionHeader title="Macro Adherence" />
-          <div className="flex flex-col gap-4">
-            {[
-              { label: "Protein", val: 89, color: C.accent },
-              { label: "Carbohydrates", val: 93, color: C.blue },
-              { label: "Fat", val: 84, color: C.purple },
-            ].map(({ label, val, color }) => (
-              <div key={label}>
-                <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-sm" style={{ color: C.fg2 }}>{label}</span>
-                  <span className="text-sm font-bold" style={{ color: C.fg }}>{val}%</span>
-                </div>
-                <div style={{ height: 4, background: C.border, borderRadius: 99 }}>
-                  <div style={{ height: "100%", width: `${val}%`, background: color, borderRadius: 99 }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {macroAdherence && (
+          <div className="rounded-[22px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+            <SectionHeader title="Macro Adherence" />
+            <div className="flex flex-col gap-4">
+              {macroAdherence.map(({ label, percent }, index) => {
+                const color = [C.accent, C.blue, C.purple][index % 3];
 
-        {/* AI recommendation */}
+                return (
+                  <div key={label}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-sm" style={{ color: C.fg2 }}>{label}</span>
+                      <span className="text-sm font-bold" style={{ color: C.fg }}>{percent}%</span>
+                    </div>
+                    <div style={{ height: 4, background: C.border, borderRadius: 99 }}>
+                      <div style={{ height: "100%", width: `${percent}%`, background: color, borderRadius: 99 }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-[10px] mt-3" style={{ color: C.fg3 }}>
+              Average of the last 7 days with logged food vs your targets.
+            </p>
+          </div>
+        )}
+
+        {/* Coach insight */}
         <div
           className="rounded-[22px] p-5"
           style={{
@@ -598,26 +637,35 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
               <Brain size={17} color={C.accent} />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: C.accent }}>AI Insight</p>
-              <p className="text-[10px]" style={{ color: C.fg3 }}>Based on last 14 days</p>
+              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: C.accent }}>Coach Insight</p>
+              <p className="text-[10px]" style={{ color: C.fg3 }}>Based on the last 14 days of check-ins</p>
             </div>
           </div>
           <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg }}>
-            Your lean bulk is progressing well at +0.27 kg/week. Based on weight trend and recovery
-            markers, consider increasing daily calories by{" "}
-            <span style={{ color: C.accent, fontWeight: 700 }}>+150 kcal</span> to maintain
-            optimal muscle growth while keeping fat gain minimal.
+            {insight.message}
           </p>
-          <button
-            className="w-full py-3 rounded-[14px] text-sm font-bold"
-            style={{
-              background: C.accentDim,
-              border: "1px solid rgba(124,255,107,0.2)",
-              color: C.accent,
-            }}
-          >
-            Apply Recommendation
-          </button>
+          {insight.kcalDelta !== 0 && !insightApplied && (
+            <button
+              onClick={applyInsight}
+              disabled={applyingInsight}
+              className="w-full py-3 rounded-[14px] text-sm font-bold"
+              style={{
+                background: C.accentDim,
+                border: "1px solid rgba(124,255,107,0.2)",
+                color: C.accent,
+                opacity: applyingInsight ? 0.6 : 1,
+              }}
+            >
+              {applyingInsight
+                ? "Applying…"
+                : `Apply ${insight.kcalDelta > 0 ? "+" : ""}${insight.kcalDelta} kcal to targets`}
+            </button>
+          )}
+          {insightApplied && (
+            <p className="text-sm font-bold" style={{ color: C.accent }}>
+              Applied — your calorie and carb targets were updated.
+            </p>
+          )}
         </div>
       </div>
     </div>
