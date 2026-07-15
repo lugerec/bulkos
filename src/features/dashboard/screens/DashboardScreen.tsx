@@ -7,6 +7,8 @@ import GreetingCard from "@/features/dashboard/components/GreetingCard";
 import NextTargetCard from "@/features/dashboard/components/NextTargetCard";
 import SmartCoachCard from "@/features/dashboard/components/SmartCoachCard";
 import TargetUpdateCard from "@/features/dashboard/components/TargetUpdateCard";
+import BulkPaceCard from "@/features/dashboard/components/BulkPaceCard";
+import { getBulkPace } from "@/lib/bulkPace";
 
 import { useHydrationStore } from "@/store/hydrationStore";
 import type { ReactNode } from "react";
@@ -229,6 +231,13 @@ export default function DashboardScreen({
           currentNutrition={nutrition}
           currentWeightKg={latestBodyEntry.weightKg}
           onUpdated={refreshProfile}
+        />
+      )}
+
+      {userProfile && (
+        <BulkPaceCard
+          pace={getBulkPace(bodyEntries, userProfile.goal)}
+          goal={userProfile.goal}
         />
       )}
 
