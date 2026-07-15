@@ -50,10 +50,13 @@ Workout history, nutrition log, body metrics, hydration, progress screen, workou
 - Frequency adherence: `getFrequencyAdherence(workoutDates, targetPerWeek)` in `features/workout/utils/frequencyAdherence.ts` — first consumer of onboarding's `profile.trainingFrequency`. Counts distinct training *days* since Monday, `daysAvailable` (today excluded once trained), `onPace` (remaining fits into available days), plus a 4-week hit/miss history. `FrequencyCard` on the Dashboard (X/Y this week, status Target hit / On pace / Falling behind, 4 history dots).
 - Weight-based water goal: `getWaterGoalLiters(weightKg, trainedToday)` in `src/lib/hydration.ts` — ~35 ml/kg, +0.5 L on training days, clamped 2–6 L, rounded to 0.1 L; falls back to the old fixed 3.5 L (`DEFAULT_WATER_GOAL_LITERS`) when weight is unknown. Dashboard hydration widget now uses it (latest check-in weight, else profile weight). Tests in `src/lib/hydration.test.ts`.
 - Weekly report: `getWeeklyReport(workouts, weightEntries, targetTrainingDays)` in `features/progress/utils/weeklyReport.ts` — digest of the last completed Mon–Sun week: distinct training days vs target, total volume with delta vs the week before, first-to-last weight change from that week's check-ins (null with <2). `WeeklyReportCard` at the top of the Progress screen (hidden when that week had no training). Tests in `weeklyReport.test.ts`.
+- CI: `.github/workflows/ci.yml` — GitHub Action on push/PR to main: Node 22, `npm ci`, `npm run test`, `npm run build`.
+- Settings profile editing: `ProfileGoalsCard` (features/settings/components) — edits goal / training frequency / activity / goal weight after onboarding; Save recomputes macros via `calculateMacroTargets` and persists both in one write through the existing `updateUserOnboarding`, then `refreshProfile()`. Save button only appears when dirty; invalid goal weight blocks save.
+- CSV export: `src/lib/exportCsv.ts` — `buildWorkoutsCsv` (one row per set: date, workout, exercise, set #, weight, reps, completed; chronological; proper quoting/escaping), `buildBodyMetricsCsv` (row per check-in, blanks for missing measurements), `downloadTextFile` (Blob + anchor). Settings "Export Data (CSV)" button downloads both files; the screen loads workouts + body metrics on mount. Tests in `exportCsv.test.ts`.
 
 ## Next candidates (agreed with owner)
 
-Smart Coach roadmap complete. Next feature TBD with owner.
+Infra/UX batch (CI, settings editing, CSV export) complete. Next feature TBD with owner.
 
 ## Workflow
 

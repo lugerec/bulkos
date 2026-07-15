@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   ChevronRight,
@@ -10,6 +10,14 @@ import {
 import { C, type Screen } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
+import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
+import ProfileGoalsCard from "../components/ProfileGoalsCard";
+import {
+  buildBodyMetricsCsv,
+  buildWorkoutsCsv,
+  downloadTextFile,
+} from "@/lib/exportCsv";
 
 export default function SettingsScreen({
   onNavigate,
@@ -20,6 +28,32 @@ export default function SettingsScreen({
   const [units, setUnits] = useState<"metric" | "imperial">("metric");
 
   const logout = useAuthStore((s) => s.logout);
+  const user = useAuthStore((s) => s.user);
+  const userDoc = useAuthStore((s) => s.profile);
+  const refreshProfile = useAuthStore((s) => s.refreshProfile);
+  const workouts = useWorkoutHistoryStore((s) => s.workouts);
+  const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
+  const bodyEntries = useBodyMetricsStore((s) => s.entries);
+  const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
+
+  useEffect(() => {
+    if (!user) return;
+    loadWorkouts(user.uid);
+    loadBodyMetrics(user.uid);
+  }, [user, loadWorkouts, loadBodyMetrics]);
+
+  const todayKey = new Date().toISOString().slice(0, 10);
+
+  const handleExport = () => {
+    downloadTextFile(
+      `bulkos-workouts-${todayKey}.csv`,
+      buildWorkoutsCsv(workouts)
+    );
+    downloadTextFile(
+      `bulkos-body-metrics-${todayKey}.csv`,
+      buildBodyMetricsCsv(bodyEntries)
+    );
+  };
 
   const Toggle = ({
     value,
@@ -59,6 +93,14 @@ export default function SettingsScreen({
       <h2 className="text-2xl font-bold mb-5" style={{ color: C.fg }}>
         Settings
       </h2>
+
+      {user && userDoc?.profile && (
+        <ProfileGoalsCard
+          uid={user.uid}
+          profile={userDoc.profile}
+          onSaved={refreshProfile}
+        />
+      )}
 
       <SectionHeader title="Tools" />
 
@@ -170,6 +212,7 @@ export default function SettingsScreen({
       </div>
 
       <button
+        onClick={handleExport}
         className="w-full py-4 rounded-[18px] font-semibold text-sm flex items-center justify-center gap-2 mb-3"
         style={{
           background: C.card,
@@ -178,7 +221,7 @@ export default function SettingsScreen({
         }}
       >
         <Download size={16} />
-        Export Data
+        Export Data (CSV)
       </button>
 
       <button
