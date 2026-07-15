@@ -938,6 +938,10 @@ export default function WorkoutScreen() {
                             ? "add weight"
                             : suggested.reason === "increase_reps"
                             ? "add reps"
+                            : suggested.reason === "maintain"
+                            ? "repeat, hit reps"
+                            : suggested.reason === "deload"
+                            ? "back off"
                             : suggested.reason}
                         </span>
                       </span>

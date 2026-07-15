@@ -25,9 +25,11 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Known minor issues / follow-ups
 
-- `progression.ts` `ProgressionSuggestion.reason` type includes `"maintain"` and `"deload"`, but `getProgressionSuggestion` never returns them (only `increase_reps` / `increase_weight`). There's no "repeat this session" state when a set fell short of `minReps`. Documented by `progression.test.ts`; changing it would alter behaviour, so left for owner sign-off.
+(none open)
 
 ## Completed features
+
+- Progressive overload cue: `getProgressionSuggestion(exercise, previousSets)` in `features/workout/utils/progression.ts` — double progression off the best previous set (by Epley est. 1RM). At/above `maxReps` → add `weightStep`, reset to `minReps` (`increase_weight`); ≥2 reps under `minReps` (and weight > step) → back off one step (`deload`); just under `minReps` → repeat same load, aim for `minReps` (`maintain`); inside range → add a rep (`increase_reps`). Shown per exercise in `WorkoutScreen` (labels: add weight / add reps / repeat, hit reps / back off). Tests in `progression.test.ts` (10).
 
 Workout history, nutrition log, body metrics, hydration, progress screen, workout templates, and the Smart Coach:
 

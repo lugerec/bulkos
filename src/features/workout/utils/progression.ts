@@ -37,6 +37,7 @@ export function getProgressionSuggestion(
     weightStep: 2.5,
   };
 
+  // Best set reached the top of the rep range: add weight, reset reps.
   if (best.reps >= progression.maxReps) {
     return {
       weight: best.weight + progression.weightStep,
@@ -45,6 +46,27 @@ export function getProgressionSuggestion(
     };
   }
 
+  // Best set fell well short of the minimum (2+ reps under): a sign of too
+  // much fatigue — back the weight off one step and rebuild.
+  if (best.reps < progression.minReps - 1 && best.weight > progression.weightStep) {
+    return {
+      weight: best.weight - progression.weightStep,
+      reps: progression.minReps,
+      reason: "deload",
+    };
+  }
+
+  // Best set was just under the minimum: repeat the same load and aim to
+  // hit the bottom of the range before adding reps.
+  if (best.reps < progression.minReps) {
+    return {
+      weight: best.weight,
+      reps: progression.minReps,
+      reason: "maintain",
+    };
+  }
+
+  // Inside the rep range: add a rep.
   return {
     weight: best.weight,
     reps: best.reps + 1,

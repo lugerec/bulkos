@@ -98,4 +98,34 @@ describe("getProgressionSuggestion", () => {
       reason: "increase_weight",
     });
   });
+
+  it("repeats the same load when the best set was just under min reps", () => {
+    // bench minReps 6: 5 reps is one short -> repeat, aim for 6
+    const suggestion = getProgressionSuggestion(bench, [set(100, 5)]);
+
+    expect(suggestion).toEqual({
+      weight: 100,
+      reps: 6,
+      reason: "maintain",
+    });
+  });
+
+  it("backs the weight off when the best set fell well short of min reps", () => {
+    // bench minReps 6: 4 reps is 2+ under -> deload one step
+    const suggestion = getProgressionSuggestion(bench, [set(100, 4)]);
+
+    expect(suggestion).toEqual({
+      weight: 97.5,
+      reps: 6,
+      reason: "deload",
+    });
+  });
+
+  it("does not deload below a single weight step (bodyweight/very light)", () => {
+    // weight (2) not greater than the step (2.5): repeat instead of going negative
+    const suggestion = getProgressionSuggestion(bench, [set(2, 3)]);
+
+    expect(suggestion?.reason).toBe("maintain");
+    expect(suggestion?.weight).toBe(2);
+  });
 });
