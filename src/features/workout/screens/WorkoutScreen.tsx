@@ -128,14 +128,14 @@ export default function WorkoutScreen() {
   }, [workout]);
 
   useEffect(() => {
-    if (done) return;
+    if (!workoutStarted || done) return;
   
     const t = setInterval(() => {
       setElapsed((e) => e + 1);
     }, 1000);
   
     return () => clearInterval(t);
-  }, [done]);
+  }, [workoutStarted, done]);
 
   useEffect(() => {
     if (!isResting) return;
