@@ -339,6 +339,45 @@ export default function WorkoutScreen() {
     );
   };
 
+  const addSet = (exIdx: number) => {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+
+        const lastSet = exercise.sets[exercise.sets.length - 1];
+        const newSet = lastSet
+          ? { ...lastSet }
+          : { weight: 0, reps: 0, completed: false };
+
+        return { ...exercise, sets: [...exercise.sets, newSet] };
+      })
+    );
+  };
+
+  const removeSet = (exIdx: number) => {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+        if (exercise.sets.length <= 1) return exercise;
+
+        return {
+          ...exercise,
+          sets: exercise.sets.slice(0, -1),
+        };
+      })
+    );
+
+    // Drop the completed flag for the removed (last) set to avoid stale keys.
+    setCompleted((prev) => {
+      const next = new Set(prev);
+      const lastIndex = exercises[exIdx].sets.length - 1;
+
+      next.delete(`${exIdx}-${lastIndex}`);
+
+      return next;
+    });
+  };
+
   function applySuggested(
     exIdx: number,
     weight: number,
@@ -969,6 +1008,34 @@ export default function WorkoutScreen() {
                   />
                 );
               })}
+
+              <div className="flex items-center gap-2 mt-2 px-1">
+                <button
+                  onClick={() => addSet(exIdx)}
+                  className="flex-1 py-2 rounded-[14px] text-xs font-semibold"
+                  style={{
+                    background: C.card2,
+                    border: `1px solid ${C.border}`,
+                    color: C.fg2,
+                  }}
+                >
+                  + Add set
+                </button>
+
+                {ex.sets.length > 1 && (
+                  <button
+                    onClick={() => removeSet(exIdx)}
+                    className="py-2 px-3 rounded-[14px] text-xs font-semibold"
+                    style={{
+                      background: "transparent",
+                      border: `1px solid ${C.border}`,
+                      color: C.fg3,
+                    }}
+                  >
+                    − Remove
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}
