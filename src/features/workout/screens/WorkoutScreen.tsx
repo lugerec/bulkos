@@ -13,6 +13,7 @@ import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
+import { getRestSeconds } from "@/features/workout/utils/restTime";
 import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
 import WarmupHint from "@/features/workout/components/WarmupHint";
 import type { WorkoutExercise } from "@/types/workout";
@@ -22,53 +23,6 @@ const fmt = (s: number) =>
   `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60)
     .toString()
     .padStart(2, "0")}`;
-
-    function getRestTime(exerciseName: string) {
-      const name = exerciseName.toLowerCase();
-    
-      if (
-        name.includes("deadlift") ||
-        name.includes("mŕtvy") ||
-        name.includes("rack pull")
-      ) {
-        return 240;
-      }
-    
-      if (
-        name.includes("bench") ||
-        name.includes("squat") ||
-        name.includes("drep")
-      ) {
-        return 180;
-      }
-    
-      if (
-        name.includes("row") ||
-        name.includes("pull") ||
-        name.includes("ohp") ||
-        name.includes("shoulder press")
-      ) {
-        return 150;
-      }
-    
-      if (
-        name.includes("curl") ||
-        name.includes("triceps") ||
-        name.includes("pushdown")
-      ) {
-        return 90;
-      }
-    
-      if (
-        name.includes("lateral") ||
-        name.includes("calf") ||
-        name.includes("abs")
-      ) {
-        return 60;
-      }
-    
-      return 90;
-    }
 
     function signedDuration(seconds: number) {
       if (seconds === 0) return "00:00";
@@ -338,7 +292,20 @@ export default function WorkoutScreen() {
           }));
         }
 
-        setRestTimer(exercise.restSeconds ?? getRestTime(exercise.name));
+        const restDefinition = exerciseDefinitions.find(
+          (item) => item.id === (exercise.exerciseId ?? exercise.id)
+        );
+
+        setRestTimer(
+          getRestSeconds(
+            {
+              equipment: restDefinition?.equipment,
+              category: restDefinition?.category,
+              name: exercise.name,
+            },
+            exercise.restSeconds ?? restDefinition?.defaultRestSeconds
+          )
+        );
         setIsResting(true);
       }
 
