@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { collectSources } from "./ExerciseMedia";
+import { collectSources, canAnimate } from "./ExerciseMedia";
 
 describe("collectSources", () => {
   it("returns nothing without media", () => {
@@ -43,5 +43,34 @@ describe("collectSources", () => {
     });
 
     expect(withStart.map((s) => s.label)).toEqual(["Start"]);
+  });
+});
+
+describe("canAnimate", () => {
+  it("is true with both start and finish stills", () => {
+    const sources = collectSources({
+      start: "/x/start.png",
+      finish: "/x/finish.png",
+    });
+
+    expect(canAnimate(sources)).toBe(true);
+  });
+
+  it("is false with only a start still", () => {
+    expect(canAnimate(collectSources({ start: "/x/start.png" }))).toBe(false);
+  });
+
+  it("is false when a real gif is present (it animates itself)", () => {
+    const sources = collectSources({
+      gif: "/x/motion.gif",
+      start: "/x/start.png",
+      finish: "/x/finish.png",
+    });
+
+    expect(canAnimate(sources)).toBe(false);
+  });
+
+  it("is false with no media", () => {
+    expect(canAnimate(collectSources(undefined))).toBe(false);
   });
 });
