@@ -9,8 +9,10 @@ import SmartCoachCard from "@/features/dashboard/components/SmartCoachCard";
 import TargetUpdateCard from "@/features/dashboard/components/TargetUpdateCard";
 import BulkPaceCard from "@/features/dashboard/components/BulkPaceCard";
 import FrequencyCard from "@/features/dashboard/components/FrequencyCard";
+import StreakCard from "@/features/dashboard/components/StreakCard";
 import { getBulkPace } from "@/lib/bulkPace";
 import { getFrequencyAdherence } from "@/features/workout/utils/frequencyAdherence";
+import { getWorkoutStreak } from "@/features/workout/utils/workoutStreak";
 import { getWaterGoalLiters } from "@/lib/hydration";
 
 import { useHydrationStore } from "@/store/hydrationStore";
@@ -252,6 +254,15 @@ export default function DashboardScreen({
       {userProfile && (
         <FrequencyCard
           adherence={getFrequencyAdherence(
+            workouts.map((w) => w.date),
+            userProfile.trainingFrequency
+          )}
+        />
+      )}
+
+      {userProfile && (
+        <StreakCard
+          streak={getWorkoutStreak(
             workouts.map((w) => w.date),
             userProfile.trainingFrequency
           )}
