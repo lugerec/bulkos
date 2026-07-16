@@ -18,7 +18,7 @@ import { getRestSeconds } from "@/features/workout/utils/restTime";
 import { notifyRestComplete, adjustRest } from "@/features/workout/utils/restNotify";
 import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
 import WarmupHint from "@/features/workout/components/WarmupHint";
-import type { WorkoutExercise } from "@/types/workout";
+import type { WorkoutExercise, SetEffort } from "@/types/workout";
 import { findSetPRs, type PersonalRecord } from "@/features/workout/utils/pr";
 import { toDateKey } from "@/lib/date";
 
@@ -336,6 +336,31 @@ export default function WorkoutScreen() {
             return {
               ...set,
               [field]: value,
+            };
+          }),
+        };
+      })
+    );
+  };
+
+  const updateEffort = (
+    exIdx: number,
+    setIdx: number,
+    effort: SetEffort
+  ) => {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+
+        return {
+          ...exercise,
+          sets: exercise.sets.map((set, setIndex) => {
+            if (setIndex !== setIdx) return set;
+
+            // Tapping the active rating again clears it.
+            return {
+              ...set,
+              effort: set.effort === effort ? undefined : effort,
             };
           }),
         };
@@ -1085,12 +1110,16 @@ export default function WorkoutScreen() {
                     reps={set.reps}
                     weight={set.weight}
                     completed={isDone}
+                    effort={set.effort}
                     onToggle={() => toggleSet(exIdx, setIdx)}
                     onWeightChange={(value) =>
                       updateSet(exIdx, setIdx, "weight", value)
                     }
                     onRepsChange={(value) =>
                       updateSet(exIdx, setIdx, "reps", value)
+                    }
+                    onEffortChange={(value) =>
+                      updateEffort(exIdx, setIdx, value)
                     }
                   />
                 );

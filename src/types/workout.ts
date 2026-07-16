@@ -83,10 +83,14 @@ export type ExerciseDefinition = {
   activation?: MuscleActivation;
 };
 
+export type SetEffort = "easy" | "moderate" | "hard";
+
 export type WorkoutSet = {
   reps: number;
   weight: number;
   completed?: boolean;
+  /** How the set felt — a simple 3-level effort rating. */
+  effort?: SetEffort;
 };
 
 export type WorkoutExercise = {

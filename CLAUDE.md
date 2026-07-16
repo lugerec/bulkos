@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Per-set effort rating (RPE-lite): after completing a set, `WorkoutSetRow` shows Easy/OK/Hard buttons writing `effort` onto the `WorkoutSet` (tapping the active one clears it; saved into history via the existing `...set` spread). `getProgressionSuggestion` is now effort-aware: a top-of-range set flagged "easy" jumps two weight steps instead of one, and a hard set inside the rep range holds reps instead of adding one. Default behaviour unchanged when no effort is set (existing tests still pass; new cases in progression.test.ts).
+
 - Rest timer upgrades: the in-workout rest timer now beeps + vibrates when it hits zero (`notifyRestComplete` in utils/restNotify.ts — best-effort Web Audio beep and `navigator.vibrate`, both no-op silently when unsupported/blocked) and has −15s / +15s adjust buttons (`adjustRest` clamps at zero, tested). Also fixed invalid nested `<p>` in the timer markup.
 
 - Swap exercise mid-workout: each exercise card in `WorkoutScreen` has a ↻ button opening `SwapExerciseSheet`, which lists same-primary-muscle alternatives (excluding the current one, sorted by name; `getAlternatives` tested). Swapping keeps the set count but resets weights/reps to the new exercise's defaults and clears its completed flags — for when a station is taken.

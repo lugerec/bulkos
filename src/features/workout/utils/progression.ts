@@ -39,8 +39,12 @@ export function getProgressionSuggestion(
 
   // Best set reached the top of the rep range: add weight, reset reps.
   if (best.reps >= progression.maxReps) {
+    // If that top-range set was flagged "easy", jump two steps to progress
+    // faster; if "hard", the single step is already right.
+    const steps = best.effort === "easy" ? 2 : 1;
+
     return {
-      weight: best.weight + progression.weightStep,
+      weight: best.weight + progression.weightStep * steps,
       reps: progression.minReps,
       reason: "increase_weight",
     };
@@ -66,7 +70,16 @@ export function getProgressionSuggestion(
     };
   }
 
-  // Inside the rep range: add a rep.
+  // Inside the rep range. If the set felt hard, repeat it to consolidate
+  // before adding volume; otherwise add a rep.
+  if (best.effort === "hard") {
+    return {
+      weight: best.weight,
+      reps: best.reps,
+      reason: "maintain",
+    };
+  }
+
   return {
     weight: best.weight,
     reps: best.reps + 1,

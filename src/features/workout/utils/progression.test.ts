@@ -129,3 +129,58 @@ describe("getProgressionSuggestion", () => {
     expect(suggestion?.weight).toBe(2);
   });
 });
+
+describe("getProgressionSuggestion — effort-aware", () => {
+  function setE(
+    weight: number,
+    reps: number,
+    effort: "easy" | "moderate" | "hard"
+  ): WorkoutSet {
+    return { weight, reps, completed: true, effort };
+  }
+
+  it("jumps two weight steps when a top-range set felt easy", () => {
+    // reps at max (10) → normally +2.5; easy → +5
+    const suggestion = getProgressionSuggestion(bench, [setE(100, 10, "easy")]);
+
+    expect(suggestion).toEqual({
+      weight: 105,
+      reps: 6,
+      reason: "increase_weight",
+    });
+  });
+
+  it("adds a single step at the top of the range when it felt hard", () => {
+    const suggestion = getProgressionSuggestion(bench, [setE(100, 10, "hard")]);
+
+    expect(suggestion).toEqual({
+      weight: 102.5,
+      reps: 6,
+      reason: "increase_weight",
+    });
+  });
+
+  it("holds reps inside the range when the set felt hard", () => {
+    // reps 8 is inside 6–10 → normally +1 rep; hard → maintain
+    const suggestion = getProgressionSuggestion(bench, [setE(100, 8, "hard")]);
+
+    expect(suggestion).toEqual({
+      weight: 100,
+      reps: 8,
+      reason: "maintain",
+    });
+  });
+
+  it("still adds a rep inside the range when it felt moderate", () => {
+    const suggestion = getProgressionSuggestion(
+      bench,
+      [setE(100, 8, "moderate")]
+    );
+
+    expect(suggestion).toEqual({
+      weight: 100,
+      reps: 9,
+      reason: "increase_reps",
+    });
+  });
+});
