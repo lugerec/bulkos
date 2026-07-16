@@ -2,9 +2,10 @@ import { create } from "zustand";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { db } from "@/config/firebase";
+import { toDateKey } from "@/lib/date";
 
 function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return toDateKey(new Date());
 }
 
 type HydrationState = {

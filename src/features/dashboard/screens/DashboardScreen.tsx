@@ -43,9 +43,10 @@ import {
   getWorkoutRecommendation,
 } from "@/features/workout/utils/workoutRecommendation";
 import type { MealType } from "@/store/appStore";
+import { toDateKey } from "@/lib/date";
 
 function getTodayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return toDateKey(new Date());
 }
 
 function getWeekStartKey() {
@@ -53,7 +54,7 @@ function getWeekStartKey() {
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   const monday = new Date(d.setDate(diff));
-  return monday.toISOString().slice(0, 10);
+  return toDateKey(monday);
 }
 
 function formatDuration(seconds: number) {
@@ -131,7 +132,7 @@ export default function DashboardScreen({
 
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const sevenDaysAgoKey = sevenDaysAgo.toISOString().slice(0, 10);
+  const sevenDaysAgoKey = toDateKey(sevenDaysAgo);
 
   const weekAgoEntry =
     sortedBodyEntries.find((entry) => entry.date >= sevenDaysAgoKey) ??
@@ -172,7 +173,7 @@ export default function DashboardScreen({
       : "Let's get more protein today.";
 
     const water = waterMl / 1000;
-    const todayKey = new Date().toISOString().slice(0, 10);
+    const todayKey = toDateKey(new Date());
     const trainedToday = workouts.some((w) => w.date === todayKey);
     const waterGoal = getWaterGoalLiters(
       latestBodyEntry?.weightKg ?? userProfile?.weight,

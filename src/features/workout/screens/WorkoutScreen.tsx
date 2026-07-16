@@ -18,6 +18,7 @@ import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
 import WarmupHint from "@/features/workout/components/WarmupHint";
 import type { WorkoutExercise } from "@/types/workout";
 import { findSetPRs, type PersonalRecord } from "@/features/workout/utils/pr";
+import { toDateKey } from "@/lib/date";
 
 const fmt = (s: number) =>
   `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60)
@@ -30,7 +31,7 @@ const fmt = (s: number) =>
     }
 
     function getTodayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return toDateKey(new Date());
 }
 
 type WorkoutComparison = {

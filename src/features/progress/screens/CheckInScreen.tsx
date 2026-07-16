@@ -5,6 +5,7 @@ import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { uploadProgressPhoto } from "@/services/progressPhotoService";
+import { toDateKey } from "@/lib/date";
 
 export default function CheckInScreen({ onBack }: { onBack: () => void }) {
   const [weight, setWeight] = useState("");
@@ -22,7 +23,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
   const addBodyMetrics = useBodyMetricsStore((s) => s.add);
   const loading = useBodyMetricsStore((s) => s.loading);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toDateKey(new Date());
 
   const toNumber = (value: string) => {
     const parsed = Number(value);

@@ -6,6 +6,7 @@ import type { FoodItem } from "@/types/food";
 import { useAuthStore } from "@/store/authStore";
 import { useAppStore } from "@/store/appStore";
 import { addFoodToMeal } from "@/services/logService";
+import { toDateKey } from "@/lib/date";
 
 type Props = {
   food: FoodItem;
@@ -22,7 +23,7 @@ const mealLabels = {
 } as const;
 
 function getTodayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return toDateKey(new Date());
 }
 
 export default function FoodDetailScreen({ food, onBack }: Props) {

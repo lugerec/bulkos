@@ -4,6 +4,7 @@ import type {
   WorkoutExercise,
   WorkoutTemplate,
 } from "@/types/workout";
+import { toDateKey } from "@/lib/date";
 
 /**
  * Structural input types.
@@ -487,10 +488,6 @@ function countConsecutiveTrainingDays(
   }
 
   return streak;
-}
-
-function toDateKey(date: Date): string {
-  return date.toISOString().slice(0, 10);
 }
 
 const DELOAD_MIN_LOADED_WEEKS = 3;

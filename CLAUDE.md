@@ -25,6 +25,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Known minor issues / follow-ups
 
+- Date bucketing must use `toDateKey`/`getTodayKey` from `src/lib/date.ts` (local calendar fields), never `toISOString().slice(0,10)` (UTC — rolls local midnight back a day in positive-offset zones like Central Europe, mis-bucketing "today", week starts, streaks, and daily logs). All 14 prior UTC uses were migrated. Tests in `date.test.ts`.
+
 (none open)
 
 ## Completed features

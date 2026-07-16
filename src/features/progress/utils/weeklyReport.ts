@@ -1,3 +1,4 @@
+import { toDateKey } from "@/lib/date";
 export type WeeklyReport = {
   /** Monday of the last completed week, YYYY-MM-DD */
   weekStart: string;
@@ -24,10 +25,6 @@ type ReportWeightEntry = {
 };
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-function toDateKey(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
 
 function getWeekStart(date: Date): Date {
   const monday = new Date(date);

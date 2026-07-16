@@ -1,3 +1,4 @@
+import { toDateKey } from "@/lib/date";
 export type WeekAdherence = {
   /** Monday of that week, YYYY-MM-DD */
   weekStart: string;
@@ -21,10 +22,6 @@ export type FrequencyAdherence = {
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const RECENT_WEEKS = 4;
-
-function toDateKey(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
 
 /** Monday 00:00 of the week containing `date`. */
 function getWeekStart(date: Date): Date {

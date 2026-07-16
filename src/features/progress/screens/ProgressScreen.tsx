@@ -32,6 +32,7 @@ import { ProgressRing, SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import { toDateKey } from "@/lib/date";
 
 type StrengthPR = {
   lift: string;
@@ -102,7 +103,7 @@ function getWeekStartKey() {
   monday.setDate(diff);
   monday.setHours(0, 0, 0, 0);
 
-  return monday.toISOString().slice(0, 10);
+  return toDateKey(monday);
 }
 
 function formatTrainingTime(seconds: number) {
@@ -260,7 +261,7 @@ const averageWorkoutDuration =
     const date = new Date();
     date.setDate(date.getDate() - (6 - index));
   
-    const dateKey = date.toISOString().slice(0, 10);
+    const dateKey = toDateKey(date);
   
     const dayWorkouts = workouts.filter(
       (workout) => workout.date === dateKey

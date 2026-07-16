@@ -1,3 +1,4 @@
+import { toDateKey } from "@/lib/date";
 export type WorkoutStreak = {
   /** consecutive fully-hit weeks up to and including the current one */
   currentStreak: number;
@@ -21,10 +22,6 @@ function getWeekStart(date: Date): Date {
   monday.setHours(0, 0, 0, 0);
 
   return monday;
-}
-
-function toDateKey(date: Date): string {
-  return date.toISOString().slice(0, 10);
 }
 
 /** Distinct training days in the 7-day window starting at `weekStart`. */

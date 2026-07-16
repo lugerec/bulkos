@@ -8,6 +8,7 @@ import {
   } from "firebase/firestore";
   
   import { db } from "@/services/db";
+  import { toDateKey } from "@/lib/date";
   import type { MealType } from "@/store/appStore";
   import type { FoodItem, LoggedFood } from "@/types/food";
   
@@ -101,7 +102,7 @@ export async function getRecentFoodNames(
 
     date.setDate(date.getDate() - index);
 
-    return date.toISOString().slice(0, 10);
+    return toDateKey(date);
   });
 
   const meals = await Promise.all(

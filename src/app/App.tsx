@@ -99,6 +99,7 @@ import {
   Bar,
   Cell,
 } from "recharts";
+import { toDateKey } from "@/lib/date";
 
 // ─── Status Bar ────────────────────────────────────────────────────────────────
 
@@ -350,7 +351,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
       const totals = await Promise.all(
         days.map((day) =>
-          getDailyMacros(user.uid, day.toISOString().slice(0, 10))
+          getDailyMacros(user.uid, toDateKey(day))
         )
       );
 

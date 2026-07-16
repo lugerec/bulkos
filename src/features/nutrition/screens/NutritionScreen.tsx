@@ -12,6 +12,7 @@ import {
   SectionHeader,
 } from "@/shared/components";
 import NutritionMealCard from "@/features/nutrition/components/NutritionMealCard";
+import { toDateKey } from "@/lib/date";
 
 const meals: { id: MealType; label: string; time: string }[] = [
   { id: "breakfast", label: "Breakfast", time: "7:30 AM" },
@@ -23,7 +24,7 @@ const meals: { id: MealType; label: string; time: string }[] = [
 ];
 
 function getTodayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return toDateKey(new Date());
 }
 
 export default function NutritionScreen({

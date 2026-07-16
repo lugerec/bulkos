@@ -19,6 +19,7 @@ import {
   buildWorkoutsCsv,
   downloadTextFile,
 } from "@/lib/exportCsv";
+import { toDateKey } from "@/lib/date";
 
 export default function SettingsScreen({
   onNavigate,
@@ -43,7 +44,7 @@ export default function SettingsScreen({
     loadBodyMetrics(user.uid);
   }, [user, loadWorkouts, loadBodyMetrics]);
 
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = toDateKey(new Date());
 
   const handleExport = () => {
     downloadTextFile(
