@@ -3,6 +3,7 @@ import { getProgressionSuggestion } from "@/features/workout/utils/progression";
 
 import ExerciseDetailsSheet from "@/features/workout/components/ExerciseDetailsSheet";
 import SwapExerciseSheet from "@/features/workout/components/SwapExerciseSheet";
+import AddExerciseSheet from "@/features/workout/components/AddExerciseSheet";
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, Dumbbell, Timer, X, Repeat } from "lucide-react";
@@ -78,6 +79,7 @@ export default function WorkoutScreen() {
 
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [swapExerciseIdx, setSwapExerciseIdx] = useState<number | null>(null);
+  const [addingExercise, setAddingExercise] = useState(false);
 
   const exerciseHasPR = (exerciseId: string) => Boolean(prs[exerciseId]);
 
@@ -449,6 +451,27 @@ export default function WorkoutScreen() {
     });
 
     setSwapExerciseIdx(null);
+  };
+
+  const addExerciseToSession = (definitionId: string) => {
+    const definition = exerciseDefinitions.find((d) => d.id === definitionId);
+    if (!definition) return;
+
+    setExercises((current) => [
+      ...current,
+      {
+        id: definition.id,
+        exerciseId: definition.id,
+        name: definition.name,
+        sets: Array.from({ length: definition.defaultSets ?? 3 }, () => ({
+          weight: 0,
+          reps: definition.defaultReps ?? 0,
+          completed: false,
+        })),
+      },
+    ]);
+
+    setAddingExercise(false);
   };
 
   function applySuggested(
@@ -1221,6 +1244,18 @@ export default function WorkoutScreen() {
 
       <div className="px-5 mt-6">
         <button
+          onClick={() => setAddingExercise(true)}
+          className="w-full py-3 rounded-[20px] font-semibold text-sm mb-3"
+          style={{
+            background: "transparent",
+            border: `1px dashed ${C.border}`,
+            color: C.fg2,
+          }}
+        >
+          + Add exercise
+        </button>
+
+        <button
           onClick={handleFinishWorkout}
           disabled={saving}
           className="w-full py-4 rounded-[20px] font-bold text-base"
@@ -1238,6 +1273,13 @@ export default function WorkoutScreen() {
       <ExerciseDetailsSheet
         exerciseId={selectedExerciseId}
         onClose={() => setSelectedExerciseId(null)}
+      />
+
+      <AddExerciseSheet
+        open={addingExercise}
+        existingIds={exercises.map((e) => e.exerciseId ?? e.id)}
+        onClose={() => setAddingExercise(false)}
+        onSelect={addExerciseToSession}
       />
 
       <SwapExerciseSheet

@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Add exercise mid-workout: a "+ Add exercise" button before Finish opens `AddExerciseSheet` (searchable full exercise list, flags ones already in the session), appending a new exercise with its default set count — for extra work not in the template.
+
 - Session effort summary: the Workout Complete screen shows an overall "how it felt" card (Felt easy / Solid effort / Tough session) derived from per-set effort ratings via `getSessionEffort` (utils/sessionEffort.ts) — counts completed+rated sets, picks the most frequent rating, tie-breaks toward harder. Gives the RPE ratings meaning at the session level. Tested.
 
 - Target rep range on each exercise during a workout: `WorkoutScreen` shows "Target N–M reps" under the exercise name, from `progression.minReps/maxReps` (falls back to `defaultReps`), so you know when to add weight. Display-only.
