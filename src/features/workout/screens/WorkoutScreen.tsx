@@ -6,7 +6,7 @@ import SwapExerciseSheet from "@/features/workout/components/SwapExerciseSheet";
 import AddExerciseSheet from "@/features/workout/components/AddExerciseSheet";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Dumbbell, Timer, X, Repeat } from "lucide-react";
+import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
@@ -80,6 +80,7 @@ export default function WorkoutScreen() {
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [swapExerciseIdx, setSwapExerciseIdx] = useState<number | null>(null);
   const [addingExercise, setAddingExercise] = useState(false);
+  const [notesOpen, setNotesOpen] = useState<Set<number>>(new Set());
 
   const exerciseHasPR = (exerciseId: string) => Boolean(prs[exerciseId]);
 
@@ -472,6 +473,23 @@ export default function WorkoutScreen() {
     ]);
 
     setAddingExercise(false);
+  };
+
+  const updateNote = (exIdx: number, value: string) => {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) =>
+        exerciseIndex === exIdx ? { ...exercise, notes: value } : exercise
+      )
+    );
+  };
+
+  const toggleNote = (exIdx: number) => {
+    setNotesOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(exIdx)) next.delete(exIdx);
+      else next.add(exIdx);
+      return next;
+    });
   };
 
   function applySuggested(
@@ -1052,6 +1070,19 @@ export default function WorkoutScreen() {
                     >
                       <Repeat size={12} />
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleNote(exIdx)}
+                      aria-label="Exercise note"
+                      className="flex items-center justify-center w-6 h-6 rounded-full"
+                      style={{
+                        background: ex.notes ? C.accentDim : C.card2,
+                        color: ex.notes ? C.accent : C.fg3,
+                      }}
+                    >
+                      <StickyNote size={12} />
+                    </button>
                   </div>
 
                   {(() => {
@@ -1155,6 +1186,30 @@ export default function WorkoutScreen() {
                   {exerciseVolume.toLocaleString()} kg
                 </p>
               </div>
+
+              {notesOpen.has(exIdx) && (
+                <textarea
+                  value={ex.notes ?? ""}
+                  onChange={(e) => updateNote(exIdx, e.target.value)}
+                  placeholder="Note for this exercise (e.g. grip, form cue, how it felt)…"
+                  rows={2}
+                  className="w-full rounded-[14px] px-3 py-2 mb-3 text-sm outline-none resize-none"
+                  style={{
+                    background: C.card2,
+                    border: `1px solid ${C.border}`,
+                    color: C.fg,
+                  }}
+                />
+              )}
+
+              {!notesOpen.has(exIdx) && ex.notes && (
+                <p
+                  className="text-[11px] mb-3 px-1 italic"
+                  style={{ color: C.fg2 }}
+                >
+                  “{ex.notes}”
+                </p>
+              )}
 
               <WarmupHint
                 workingWeight={Math.max(
