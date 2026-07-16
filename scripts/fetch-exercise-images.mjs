@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 /**
  * Downloads exercise images from the wger open database (CC-BY-SA) into
- * public/exercises/<exercise-id>/ and patches src/data/exercises/*.ts with
- * the local media paths, plus writes an attribution file.
+ * public/exercises/<exercise-id>/ and writes src/data/exerciseMedia.json
+ * mapping our exercise ids to the saved local paths, plus an attribution
+ * file.
  *
- * wger has no CORS and its images can't be fetched from the browser, so we
- * pull them once here at build time and serve them locally.
+ * wger has no usable search endpoint anymore, so we pull the full english
+ * translation list (name -> base id) and the full image list (base id ->
+ * image url) once, then match our exercises by name locally. wger images
+ * can't be fetched from the browser (no CORS), which is why this runs here.
  *
- * Run from the repo root:  node scripts/fetch-exercise-images.mjs
- * Node 18+ (uses global fetch). Safe to re-run — skips files already saved.
+ * Run from the repo root:  npm run fetch-images
+ * Node 18+ (global fetch). Safe to re-run — skips files already saved.
  */
 
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,68 +24,39 @@ const ROOT = join(__dirname, "..");
 const EXERCISE_DIR = join(ROOT, "src", "data", "exercises");
 const PUBLIC_DIR = join(ROOT, "public", "exercises");
 const WGER = "https://wger.de";
+const ENGLISH = 2;
 
-/** Expand short forms so names match wger's full exercise titles. */
-function expandName(name) {
+/** Fetch every page of a paginated wger list endpoint. */
+async function fetchAll(path) {
+  let url = `${WGER}${path}${path.includes("?") ? "&" : "?"}limit=200&format=json`;
+  const all = [];
+
+  while (url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`${res.status} for ${url}`);
+    const data = await res.json();
+    all.push(...(data.results ?? []));
+    url = data.next;
+    process.stdout.write(`\r  fetched ${all.length}…   `);
+  }
+  process.stdout.write("\n");
+  return all;
+}
+
+/** Normalise a name for fuzzy matching. */
+function norm(name) {
   return name
-    .replace(/\bDB\b/g, "Dumbbell")
-    .replace(/\bBB\b/g, "Barbell")
-    .replace(/\bOHP\b/g, "Overhead Press")
-    .replace(/\bRDL\b/g, "Romanian Deadlift")
+    .toLowerCase()
+    .replace(/\bdb\b/g, "dumbbell")
+    .replace(/\bbb\b/g, "barbell")
+    .replace(/\bohp\b/g, "overhead press")
+    .replace(/\brdl\b/g, "romanian deadlift")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
-/** Candidate search terms for one exercise name, most specific first. */
-function searchTerms(name) {
-  const full = expandName(name);
-  const terms = new Set([full, name]);
-
-  // Also try without leading equipment word (e.g. "Barbell Row" -> "Row").
-  const withoutEquip = full.replace(
-    /^(Barbell|Dumbbell|Cable|Machine|Smith Machine|Seated|Standing|Incline|Decline)\s+/i,
-    ""
-  );
-  terms.add(withoutEquip);
-
-  return [...terms].filter(Boolean);
-}
-
-async function searchExercise(term) {
-  const url = `${WGER}/api/v2/exercise/search/?language=english&format=json&term=${encodeURIComponent(
-    term
-  )}`;
-
-  const res = await fetch(url);
-  if (!res.ok) return [];
-
-  const data = await res.json();
-  return data.suggestions ?? [];
-}
-
-/** Fetch image URLs for a wger base exercise id. */
-async function imagesForBase(baseId) {
-  const url = `${WGER}/api/v2/exerciseimage/?exercise_base=${baseId}&format=json`;
-  const res = await fetch(url);
-  if (!res.ok) return [];
-
-  const data = await res.json();
-  return (data.results ?? []).map((r) => r.image).filter(Boolean);
-}
-
-async function downloadImage(url, destPath) {
-  if (existsSync(destPath)) return true;
-
-  const res = await fetch(url);
-  if (!res.ok) return false;
-
-  const buffer = Buffer.from(await res.arrayBuffer());
-  await writeFile(destPath, buffer);
-  return true;
-}
-
-async function getExerciseList() {
-  // Parse id + name pairs straight from the source files.
-  const { readdir } = await import("node:fs/promises");
+async function getOurExercises() {
   const files = (await readdir(EXERCISE_DIR)).filter(
     (f) => f.endsWith(".ts") && f !== "index.ts"
   );
@@ -90,89 +64,118 @@ async function getExerciseList() {
   const exercises = [];
   for (const file of files) {
     const content = await readFile(join(EXERCISE_DIR, file), "utf8");
-    const regex =
-      /id:\s*"([^"]+)"[\s\S]*?name:\s*"([^"]+)"/g;
-    let match;
-    while ((match = regex.exec(content))) {
-      exercises.push({ id: match[1], name: match[2], file });
+    const regex = /id:\s*"([^"]+)"[\s\S]*?name:\s*"([^"]+)"/g;
+    let m;
+    while ((m = regex.exec(content))) {
+      exercises.push({ id: m[1], name: m[2] });
     }
   }
   return exercises;
 }
 
+async function downloadImage(url, destPath) {
+  if (existsSync(destPath)) return true;
+  const res = await fetch(url);
+  if (!res.ok) return false;
+  await writeFile(destPath, Buffer.from(await res.arrayBuffer()));
+  return true;
+}
+
 async function main() {
-  const exercises = await getExerciseList();
-  console.log(`Found ${exercises.length} exercises. Matching against wger…\n`);
+  const ours = await getOurExercises();
+  console.log(`Found ${ours.length} local exercises.\n`);
+
+  console.log("Fetching wger english translations…");
+  const translations = await fetchAll(
+    `/api/v2/exercise-translation/?language=${ENGLISH}`
+  );
+
+  console.log("Fetching wger images…");
+  const images = await fetchAll(`/api/v2/exerciseimage/`);
+
+  // base id -> [image urls], main image first
+  const imagesByBase = new Map();
+  for (const img of images) {
+    const base = img.exercise;
+    if (!base || !img.image) continue;
+    if (!imagesByBase.has(base)) imagesByBase.set(base, []);
+    if (img.is_main) imagesByBase.get(base).unshift(img.image);
+    else imagesByBase.get(base).push(img.image);
+  }
+
+  // normalised name -> base id (only bases that actually have images)
+  const baseByName = new Map();
+  for (const t of translations) {
+    if (!t.name || !t.exercise) continue;
+    if (!imagesByBase.has(t.exercise)) continue;
+    const key = norm(t.name);
+    if (!baseByName.has(key)) baseByName.set(key, t.exercise);
+  }
+
+  console.log(
+    `\n${imagesByBase.size} wger exercises have images. Matching…\n`
+  );
 
   const attribution = [
     "# Exercise image attributions",
     "",
-    "Images are from the wger project (https://wger.de), licensed under",
-    "Creative Commons Attribution-ShareAlike 3.0 (CC-BY-SA 3.0).",
+    "Images from the wger project (https://wger.de), licensed CC-BY-SA 3.0.",
     "",
   ];
-
+  const mediaMap = {};
   let matched = 0;
   let downloaded = 0;
-  const mediaMap = {};
 
-  for (const exercise of exercises) {
-    let baseId = null;
+  for (const ex of ours) {
+    const key = norm(ex.name);
 
-    for (const term of searchTerms(exercise.name)) {
-      const suggestions = await searchExercise(term);
-      const hit = suggestions.find((s) => s.data?.base_id);
-      if (hit) {
-        baseId = hit.data.base_id;
-        break;
+    // exact, then contains-match either direction
+    let base = baseByName.get(key);
+    if (!base) {
+      for (const [name, id] of baseByName) {
+        if (name.includes(key) || key.includes(name)) {
+          base = id;
+          break;
+        }
       }
     }
-
-    if (!baseId) {
-      console.log(`✗ ${exercise.name} — no wger match`);
+    if (!base) {
+      console.log(`✗ ${ex.name} — no match`);
       continue;
     }
 
-    const images = await imagesForBase(baseId);
-    if (images.length === 0) {
-      console.log(`○ ${exercise.name} — matched but no images`);
+    const urls = imagesByBase.get(base) ?? [];
+    if (urls.length === 0) {
+      console.log(`○ ${ex.name} — matched but no images`);
       continue;
     }
 
     matched++;
-    const destDir = join(PUBLIC_DIR, exercise.id);
+    const destDir = join(PUBLIC_DIR, ex.id);
     await mkdir(destDir, { recursive: true });
 
     const saved = {};
-    for (let i = 0; i < Math.min(images.length, 2); i++) {
-      const ext = images[i].split(".").pop().split("?")[0] || "png";
-      const slot = i === 0 ? "start" : "finish";
-      const filename = `${slot}.${ext}`;
-      const ok = await downloadImage(images[i], join(destDir, filename));
-      if (ok) {
-        saved[slot] = `/exercises/${exercise.id}/${filename}`;
+    const slots = ["start", "finish"];
+    for (let i = 0; i < Math.min(urls.length, 2); i++) {
+      const ext = (urls[i].split(".").pop() || "png").split("?")[0];
+      const filename = `${slots[i]}.${ext}`;
+      if (await downloadImage(urls[i], join(destDir, filename))) {
+        saved[slots[i]] = `/exercises/${ex.id}/${filename}`;
         downloaded++;
       }
     }
 
-    if (Object.keys(saved).length > 0) {
-      mediaMap[exercise.id] = saved;
-      console.log(`✓ ${exercise.name} — ${Object.keys(saved).length} image(s)`);
-      attribution.push(
-        `- ${exercise.name}: wger base #${baseId} (${
-          Object.keys(saved).length
-        } image(s))`
-      );
+    if (Object.keys(saved).length) {
+      mediaMap[ex.id] = saved;
+      console.log(`✓ ${ex.name} — ${Object.keys(saved).length} image(s)`);
+      attribution.push(`- ${ex.name}: wger base #${base}`);
     }
   }
 
-  // A JSON map keyed by exercise id — merged over each exercise's own media
-  // at runtime, so we never rewrite the exercise source files.
   await writeFile(
     join(ROOT, "src", "data", "exerciseMedia.json"),
     JSON.stringify(mediaMap, null, 2) + "\n"
   );
-
   await writeFile(
     join(ROOT, "EXERCISE_IMAGE_ATTRIBUTION.md"),
     attribution.join("\n") + "\n"
@@ -181,12 +184,10 @@ async function main() {
   console.log(
     `\nDone. Matched ${matched} exercises, downloaded ${downloaded} images.`
   );
-  console.log("Images in public/exercises/<id>/, map in src/data/exerciseMedia.json.");
-  console.log("The app merges this map automatically — no further steps.");
-  console.log("Attribution written to EXERCISE_IMAGE_ATTRIBUTION.md");
+  console.log("Map: src/data/exerciseMedia.json — the app picks it up automatically.");
 }
 
 main().catch((err) => {
-  console.error("Failed:", err);
+  console.error("\nFailed:", err.message);
   process.exit(1);
 });
