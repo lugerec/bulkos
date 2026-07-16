@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Session effort summary: the Workout Complete screen shows an overall "how it felt" card (Felt easy / Solid effort / Tough session) derived from per-set effort ratings via `getSessionEffort` (utils/sessionEffort.ts) — counts completed+rated sets, picks the most frequent rating, tie-breaks toward harder. Gives the RPE ratings meaning at the session level. Tested.
+
 - Target rep range on each exercise during a workout: `WorkoutScreen` shows "Target N–M reps" under the exercise name, from `progression.minReps/maxReps` (falls back to `defaultReps`), so you know when to add weight. Display-only.
 
 - Per-set effort rating (RPE-lite): after completing a set, `WorkoutSetRow` shows Easy/OK/Hard buttons writing `effort` onto the `WorkoutSet` (tapping the active one clears it; saved into history via the existing `...set` spread). `getProgressionSuggestion` is now effort-aware: a top-of-range set flagged "easy" jumps two weight steps instead of one, and a hard set inside the rep range holds reps instead of adding one. Default behaviour unchanged when no effort is set (existing tests still pass; new cases in progression.test.ts).

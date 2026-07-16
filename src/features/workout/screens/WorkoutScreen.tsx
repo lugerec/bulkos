@@ -16,6 +16,10 @@ import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
 import { notifyRestComplete, adjustRest } from "@/features/workout/utils/restNotify";
+import {
+  getSessionEffort,
+  describeSessionEffort,
+} from "@/features/workout/utils/sessionEffort";
 import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
 import WarmupHint from "@/features/workout/components/WarmupHint";
 import type { WorkoutExercise, SetEffort } from "@/types/workout";
@@ -626,6 +630,8 @@ export default function WorkoutScreen() {
   };
 
   if (done) {
+    const sessionEffort = getSessionEffort(exercises);
+
     return (
       <div
         className="flex flex-col items-center justify-center px-8 text-center"
@@ -685,6 +691,33 @@ export default function WorkoutScreen() {
           ))}
         </div>
   
+        {sessionEffort.overall && (
+          <div
+            className="w-full rounded-[20px] p-4 mb-5 flex items-center gap-3"
+            style={{ background: C.card, border: `1px solid ${C.border}` }}
+          >
+            <span className="text-2xl">
+              {describeSessionEffort(sessionEffort.overall).emoji}
+            </span>
+            <div className="text-left flex-1">
+              <p className="text-sm font-bold" style={{ color: C.fg }}>
+                {describeSessionEffort(sessionEffort.overall).label}
+              </p>
+              <p className="text-[11px] mt-0.5" style={{ color: C.fg3 }}>
+                {sessionEffort.counts.easy > 0 &&
+                  `${sessionEffort.counts.easy} easy · `}
+                {sessionEffort.counts.moderate > 0 &&
+                  `${sessionEffort.counts.moderate} ok · `}
+                {sessionEffort.counts.hard > 0 &&
+                  `${sessionEffort.counts.hard} hard`}
+                {" "}
+                across {sessionEffort.rated} rated set
+                {sessionEffort.rated > 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+        )}
+
         {prList.length > 0 && (
           <div
             className="w-full rounded-[20px] p-4 mb-5 text-left"
