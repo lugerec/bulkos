@@ -141,7 +141,7 @@ function Section({
 }>) {
   return (
     <div
-      className="mt-8 rounded-[18px] p-4"
+      className="mt-8 rounded-[20px] p-4"
       style={{
         background: C.card,
         border: `1px solid ${C.border}`,

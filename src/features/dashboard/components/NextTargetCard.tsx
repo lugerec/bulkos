@@ -34,7 +34,7 @@ export default function NextTargetCard() {
 
   return (
     <div
-      className="rounded-[24px] p-5 mb-5"
+      className="rounded-[20px] p-5 mb-5"
       style={{
         background:
           "linear-gradient(135deg, rgba(163,230,53,0.12), rgba(96,165,250,0.08))",

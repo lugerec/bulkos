@@ -451,7 +451,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Calorie chart */}
-        <div className="rounded-[22px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex justify-between items-center mb-4">
             <div>
               <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: C.fg2 }}>
@@ -489,7 +489,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
         {/* Macro adherence */}
         {macroAdherence && (
-          <div className="rounded-[22px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
             <SectionHeader title="Macro Adherence" />
             <div className="flex flex-col gap-4">
               {macroAdherence.map(({ label, percent }, index) => {
@@ -516,7 +516,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
         {/* Coach insight */}
         <div
-          className="rounded-[22px] p-5"
+          className="rounded-[20px] p-5"
           style={{
             background: "linear-gradient(135deg, rgba(163,230,53,0.07) 0%, rgba(96,165,250,0.07) 100%)",
             border: "1px solid rgba(163,230,53,0.18)",

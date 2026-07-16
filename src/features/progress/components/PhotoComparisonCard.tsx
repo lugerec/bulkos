@@ -84,7 +84,7 @@ export default function PhotoComparisonCard({ entries }: Props) {
         </select>
 
         <div
-          className="rounded-[16px] overflow-hidden"
+          className="rounded-[14px] overflow-hidden"
           style={{
             height: 220,
             background: C.card2,
@@ -121,7 +121,7 @@ export default function PhotoComparisonCard({ entries }: Props) {
       <SectionHeader title="Photo Comparison" />
 
       <div
-        className="rounded-[22px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between mb-3">

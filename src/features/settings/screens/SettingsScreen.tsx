@@ -221,7 +221,7 @@ export default function SettingsScreen({
 
       <button
         onClick={handleExport}
-        className="w-full py-4 rounded-[18px] font-semibold text-sm flex items-center justify-center gap-2 mb-3"
+        className="w-full py-4 rounded-[20px] font-semibold text-sm flex items-center justify-center gap-2 mb-3"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -234,7 +234,7 @@ export default function SettingsScreen({
 
       <button
         onClick={logout}
-        className="w-full py-4 rounded-[18px] font-semibold text-sm mb-3"
+        className="w-full py-4 rounded-[20px] font-semibold text-sm mb-3"
         style={{
           background: "rgba(255,76,76,0.08)",
           border: `1px solid rgba(255,76,76,0.25)`,

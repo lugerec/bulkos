@@ -177,7 +177,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
 
             {thumbnail ? (
             <div
-              className="mt-5 rounded-[18px] overflow-hidden"
+              className="mt-5 rounded-[20px] overflow-hidden"
               style={{
                 border: `1px solid ${C.border}`,
                 background: C.card,
@@ -191,7 +191,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
             </div>
           ) : (
             <div
-              className="mt-5 h-56 rounded-[18px] flex items-center justify-center"
+              className="mt-5 h-56 rounded-[20px] flex items-center justify-center"
               style={{
                 background: C.card,
                 border: `1px solid ${C.border}`,
@@ -263,7 +263,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
         </div>
 
         <div
-          className="rounded-[22px] p-5 mb-5 flex items-center justify-center"
+          className="rounded-[20px] p-5 mb-5 flex items-center justify-center"
           style={{
             background:
               "linear-gradient(135deg, rgba(163,230,53,0.10), rgba(96,165,250,0.08))",
@@ -444,7 +444,7 @@ function Section({
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div
-      className="rounded-[16px] p-3 text-center"
+      className="rounded-[14px] p-3 text-center"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <p className="text-lg font-bold" style={{ color: C.fg }}>
@@ -482,7 +482,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="rounded-[16px] p-3"
+      className="rounded-[14px] p-3"
       style={{ background: C.card2, border: `1px solid ${C.border}` }}
     >
       <div className="flex items-center gap-2 mb-1">

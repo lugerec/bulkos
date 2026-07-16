@@ -78,7 +78,7 @@ export default function FoodDatabaseScreen() {
       </p>
 
       <div
-        className="flex items-center gap-3 px-4 py-3 rounded-[16px] mb-5"
+        className="flex items-center gap-3 px-4 py-3 rounded-[14px] mb-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <Search size={16} color={C.fg3} />

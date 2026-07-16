@@ -402,7 +402,7 @@ const averageWorkoutDuration =
           return (
             <div
               key={label}
-              className="rounded-[18px] p-4"
+              className="rounded-[20px] p-4"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <p className="text-[11px] mb-2" style={{ color: C.fg2 }}>
@@ -447,7 +447,7 @@ const averageWorkoutDuration =
       </div>
 
       <div
-        className="rounded-[22px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between">
@@ -593,7 +593,7 @@ const averageWorkoutDuration =
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div
-      className="rounded-[18px] p-4"
+      className="rounded-[20px] p-4"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <p className="text-[11px] mb-2" style={{ color: C.fg2 }}>
@@ -616,7 +616,7 @@ function ProgressPhoto({
 }) {
   return (
     <div
-      className="rounded-[18px] overflow-hidden"
+      className="rounded-[20px] overflow-hidden"
       style={{
         background: C.card,
         border: `1px solid ${C.border}`,

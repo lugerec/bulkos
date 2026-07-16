@@ -564,7 +564,7 @@ export default function WorkoutScreen() {
           ].map(({ label, val }) => (
             <div
               key={label}
-              className="rounded-[16px] p-3 text-center"
+              className="rounded-[14px] p-3 text-center"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <p className="text-lg font-bold" style={{ color: C.accent }}>
@@ -579,7 +579,7 @@ export default function WorkoutScreen() {
   
         {prList.length > 0 && (
           <div
-            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            className="w-full rounded-[20px] p-4 mb-5 text-left"
             style={{
               background: "rgba(163,230,53,0.07)",
               border: "1px solid rgba(163,230,53,0.2)",
@@ -607,7 +607,7 @@ export default function WorkoutScreen() {
 
         {strongestSet && (
           <div
-            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            className="w-full rounded-[20px] p-4 mb-5 text-left"
             style={{
               background: C.card,
               border: `1px solid ${C.border}`,
@@ -638,7 +638,7 @@ export default function WorkoutScreen() {
   
         {comparison && (
           <div
-            className="w-full rounded-[20px] p-4 mb-6 text-left"
+            className="w-full rounded-[20px] p-4 mb-5 text-left"
             style={{
               background: C.card,
               border: `1px solid ${C.border}`,
@@ -677,7 +677,7 @@ export default function WorkoutScreen() {
             setElapsed(0);
             setPrs({});
           }}
-          className="w-full py-4 rounded-[18px] font-semibold"
+          className="w-full py-4 rounded-[20px] font-semibold"
           style={{
             background: C.card,
             border: `1px solid ${C.border}`,
@@ -765,7 +765,7 @@ export default function WorkoutScreen() {
 
       {isResting && (
         <div
-          className="mx-5 mb-4 rounded-[18px] p-4 flex items-center gap-4"
+          className="mx-5 mb-4 rounded-[20px] p-4 flex items-center gap-4"
           style={{
             background: "rgba(163,230,53,0.07)",
             border: "1px solid rgba(163,230,53,0.2)",
@@ -984,7 +984,7 @@ export default function WorkoutScreen() {
         <button
           onClick={handleFinishWorkout}
           disabled={saving}
-          className="w-full py-4 rounded-[18px] font-bold text-base"
+          className="w-full py-4 rounded-[20px] font-bold text-base"
           style={{
             background: C.accent,
             color: C.bg,

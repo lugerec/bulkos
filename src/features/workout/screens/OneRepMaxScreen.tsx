@@ -63,7 +63,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
 
       <div className="px-5">
         <div
-          className="rounded-[22px] p-4 mb-5"
+          className="rounded-[20px] p-4 mb-5"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <div className="flex gap-3 mb-4">
@@ -73,7 +73,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
 
           {estimate ? (
             <div
-              className="rounded-[16px] p-4 text-center"
+              className="rounded-[14px] p-4 text-center"
               style={{ background: C.accentDim }}
             >
               <div className="flex items-center justify-center gap-2 mb-1">
@@ -111,7 +111,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
 
         {repTargets.length > 0 && (
           <div
-            className="rounded-[22px] overflow-hidden"
+            className="rounded-[20px] overflow-hidden"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
             <div

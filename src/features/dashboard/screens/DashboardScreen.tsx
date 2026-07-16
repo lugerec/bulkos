@@ -289,7 +289,7 @@ export default function DashboardScreen({
       />
 
       <div
-        className="rounded-[26px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-5"
         style={{
           background:
             "linear-gradient(135deg, rgba(163,230,53,0.16), rgba(96,165,250,0.08))",
@@ -391,7 +391,7 @@ export default function DashboardScreen({
         ].map(({ label, remaining, unit, color, pct }) => (
           <div
             key={label}
-            className="rounded-[18px] p-4"
+            className="rounded-[20px] p-4"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
             <div className="flex justify-between items-start mb-3">
@@ -418,7 +418,7 @@ export default function DashboardScreen({
       </div>
 
       <div
-        className="rounded-[22px] p-4 mb-5 flex items-center gap-5"
+        className="rounded-[20px] p-4 mb-5 flex items-center gap-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <ProgressRing
@@ -561,7 +561,7 @@ export default function DashboardScreen({
       <SectionHeader title="Hydration" />
 
       <div
-        className="rounded-[20px] p-4 mb-6"
+        className="rounded-[20px] p-4 mb-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between mb-2.5">
@@ -630,7 +630,7 @@ export default function DashboardScreen({
 
       <button
         onClick={() => onNavigate("workout")}
-        className="w-full py-4 rounded-[18px] font-bold text-base"
+        className="w-full py-4 rounded-[20px] font-bold text-base"
         style={{
           background: C.accent,
           color: C.bg,
@@ -646,7 +646,7 @@ export default function DashboardScreen({
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
     <div
-      className="rounded-[18px] p-4"
+      className="rounded-[20px] p-4"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>

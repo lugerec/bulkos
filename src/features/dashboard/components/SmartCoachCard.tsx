@@ -13,7 +13,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
 
   return (
     <div
-      className="rounded-[24px] p-5 mb-5"
+      className="rounded-[20px] p-5 mb-5"
       style={{
         background: isRecovery
           ? "linear-gradient(135deg, rgba(96,165,250,0.14), rgba(192,132,252,0.08))"
@@ -96,7 +96,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
       {!isRecovery && (
         <button
           onClick={onStart}
-          className="w-full py-3 rounded-[16px] text-sm font-bold flex items-center justify-center gap-1.5"
+          className="w-full py-3 rounded-[14px] text-sm font-bold flex items-center justify-center gap-1.5"
           style={{
             background: C.accent,
             color: C.bg,

@@ -81,7 +81,7 @@ export default function NutritionScreen({
       </div>
 
       <div
-        className="mx-5 mb-5 rounded-[22px] p-5"
+        className="mx-5 mb-5 rounded-[20px] p-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-start justify-between mb-5">

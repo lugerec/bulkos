@@ -95,7 +95,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </button>
 
       <div
-        className="rounded-[28px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-5"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -160,7 +160,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </div>
 
       <div
-        className="rounded-[28px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-5"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -182,7 +182,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </div>
 
       <div
-        className="rounded-[28px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-5"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -244,7 +244,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </div>
 
       <div
-        className="rounded-[28px] p-5 mb-6"
+        className="rounded-[20px] p-5 mb-5"
         style={{
           background:
             "linear-gradient(135deg, rgba(163,230,53,0.08), rgba(96,165,250,0.06))",
@@ -288,7 +288,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
 
       {error && (
         <div
-          className="rounded-[16px] px-4 py-3 mb-3"
+          className="rounded-[14px] px-4 py-3 mb-3"
           style={{
             background: "rgba(255,77,77,0.08)",
             border: "1px solid rgba(255,77,77,0.25)",
@@ -304,7 +304,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         type="button"
         onClick={handleAddFood}
         disabled={!user || saving}
-        className="w-full py-4 rounded-[18px] font-bold text-base"
+        className="w-full py-4 rounded-[20px] font-bold text-base"
         style={{
           background: C.accent,
           color: C.bg,

@@ -38,7 +38,7 @@ export default function MuscleBalanceCard({ balances }: Props) {
       <SectionHeader title="Muscle Balance" />
 
       <div
-        className="rounded-[22px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center gap-2 mb-4">
