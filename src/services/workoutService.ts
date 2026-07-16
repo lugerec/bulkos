@@ -1,13 +1,14 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 import { db } from "@/services/db";
-import type { WorkoutExercise } from "@/types/workout";
+import type { WorkoutExercise, SetEffort } from "@/types/workout";
 
 type LoggedWorkoutExercise = WorkoutExercise & {
   sets: {
     reps: number;
     weight: number;
     completed: boolean;
+    effort?: SetEffort;
   }[];
 };
 

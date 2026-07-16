@@ -7,11 +7,13 @@ import {
 } from "firebase/firestore";
 
 import { db } from "@/services/db";
+import type { SetEffort } from "@/types/workout";
 
 export type LoggedWorkoutSet = {
   reps: number;
   weight: number;
   completed: boolean;
+  effort?: SetEffort;
 };
 
 export type LoggedWorkoutExercise = {

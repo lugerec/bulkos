@@ -81,6 +81,15 @@ export default function WorkoutDetailScreen({
                   {completedSets.length}/{exercise.sets.length} sets ·{" "}
                   {exerciseVolume.toLocaleString()} kg volume
                 </p>
+
+                {exercise.notes && (
+                  <p
+                    className="text-[11px] mt-2 italic"
+                    style={{ color: C.fg2 }}
+                  >
+                    “{exercise.notes}”
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">
@@ -98,9 +107,32 @@ export default function WorkoutDetailScreen({
                       Set {index + 1}
                     </span>
 
-                    <span className="text-sm font-bold" style={{ color: C.fg }}>
-                      {set.weight} kg × {set.reps}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {set.effort && (
+                        <span
+                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize"
+                          style={{
+                            background: C.card,
+                            border: `1px solid ${C.border}`,
+                            color:
+                              set.effort === "hard"
+                                ? C.amber
+                                : set.effort === "easy"
+                                ? C.blue
+                                : C.accent,
+                          }}
+                        >
+                          {set.effort === "moderate" ? "ok" : set.effort}
+                        </span>
+                      )}
+
+                      <span
+                        className="text-sm font-bold"
+                        style={{ color: C.fg }}
+                      >
+                        {set.weight} kg × {set.reps}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
