@@ -1,12 +1,14 @@
 import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
 import MuscleSetTargetCard from "../components/MuscleSetTargetCard";
+import MuscleBalanceCard from "../components/MuscleBalanceCard";
 import StallingLiftsCard from "../components/StallingLiftsCard";
 import StrengthStandardsCard from "../components/StrengthStandardsCard";
 import WeeklyReportCard from "../components/WeeklyReportCard";
 import PhotoComparisonCard from "../components/PhotoComparisonCard";
 import { getMuscleVolume } from "../utils/muscleVolume";
 import { getWeeklyReport } from "../utils/weeklyReport";
+import { getMuscleBalance } from "../utils/muscleBalance";
 import { getStrengthStandards } from "../utils/strengthStandards";
 import { detectPlateaus } from "@/features/workout/utils/plateauDetection";
 import {
@@ -219,6 +221,7 @@ const workoutsPreviousWeek = workouts.filter(
 const weeklyMuscleVolume = getMuscleVolume(workoutsThisWeek, currentWeight);
 const muscleRecovery = getMuscleRecoveryOverview(workouts);
 const muscleSetTargets = getMuscleSetTargetOverview(workouts);
+const muscleBalance = getMuscleBalance(muscleSetTargets);
 const plateaus = detectPlateaus(workouts);
 const strengthStandards =
   currentWeight && userDoc?.profile?.sex
@@ -371,6 +374,7 @@ const averageWorkoutDuration =
       <MuscleVolumeCard data={weeklyMuscleVolume} />
       <MuscleRecoveryCard data={muscleRecovery} workouts={workouts} />
       <MuscleSetTargetCard data={muscleSetTargets} />
+      <MuscleBalanceCard balances={muscleBalance} />
       <StallingLiftsCard plateaus={plateaus} />
       <StrengthStandardsCard standards={strengthStandards} />
 
