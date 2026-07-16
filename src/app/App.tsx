@@ -2,6 +2,7 @@ import TemplateEditorScreen from "@/features/workout/screens/TemplateEditorScree
 import TemplateBuilderScreen from "@/features/workout/screens/TemplateBuilderScreen";
 import CheckInScreen from "@/features/progress/screens/CheckInScreen";
 import ExerciseHistoryScreen from "@/features/workout/screens/ExerciseHistoryScreen";
+import ExerciseDetailScreen from "@/features/workout/screens/ExerciseDetailScreen";
 import WorkoutDetailScreen from "@/features/workout/screens/WorkoutDetailScreen";
 import WorkoutHistoryScreen from "@/features/workout/screens/WorkoutHistoryScreen";
 import SettingsScreen from "@/features/settings/screens/SettingsScreen";
@@ -978,6 +979,9 @@ export default function App() {
           {screen === "analytics" && <AnalyticsScreen onBack={() => navigate("settings")} />}
           {screen === "grocery" && <GroceryListScreen onBack={() => navigate("settings")} />}
           {screen === "one-rep-max" && <OneRepMaxScreen onBack={() => navigate("settings")} />}
+          {screen === "exercise-detail" && (
+            <ExerciseDetailScreen onBack={goBack} />
+          )}
           {screen === "settings" && <SettingsScreen onNavigate={navigate} />}
         </div>
 

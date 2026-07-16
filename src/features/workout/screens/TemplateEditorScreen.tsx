@@ -5,6 +5,8 @@ import { exerciseDefinitions } from "@/data/exercises";
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
+import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import { useAppStore } from "@/store/appStore";
 import type {
   Equipment,
   ExerciseDefinition,
@@ -39,6 +41,13 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
   const user = useAuthStore((s) => s.user);
   const template = useWorkoutTemplateStore((s) => s.selected);
   const saveTemplate = useWorkoutTemplateStore((s) => s.save);
+  const selectExercise = useWorkoutHistoryStore((s) => s.selectExercise);
+  const navigate = useAppStore((s) => s.navigate);
+
+  const openExerciseDetail = (exercise: ExerciseDefinition) => {
+    selectExercise(exercise.id, exercise.name);
+    navigate("exercise-detail");
+  };
 
   const [name, setName] = useState("");
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
@@ -315,6 +324,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
             key={exercise.id}
             exercise={exercise}
             onAdd={addExercise}
+            onInfo={openExerciseDetail}
           />
         ))}
       </div>
@@ -486,18 +496,22 @@ function TemplateExerciseCard({
 function ExerciseDefinitionCard({
   exercise,
   onAdd,
+  onInfo,
 }: {
   exercise: ExerciseDefinition;
   onAdd: (exercise: ExerciseDefinition) => void;
+  onInfo: (exercise: ExerciseDefinition) => void;
 }) {
   return (
-    <button
-      onClick={() => onAdd(exercise)}
+    <div
       className="rounded-[20px] p-4 text-left"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
+        <button
+          onClick={() => onInfo(exercise)}
+          className="flex-1 min-w-0 text-left"
+        >
           <p className="font-bold text-sm" style={{ color: C.fg }}>
             {exercise.name}
           </p>
@@ -525,17 +539,20 @@ function ExerciseDefinitionCard({
               {exercise.defaultSets} × {exercise.defaultReps}
             </span>
             <span>Rest {exercise.defaultRestSeconds}s</span>
+            <span style={{ color: C.accent }}>View demo ›</span>
           </div>
-        </div>
+        </button>
 
-        <div
+        <button
+          onClick={() => onAdd(exercise)}
+          aria-label={`Add ${exercise.name}`}
           className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: C.accent, color: C.bg }}
         >
           <Plus size={18} />
-        </div>
+        </button>
       </div>
-    </button>
+    </div>
   );
 }
 

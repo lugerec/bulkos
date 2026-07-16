@@ -30,6 +30,7 @@ export const C = {
   | "grocery"
   | "one-rep-max"
   | "exercise-history"
+  | "exercise-detail"
   | "check-in"
   | "template-builder"
   | "template-editor"

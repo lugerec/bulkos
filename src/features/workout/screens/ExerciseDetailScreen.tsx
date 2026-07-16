@@ -2,16 +2,17 @@ import { ArrowLeft } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { exerciseDefinitions } from "@/data/exercises";
+import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import ExerciseMedia from "@/features/workout/components/ExerciseMedia";
+import { getExerciseMedia } from "@/features/workout/utils/exerciseMedia";
 
 type Props = {
-  exerciseId: string;
   onBack: () => void;
 };
 
-export default function ExerciseDetailScreen({
-  exerciseId,
-  onBack,
-}: Props) {
+export default function ExerciseDetailScreen({ onBack }: Props) {
+  const exerciseId = useWorkoutHistoryStore((s) => s.selectedExerciseId);
+
   const exercise = exerciseDefinitions.find(
     (e) => e.id === exerciseId
   );
@@ -72,6 +73,14 @@ export default function ExerciseDetailScreen({
 
         <Badge text={exercise.category} />
 
+      </div>
+
+      <div className="mt-5">
+        <ExerciseMedia
+          media={getExerciseMedia(exercise.id, exercise.media)}
+          name={exercise.name}
+          primaryMuscle={exercise.primaryMuscle}
+        />
       </div>
 
       <Section title="Instructions">
