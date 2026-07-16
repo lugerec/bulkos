@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { toDateKey } from "@/lib/date";
 
 import {
   applyDeloadToTemplate,
@@ -80,7 +81,7 @@ const NOW = new Date("2026-07-14T12:00:00");
 
 function daysAgo(days: number): string {
   const date = new Date(NOW.getTime() - days * 24 * 60 * 60 * 1000);
-  return date.toISOString().slice(0, 10);
+  return toDateKey(date);
 }
 
 describe("getMuscleRecoveryOverview", () => {

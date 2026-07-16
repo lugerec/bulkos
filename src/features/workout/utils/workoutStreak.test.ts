@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { toDateKey } from "@/lib/date";
 
 import { getWorkoutStreak } from "./workoutStreak";
 
@@ -14,7 +15,7 @@ function weekDays(weeksBack: number, count: number): string[] {
     const day = new Date(monday);
     day.setDate(day.getDate() + index * 2);
 
-    return day.toISOString().slice(0, 10);
+    return toDateKey(day);
   });
 }
 

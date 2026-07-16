@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { toDateKey } from "@/lib/date";
 
 import { applyKcalDeltaToTargets, getBulkPace, getPaceInsight } from "./bulkPace";
 
@@ -7,7 +8,7 @@ const NOW = new Date("2026-07-14T12:00:00");
 function entry(daysAgo: number, weightKg: number) {
   const date = new Date(NOW.getTime() - daysAgo * 24 * 60 * 60 * 1000);
 
-  return { date: date.toISOString().slice(0, 10), weightKg };
+  return { date: toDateKey(date), weightKg };
 }
 
 describe("getBulkPace", () => {
