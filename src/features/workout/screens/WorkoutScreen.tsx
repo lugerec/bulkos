@@ -15,6 +15,7 @@ import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
+import { notifyRestComplete, adjustRest } from "@/features/workout/utils/restNotify";
 import WorkoutSetRow from "@/features/workout/components/WorkoutSetRow";
 import WarmupHint from "@/features/workout/components/WarmupHint";
 import type { WorkoutExercise } from "@/types/workout";
@@ -146,6 +147,7 @@ export default function WorkoutScreen() {
       setRestTimer((r) => {
         if (r <= 1) {
           setIsResting(false);
+          notifyRestComplete();
           return 0;
         }
 
@@ -846,36 +848,69 @@ export default function WorkoutScreen() {
 
       {isResting && (
         <div
-          className="mx-5 mb-4 rounded-[20px] p-4 flex items-center gap-4"
+          className="mx-5 mb-4 rounded-[20px] p-4"
           style={{
             background: "rgba(163,230,53,0.07)",
             border: "1px solid rgba(163,230,53,0.2)",
           }}
         >
-          <Timer size={20} color={C.accent} />
-          <div className="flex-1">
-            <p className="text-sm font-semibold" style={{ color: C.fg }}>
-              Rest Timer
-            </p>
-            <p className="text-[11px]" style={{ color: C.fg3 }}>
-              Next set in...
-            </p>
+          <div className="flex items-center gap-4">
+            <Timer size={20} color={C.accent} />
+            <div className="flex-1">
+              <p className="text-sm font-semibold" style={{ color: C.fg }}>
+                Rest Timer
+              </p>
+              <p className="text-[11px]" style={{ color: C.fg3 }}>
+                Next set in…
+              </p>
+            </div>
+
+            <div className="text-right">
+              <p
+                className="text-2xl font-bold font-mono leading-none"
+                style={{ color: C.accent }}
+              >
+                {fmt(restTimer)}
+              </p>
+              <p className="text-[10px] mt-1" style={{ color: C.fg3 }}>
+                Recommended rest
+              </p>
+            </div>
+
+            <button
+              onClick={() => setIsResting(false)}
+              aria-label="Skip rest"
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ background: C.accentDim }}
+            >
+              <X size={14} color={C.accent} />
+            </button>
           </div>
 
-          <p className="text-2xl font-bold font-mono" style={{ color: C.accent }}>
-            {fmt(restTimer)}
-            <p className="text-[10px] mt-1 text-center" style={{ color: C.fg3 }}>
-              Recommended rest
-            </p>
-          </p>
-
-          <button
-            onClick={() => setIsResting(false)}
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: C.accentDim }}
-          >
-            <X size={14} color={C.accent} />
-          </button>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => setRestTimer((r) => adjustRest(r, -15))}
+              className="flex-1 py-2 rounded-[14px] text-xs font-semibold"
+              style={{
+                background: C.card2,
+                border: `1px solid ${C.border}`,
+                color: C.fg2,
+              }}
+            >
+              −15s
+            </button>
+            <button
+              onClick={() => setRestTimer((r) => adjustRest(r, 15))}
+              className="flex-1 py-2 rounded-[14px] text-xs font-semibold"
+              style={{
+                background: C.card2,
+                border: `1px solid ${C.border}`,
+                color: C.fg2,
+              }}
+            >
+              +15s
+            </button>
+          </div>
         </div>
       )}
 
