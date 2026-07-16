@@ -2,9 +2,10 @@ import { exerciseDefinitions } from "@/data/exercises";
 import { getProgressionSuggestion } from "@/features/workout/utils/progression";
 
 import ExerciseDetailsSheet from "@/features/workout/components/ExerciseDetailsSheet";
+import SwapExerciseSheet from "@/features/workout/components/SwapExerciseSheet";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Dumbbell, Timer, X } from "lucide-react";
+import { CheckCircle2, Dumbbell, Timer, X, Repeat } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
@@ -71,6 +72,7 @@ export default function WorkoutScreen() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
 
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
+  const [swapExerciseIdx, setSwapExerciseIdx] = useState<number | null>(null);
 
   const exerciseHasPR = (exerciseId: string) => Boolean(prs[exerciseId]);
 
@@ -376,6 +378,46 @@ export default function WorkoutScreen() {
 
       return next;
     });
+  };
+
+  const swapExercise = (exIdx: number, newDefinitionId: string) => {
+    const definition = exerciseDefinitions.find(
+      (d) => d.id === newDefinitionId
+    );
+    if (!definition) return;
+
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+
+        // Keep the same number of sets, but reset weights/reps to the new
+        // exercise's defaults — the old numbers don't transfer to a different lift.
+        const setCount = exercise.sets.length;
+
+        return {
+          ...exercise,
+          id: definition.id,
+          exerciseId: definition.id,
+          name: definition.name,
+          sets: Array.from({ length: setCount }, () => ({
+            weight: 0,
+            reps: definition.defaultReps ?? 0,
+            completed: false,
+          })),
+        };
+      })
+    );
+
+    // Clear any completed flags for this exercise's sets.
+    setCompleted((prev) => {
+      const next = new Set<string>();
+      prev.forEach((key) => {
+        if (!key.startsWith(`${exIdx}-`)) next.add(key);
+      });
+      return next;
+    });
+
+    setSwapExerciseIdx(null);
   };
 
   function applySuggested(
@@ -884,6 +926,16 @@ export default function WorkoutScreen() {
                         🏆 NEW PR
                       </span>
                     )}
+
+                    <button
+                      type="button"
+                      onClick={() => setSwapExerciseIdx(exIdx)}
+                      aria-label="Swap exercise"
+                      className="flex items-center justify-center w-6 h-6 rounded-full"
+                      style={{ background: C.card2, color: C.fg3 }}
+                    >
+                      <Repeat size={12} />
+                    </button>
                   </div>
 
                   {previousSets.length > 0 && (
@@ -1066,6 +1118,25 @@ export default function WorkoutScreen() {
       <ExerciseDetailsSheet
         exerciseId={selectedExerciseId}
         onClose={() => setSelectedExerciseId(null)}
+      />
+
+      <SwapExerciseSheet
+        current={
+          swapExerciseIdx !== null
+            ? exerciseDefinitions.find(
+                (d) =>
+                  d.id ===
+                  (exercises[swapExerciseIdx]?.exerciseId ??
+                    exercises[swapExerciseIdx]?.id)
+              ) ?? null
+            : null
+        }
+        onClose={() => setSwapExerciseIdx(null)}
+        onSelect={(definitionId) => {
+          if (swapExerciseIdx !== null) {
+            swapExercise(swapExerciseIdx, definitionId);
+          }
+        }}
       />
     </div>
   );
