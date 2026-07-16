@@ -1,0 +1,78 @@
+# Exercise image attributions
+
+Images from the wger project (https://wger.de), licensed CC-BY-SA 3.0.
+
+- Cable Crunch: wger base #167
+- Pull-up: wger base #979
+- Lat Pulldown: wger base #1127
+- Barbell Row: wger base #320
+- DB Row: wger base #81
+- Seated Cable Row: wger base #1117
+- Chest Supported Row: wger base #320
+- Straight Arm Pulldown: wger base #1726
+- Deadlift: wger base #1003
+- Barbell Curl: wger base #320
+- DB Curl: wger base #320
+- Hammer Curl: wger base #1567
+- Preacher Curl: wger base #320
+- Incline DB Curl: wger base #320
+- Cable Curl: wger base #320
+- Standing Calf Raise: wger base #320
+- Seated Calf Raise: wger base #320
+- Single Leg Calf Raise: wger base #320
+- Smith Machine Calf Raise: wger base #320
+- Donkey Calf Raise: wger base #320
+- Leg Press Calf Raise: wger base #320
+- Walking: wger base #206
+- Treadmill Walk: wger base #320
+- Running: wger base #1003
+- Cycling: wger base #1003
+- Rowing: wger base #83
+- StairMaster: wger base #320
+- Elliptical: wger base #320
+- Jump Rope: wger base #320
+- Burpees: wger base #320
+- Assault Bike: wger base #320
+- Bench Press: wger base #73
+- Incline Bench Press: wger base #73
+- Incline DB Press: wger base #320
+- DB Bench Press: wger base #73
+- Machine Chest Press: wger base #129
+- Cable Fly: wger base #320
+- Pec Deck: wger base #320
+- Push-up: wger base #1551
+- Hip Thrust: wger base #1642
+- Glute Bridge: wger base #320
+- Cable Kickback: wger base #320
+- Smith Hip Thrust: wger base #1003
+- Abductor Machine: wger base #320
+- Frog Pump: wger base #1003
+- Reverse Hyperextension: wger base #320
+- Romanian Deadlift: wger base #1652
+- Lying Leg Curl: wger base #320
+- Seated Leg Curl: wger base #320
+- Single Leg Curl: wger base #320
+- Good Morning: wger base #1392
+- Glute Ham Raise: wger base #320
+- Nordic Curl: wger base #909
+- Squat: wger base #1801
+- Front Squat: wger base #1640
+- Leg Press: wger base #371
+- Hack Squat: wger base #1003
+- Bulgarian Split Squat: wger base #988
+- Leg Extension: wger base #369
+- Walking Lunge: wger base #320
+- Step-Up: wger base #981
+- Overhead Press: wger base #320
+- DB Shoulder Press: wger base #320
+- Machine Shoulder Press: wger base #320
+- Lateral Raise: wger base #1378
+- Cable Lateral Raise: wger base #1378
+- Rear Delt Fly: wger base #822
+- Face Pull: wger base #1639
+- Triceps Pushdown: wger base #1185
+- Overhead Triceps Extension: wger base #1519
+- Skull Crusher: wger base #320
+- Dip: wger base #194
+- Close Grip Bench Press: wger base #73
+- Single Arm Pushdown: wger base #320

@@ -1,1 +1,279 @@
-{}
+{
+  "cable-crunch": {
+    "start": "/exercises/cable-crunch/start.png",
+    "finish": "/exercises/cable-crunch/finish.png"
+  },
+  "pull-up": {
+    "start": "/exercises/pull-up/start.png"
+  },
+  "lat-pulldown": {
+    "start": "/exercises/lat-pulldown/start.png"
+  },
+  "barbell-row": {
+    "start": "/exercises/barbell-row/start.png",
+    "finish": "/exercises/barbell-row/finish.png"
+  },
+  "db-row": {
+    "start": "/exercises/db-row/start.png"
+  },
+  "seated-cable-row": {
+    "start": "/exercises/seated-cable-row/start.png",
+    "finish": "/exercises/seated-cable-row/finish.png"
+  },
+  "chest-supported-row": {
+    "start": "/exercises/chest-supported-row/start.png",
+    "finish": "/exercises/chest-supported-row/finish.png"
+  },
+  "straight-arm-pulldown": {
+    "start": "/exercises/straight-arm-pulldown/start.png"
+  },
+  "deadlift": {
+    "start": "/exercises/deadlift/start.png",
+    "finish": "/exercises/deadlift/finish.png"
+  },
+  "barbell-curl": {
+    "start": "/exercises/barbell-curl/start.png",
+    "finish": "/exercises/barbell-curl/finish.png"
+  },
+  "db-curl": {
+    "start": "/exercises/db-curl/start.png",
+    "finish": "/exercises/db-curl/finish.png"
+  },
+  "hammer-curl": {
+    "start": "/exercises/hammer-curl/start.png"
+  },
+  "preacher-curl": {
+    "start": "/exercises/preacher-curl/start.png",
+    "finish": "/exercises/preacher-curl/finish.png"
+  },
+  "incline-db-curl": {
+    "start": "/exercises/incline-db-curl/start.png",
+    "finish": "/exercises/incline-db-curl/finish.png"
+  },
+  "cable-curl": {
+    "start": "/exercises/cable-curl/start.png",
+    "finish": "/exercises/cable-curl/finish.png"
+  },
+  "standing-calf-raise": {
+    "start": "/exercises/standing-calf-raise/start.png",
+    "finish": "/exercises/standing-calf-raise/finish.png"
+  },
+  "seated-calf-raise": {
+    "start": "/exercises/seated-calf-raise/start.png",
+    "finish": "/exercises/seated-calf-raise/finish.png"
+  },
+  "single-leg-calf-raise": {
+    "start": "/exercises/single-leg-calf-raise/start.png",
+    "finish": "/exercises/single-leg-calf-raise/finish.png"
+  },
+  "smith-calf-raise": {
+    "start": "/exercises/smith-calf-raise/start.png",
+    "finish": "/exercises/smith-calf-raise/finish.png"
+  },
+  "donkey-calf-raise": {
+    "start": "/exercises/donkey-calf-raise/start.png",
+    "finish": "/exercises/donkey-calf-raise/finish.png"
+  },
+  "leg-press-calf-raise": {
+    "start": "/exercises/leg-press-calf-raise/start.png",
+    "finish": "/exercises/leg-press-calf-raise/finish.png"
+  },
+  "walking": {
+    "start": "/exercises/walking/start.png",
+    "finish": "/exercises/walking/finish.png"
+  },
+  "treadmill-walk": {
+    "start": "/exercises/treadmill-walk/start.png",
+    "finish": "/exercises/treadmill-walk/finish.png"
+  },
+  "running": {
+    "start": "/exercises/running/start.png",
+    "finish": "/exercises/running/finish.png"
+  },
+  "cycling": {
+    "start": "/exercises/cycling/start.png",
+    "finish": "/exercises/cycling/finish.png"
+  },
+  "rowing": {
+    "start": "/exercises/rowing/start.png",
+    "finish": "/exercises/rowing/finish.png"
+  },
+  "stairmaster": {
+    "start": "/exercises/stairmaster/start.png",
+    "finish": "/exercises/stairmaster/finish.png"
+  },
+  "elliptical": {
+    "start": "/exercises/elliptical/start.png",
+    "finish": "/exercises/elliptical/finish.png"
+  },
+  "jump-rope": {
+    "start": "/exercises/jump-rope/start.png",
+    "finish": "/exercises/jump-rope/finish.png"
+  },
+  "burpees": {
+    "start": "/exercises/burpees/start.png",
+    "finish": "/exercises/burpees/finish.png"
+  },
+  "assault-bike": {
+    "start": "/exercises/assault-bike/start.png",
+    "finish": "/exercises/assault-bike/finish.png"
+  },
+  "bench-press": {
+    "start": "/exercises/bench-press/start.png",
+    "finish": "/exercises/bench-press/finish.png"
+  },
+  "incline-bench-press": {
+    "start": "/exercises/incline-bench-press/start.png",
+    "finish": "/exercises/incline-bench-press/finish.png"
+  },
+  "incline-db-press": {
+    "start": "/exercises/incline-db-press/start.png",
+    "finish": "/exercises/incline-db-press/finish.png"
+  },
+  "db-bench-press": {
+    "start": "/exercises/db-bench-press/start.png",
+    "finish": "/exercises/db-bench-press/finish.png"
+  },
+  "machine-chest-press": {
+    "start": "/exercises/machine-chest-press/start.png",
+    "finish": "/exercises/machine-chest-press/finish.webp"
+  },
+  "cable-fly": {
+    "start": "/exercises/cable-fly/start.png",
+    "finish": "/exercises/cable-fly/finish.png"
+  },
+  "pec-deck": {
+    "start": "/exercises/pec-deck/start.png",
+    "finish": "/exercises/pec-deck/finish.png"
+  },
+  "push-up": {
+    "start": "/exercises/push-up/start.png"
+  },
+  "hip-thrust": {
+    "start": "/exercises/hip-thrust/start.webp"
+  },
+  "glute-bridge": {
+    "start": "/exercises/glute-bridge/start.png",
+    "finish": "/exercises/glute-bridge/finish.png"
+  },
+  "cable-kickback": {
+    "start": "/exercises/cable-kickback/start.png",
+    "finish": "/exercises/cable-kickback/finish.png"
+  },
+  "smith-hip-thrust": {
+    "start": "/exercises/smith-hip-thrust/start.png",
+    "finish": "/exercises/smith-hip-thrust/finish.png"
+  },
+  "abductor-machine": {
+    "start": "/exercises/abductor-machine/start.png",
+    "finish": "/exercises/abductor-machine/finish.png"
+  },
+  "frog-pump": {
+    "start": "/exercises/frog-pump/start.png",
+    "finish": "/exercises/frog-pump/finish.png"
+  },
+  "reverse-hyper": {
+    "start": "/exercises/reverse-hyper/start.png",
+    "finish": "/exercises/reverse-hyper/finish.png"
+  },
+  "romanian-deadlift": {
+    "start": "/exercises/romanian-deadlift/start.webp"
+  },
+  "lying-leg-curl": {
+    "start": "/exercises/lying-leg-curl/start.png",
+    "finish": "/exercises/lying-leg-curl/finish.png"
+  },
+  "seated-leg-curl": {
+    "start": "/exercises/seated-leg-curl/start.png",
+    "finish": "/exercises/seated-leg-curl/finish.png"
+  },
+  "single-leg-curl": {
+    "start": "/exercises/single-leg-curl/start.png",
+    "finish": "/exercises/single-leg-curl/finish.png"
+  },
+  "good-morning": {
+    "start": "/exercises/good-morning/start.png",
+    "finish": "/exercises/good-morning/finish.png"
+  },
+  "glute-ham-raise": {
+    "start": "/exercises/glute-ham-raise/start.png",
+    "finish": "/exercises/glute-ham-raise/finish.png"
+  },
+  "nordic-curl": {
+    "start": "/exercises/nordic-curl/start.png"
+  },
+  "squat": {
+    "start": "/exercises/squat/start.jpg",
+    "finish": "/exercises/squat/finish.jpg"
+  },
+  "front-squat": {
+    "start": "/exercises/front-squat/start.webp"
+  },
+  "leg-press": {
+    "start": "/exercises/leg-press/start.webp"
+  },
+  "hack-squat": {
+    "start": "/exercises/hack-squat/start.png",
+    "finish": "/exercises/hack-squat/finish.png"
+  },
+  "bulgarian-split-squat": {
+    "start": "/exercises/bulgarian-split-squat/start.png"
+  },
+  "leg-extension": {
+    "start": "/exercises/leg-extension/start.webp",
+    "finish": "/exercises/leg-extension/finish.png"
+  },
+  "walking-lunge": {
+    "start": "/exercises/walking-lunge/start.png",
+    "finish": "/exercises/walking-lunge/finish.png"
+  },
+  "step-up": {
+    "start": "/exercises/step-up/start.png"
+  },
+  "overhead-press": {
+    "start": "/exercises/overhead-press/start.png",
+    "finish": "/exercises/overhead-press/finish.png"
+  },
+  "db-shoulder-press": {
+    "start": "/exercises/db-shoulder-press/start.png",
+    "finish": "/exercises/db-shoulder-press/finish.png"
+  },
+  "machine-shoulder-press": {
+    "start": "/exercises/machine-shoulder-press/start.png",
+    "finish": "/exercises/machine-shoulder-press/finish.png"
+  },
+  "lateral-raise": {
+    "start": "/exercises/lateral-raise/start.jpg"
+  },
+  "cable-lateral-raise": {
+    "start": "/exercises/cable-lateral-raise/start.jpg"
+  },
+  "rear-delt-fly": {
+    "start": "/exercises/rear-delt-fly/start.png",
+    "finish": "/exercises/rear-delt-fly/finish.png"
+  },
+  "face-pull": {
+    "start": "/exercises/face-pull/start.webp"
+  },
+  "triceps-pushdown": {
+    "start": "/exercises/triceps-pushdown/start.jpg"
+  },
+  "overhead-triceps-extension": {
+    "start": "/exercises/overhead-triceps-extension/start.gif"
+  },
+  "skull-crusher": {
+    "start": "/exercises/skull-crusher/start.png",
+    "finish": "/exercises/skull-crusher/finish.png"
+  },
+  "dip": {
+    "start": "/exercises/dip/start.png"
+  },
+  "close-grip-bench-press": {
+    "start": "/exercises/close-grip-bench-press/start.png",
+    "finish": "/exercises/close-grip-bench-press/finish.png"
+  },
+  "single-arm-pushdown": {
+    "start": "/exercises/single-arm-pushdown/start.png",
+    "finish": "/exercises/single-arm-pushdown/finish.png"
+  }
+}
