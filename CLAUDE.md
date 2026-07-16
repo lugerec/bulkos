@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Target rep range on each exercise during a workout: `WorkoutScreen` shows "Target N–M reps" under the exercise name, from `progression.minReps/maxReps` (falls back to `defaultReps`), so you know when to add weight. Display-only.
+
 - Per-set effort rating (RPE-lite): after completing a set, `WorkoutSetRow` shows Easy/OK/Hard buttons writing `effort` onto the `WorkoutSet` (tapping the active one clears it; saved into history via the existing `...set` spread). `getProgressionSuggestion` is now effort-aware: a top-of-range set flagged "easy" jumps two weight steps instead of one, and a hard set inside the rep range holds reps instead of adding one. Default behaviour unchanged when no effort is set (existing tests still pass; new cases in progression.test.ts).
 
 - Rest timer upgrades: the in-workout rest timer now beeps + vibrates when it hits zero (`notifyRestComplete` in utils/restNotify.ts — best-effort Web Audio beep and `navigator.vibrate`, both no-op silently when unsupported/blocked) and has −15s / +15s adjust buttons (`adjustRest` clamps at zero, tested). Also fixed invalid nested `<p>` in the timer markup.

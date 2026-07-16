@@ -998,6 +998,29 @@ export default function WorkoutScreen() {
                     </button>
                   </div>
 
+                  {(() => {
+                    const range = exerciseDefinition?.progression;
+                    const minReps =
+                      range?.minReps ?? exerciseDefinition?.defaultReps;
+                    const maxReps = range?.maxReps;
+
+                    if (minReps == null) return null;
+
+                    const label =
+                      maxReps != null && maxReps !== minReps
+                        ? `${minReps}–${maxReps}`
+                        : `${minReps}`;
+
+                    return (
+                      <p
+                        className="text-[11px] mt-1 font-medium"
+                        style={{ color: C.accent }}
+                      >
+                        Target {label} reps
+                      </p>
+                    );
+                  })()}
+
                   {previousSets.length > 0 && (
                     <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
                       Previous{" "}
