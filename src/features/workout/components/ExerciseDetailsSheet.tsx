@@ -266,8 +266,8 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           className="rounded-[22px] p-5 mb-5 flex items-center justify-center"
           style={{
             background:
-              "linear-gradient(135deg, rgba(124,255,107,0.10), rgba(91,141,239,0.08))",
-            border: "1px solid rgba(124,255,107,0.18)",
+              "linear-gradient(135deg, rgba(163,230,53,0.10), rgba(96,165,250,0.08))",
+            border: "1px solid rgba(163,230,53,0.18)",
             height: 150,
           }}
         >

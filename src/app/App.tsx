@@ -141,12 +141,12 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         />
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(9,9,9,0.25) 0%, rgba(9,9,9,0.85) 100%)" }}
+          style={{ background: "linear-gradient(to bottom, rgba(10,10,11,0.25) 0%, rgba(10,10,11,0.85) 100%)" }}
         />
         <button
           onClick={onBack}
           className="absolute top-4 left-5 w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: "rgba(9,9,9,0.6)", backdropFilter: "blur(12px)", border: `1px solid ${C.border}` }}
+          style={{ background: "rgba(10,10,11,0.6)", backdropFilter: "blur(12px)", border: `1px solid ${C.border}` }}
         >
           <ArrowLeft size={16} color={C.fg} />
         </button>
@@ -260,7 +260,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         {/* Meal prep tip */}
         <div
           className="rounded-[20px] p-4 mb-4"
-          style={{ background: C.accentDim2, border: "1px solid rgba(124,255,107,0.15)" }}
+          style={{ background: C.accentDim2, border: "1px solid rgba(163,230,53,0.15)" }}
         >
           <div className="flex gap-3 items-start">
             <Zap size={16} color={C.accent} className="mt-0.5 flex-shrink-0" />
@@ -517,8 +517,8 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
         <div
           className="rounded-[22px] p-5"
           style={{
-            background: "linear-gradient(135deg, rgba(124,255,107,0.07) 0%, rgba(91,141,239,0.07) 100%)",
-            border: "1px solid rgba(124,255,107,0.18)",
+            background: "linear-gradient(135deg, rgba(163,230,53,0.07) 0%, rgba(96,165,250,0.07) 100%)",
+            border: "1px solid rgba(163,230,53,0.18)",
           }}
         >
           <div className="flex items-center gap-3 mb-3">
@@ -530,7 +530,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider" style={{ color: C.accent }}>Coach Insight</p>
-              <p className="text-[10px]" style={{ color: C.fg3 }}>Based on the last 14 days of check-ins</p>
+              <p className="text-[10px]" style={{ color: C.fg2 }}>Based on the last 14 days of check-ins</p>
             </div>
           </div>
           <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg }}>
@@ -543,7 +543,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
               className="w-full py-3 rounded-[14px] text-sm font-bold"
               style={{
                 background: C.accentDim,
-                border: "1px solid rgba(124,255,107,0.2)",
+                border: "1px solid rgba(163,230,53,0.2)",
                 color: C.accent,
                 opacity: applyingInsight ? 0.6 : 1,
               }}
@@ -809,7 +809,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
                 {item.source === "off" && (
                   <span
                     className="text-[9px] font-bold px-1.5 py-0.5 rounded flex-shrink-0"
-                    style={{ background: "rgba(91,141,239,0.15)", color: C.blue }}
+                    style={{ background: "rgba(96,165,250,0.15)", color: C.blue }}
                   >
                     STORE
                   </span>
@@ -848,7 +848,7 @@ function BottomNav({ active, onNavigate }: {
     <div
       className="absolute bottom-0 left-0 right-0 flex justify-around items-center pt-2 pb-6"
       style={{
-        background: "rgba(9,9,9,0.95)",
+        background: "rgba(10,10,11,0.95)",
         borderTop: `1px solid ${C.border}`,
         backdropFilter: "blur(24px)",
       }}
@@ -931,7 +931,7 @@ export default function App() {
           background: C.bg,
           borderRadius: 44,
           border: `1px solid ${C.border}`,
-          boxShadow: `0 0 0 8px #111111, 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(124,255,107,0.04)`,
+          boxShadow: `0 0 0 8px #111111, 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(163,230,53,0.04)`,
         }}
       >
         {/* Notch */}

@@ -16,10 +16,10 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
       className="rounded-[24px] p-5 mb-5"
       style={{
         background: isRecovery
-          ? "linear-gradient(135deg, rgba(91,141,239,0.14), rgba(168,85,247,0.08))"
-          : "linear-gradient(135deg, rgba(168,85,247,0.14), rgba(124,255,107,0.08))",
+          ? "linear-gradient(135deg, rgba(96,165,250,0.14), rgba(192,132,252,0.08))"
+          : "linear-gradient(135deg, rgba(192,132,252,0.14), rgba(163,230,53,0.08))",
         border: `1px solid ${
-          isRecovery ? "rgba(91,141,239,0.25)" : "rgba(168,85,247,0.25)"
+          isRecovery ? "rgba(96,165,250,0.25)" : "rgba(192,132,252,0.25)"
         }`,
       }}
     >
@@ -47,7 +47,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
             className="text-[11px] font-bold px-2.5 py-1 rounded-full"
             style={
               recommendation.isDeloadWeek
-                ? { background: "rgba(255,181,71,0.14)", color: C.amber }
+                ? { background: "rgba(251,191,36,0.14)", color: C.amber }
                 : { background: C.accentDim, color: C.accent }
             }
           >
@@ -58,7 +58,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
         )}
       </div>
 
-      <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg2 }}>
+      <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg }}>
         {recommendation.reason}
       </p>
 

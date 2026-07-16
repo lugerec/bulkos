@@ -344,7 +344,7 @@ function ChoiceStep({
               className="text-left rounded-[22px] p-4 flex gap-4 items-start"
               style={{
                 background: active ? C.accentDim : C.card,
-                border: `1px solid ${active ? "rgba(124,255,107,0.45)" : C.border}`,
+                border: `1px solid ${active ? "rgba(163,230,53,0.45)" : C.border}`,
               }}
             >
               <div
@@ -512,8 +512,8 @@ function SummaryStep({
       <div
         className="rounded-[26px] p-5"
         style={{
-          background: "linear-gradient(135deg, rgba(124,255,107,0.08), rgba(91,141,239,0.06))",
-          border: "1px solid rgba(124,255,107,0.2)",
+          background: "linear-gradient(135deg, rgba(163,230,53,0.08), rgba(96,165,250,0.06))",
+          border: "1px solid rgba(163,230,53,0.2)",
         }}
       >
         <div className="flex items-center gap-3 mb-5">
@@ -565,7 +565,7 @@ function Macro({
   return (
     <div
       className="rounded-2xl p-4"
-      style={{ background: "rgba(9,9,9,0.35)", border: `1px solid ${C.border}` }}
+      style={{ background: "rgba(10,10,11,0.35)", border: `1px solid ${C.border}` }}
     >
       <div className="flex items-center gap-2 mb-2">
         <Target size={14} color={color} />

@@ -87,11 +87,11 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
               </div>
               <p className="text-3xl font-extrabold" style={{ color: C.fg }}>
                 {estimate.average}
-                <span className="text-base font-medium ml-1" style={{ color: C.fg3 }}>
+                <span className="text-base font-medium ml-1" style={{ color: C.fg2 }}>
                   kg
                 </span>
               </p>
-              <p className="text-[10px] mt-1" style={{ color: C.fg3 }}>
+              <p className="text-[10px] mt-1" style={{ color: C.fg2 }}>
                 Epley {estimate.epley} · Brzycki {estimate.brzycki} · Lombardi{" "}
                 {estimate.lombardi}
               </p>

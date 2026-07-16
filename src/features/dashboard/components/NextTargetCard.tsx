@@ -37,8 +37,8 @@ export default function NextTargetCard() {
       className="rounded-[24px] p-5 mb-5"
       style={{
         background:
-          "linear-gradient(135deg, rgba(124,255,107,0.12), rgba(91,141,239,0.08))",
-        border: "1px solid rgba(124,255,107,0.2)",
+          "linear-gradient(135deg, rgba(163,230,53,0.12), rgba(96,165,250,0.08))",
+        border: "1px solid rgba(163,230,53,0.2)",
       }}
     >
       <div className="flex items-start gap-3">

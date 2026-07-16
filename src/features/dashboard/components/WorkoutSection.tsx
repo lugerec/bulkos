@@ -36,8 +36,8 @@ export default function WorkoutSection({
         className="rounded-[24px] p-5 mb-5"
         style={{
           background:
-            "linear-gradient(135deg, rgba(124,255,107,0.12), rgba(255,181,71,0.07))",
-          border: "1px solid rgba(124,255,107,0.2)",
+            "linear-gradient(135deg, rgba(163,230,53,0.12), rgba(251,191,36,0.07))",
+          border: "1px solid rgba(163,230,53,0.2)",
         }}
       >
         <p
@@ -121,7 +121,7 @@ export default function WorkoutSection({
           style={{
             background: C.accent,
             color: C.bg,
-            boxShadow: `0 8px 32px rgba(124,255,107,0.22)`,
+            boxShadow: `0 8px 32px rgba(163,230,53,0.22)`,
           }}
         >
           <Play size={18} fill={C.bg} color={C.bg} />

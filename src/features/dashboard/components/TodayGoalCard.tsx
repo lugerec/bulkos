@@ -16,8 +16,8 @@ export default function TodayGoalCard({
       className="rounded-[26px] p-5 mb-5"
       style={{
         background:
-          "linear-gradient(135deg, rgba(124,255,107,0.16), rgba(91,141,239,0.08))",
-        border: "1px solid rgba(124,255,107,0.22)",
+          "linear-gradient(135deg, rgba(163,230,53,0.16), rgba(96,165,250,0.08))",
+        border: "1px solid rgba(163,230,53,0.22)",
       }}
     >
       <p

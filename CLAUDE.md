@@ -19,7 +19,7 @@ Owner: Lukáš. Goal: premium-level fitness app (Strong, Hevy, RP Hypertrophy ti
 - `src/services/*` — Firebase access
 - `src/data/exercises/*` — exercise database per muscle group (`ExerciseDefinition` with `activation` percentages)
 - `src/types/*` — shared types
-- `src/shared/ui.ts` — colors (`C`) and `Screen` type; `src/shared/components.tsx` — ProgressRing, Badge, SectionHeader
+- `src/shared/ui.ts` — colors (`C`) and `Screen` type; `src/shared/components.tsx` — ProgressRing, Badge, SectionHeader. Palette is "Iron & Lime": bg `#0A0A0B` → card `#16161A` → card2 `#1F1F26`, border `#2A2A31`; accent `#A3E635` (lime, use dark `C.onAccent`/`C.bg` for text on solid accent fills); text `fg #F4F4F5` / `fg2 #A1A1AA` / `fg3 #71717A` (all WCAG-legible — never grey text on accent/gradient backgrounds; use `fg` there). Semantic: red `#F87171`, amber `#FBBF24`, blue `#60A5FA`, purple `#C084FC`. CSS-var mirror in `src/styles/theme.css` kept in sync.
 
 Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `store/workoutHistoryStore.ts`). Do NOT unify them. Utils that consume workouts define their own minimal structural input types instead (see `RecommendationWorkout` in `workoutRecommendation.ts`, `MuscleVolumeWorkout` in `muscleVolume.ts`).
 

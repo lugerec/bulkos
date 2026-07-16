@@ -246,8 +246,8 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         className="rounded-[28px] p-5 mb-6"
         style={{
           background:
-            "linear-gradient(135deg, rgba(124,255,107,0.08), rgba(91,141,239,0.06))",
-          border: "1px solid rgba(124,255,107,0.2)",
+            "linear-gradient(135deg, rgba(163,230,53,0.08), rgba(96,165,250,0.06))",
+          border: "1px solid rgba(163,230,53,0.2)",
         }}
       >
         <p
@@ -361,7 +361,7 @@ function BigMacro({
     <div
       className="rounded-2xl p-4"
       style={{
-        background: "rgba(9,9,9,0.35)",
+        background: "rgba(10,10,11,0.35)",
         border: `1px solid ${C.border}`,
       }}
     >

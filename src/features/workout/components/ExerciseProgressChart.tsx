@@ -29,7 +29,7 @@ import {
             <Line
               type="monotone"
               dataKey="value"
-              stroke="#7CFF6B"
+              stroke="#A3E635"
               strokeWidth={3}
               dot
             />

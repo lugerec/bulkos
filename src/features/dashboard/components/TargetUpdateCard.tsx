@@ -62,8 +62,8 @@ export default function TargetUpdateCard({
     <div
       className="rounded-[22px] p-4 mb-5"
       style={{
-        background: "rgba(91,141,239,0.08)",
-        border: "1px solid rgba(91,141,239,0.25)",
+        background: "rgba(96,165,250,0.08)",
+        border: "1px solid rgba(96,165,250,0.25)",
       }}
     >
       <div className="flex items-center gap-2 mb-1.5">
