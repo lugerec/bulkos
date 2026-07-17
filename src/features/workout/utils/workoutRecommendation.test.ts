@@ -8,6 +8,7 @@ import {
   getMuscleRecoveryDetail,
   getMuscleRecoveryOverview,
   getMuscleSetTargetOverview,
+  getRecentEffortStrain,
   getWorkoutRecommendation,
   type RecommendationExercise,
   type RecommendationWorkout,
@@ -616,5 +617,98 @@ describe("applyDeloadToTemplate", () => {
     const deload = applyDeloadToTemplate(withRest, NOW);
 
     expect(deload.exercises[0].restSeconds).toBe(150);
+  });
+});
+
+describe("getRecentEffortStrain", () => {
+  function workoutWithEfforts(
+    date: string,
+    efforts: ("easy" | "moderate" | "hard")[]
+  ): RecommendationWorkout {
+    return {
+      id: date,
+      date,
+      name: "W",
+      volumeKg: 1000,
+      exercises: [
+        {
+          id: "bench-press",
+          name: "Bench Press",
+          sets: efforts.map((effort) => ({
+            reps: 8,
+            weight: 60,
+            completed: true,
+            effort,
+          })),
+        },
+      ],
+    };
+  }
+
+  it("flags strain when most recent rated sets are hard", () => {
+    const hard = Array<"hard">(6).fill("hard");
+    const workouts = [
+      workoutWithEfforts("2026-07-15", hard),
+      workoutWithEfforts("2026-07-13", ["hard", "hard", "moderate"]),
+    ];
+
+    const strain = getRecentEffortStrain(workouts);
+
+    expect(strain.ratedSets).toBe(9);
+    expect(strain.hardRatio).toBeGreaterThanOrEqual(0.6);
+    expect(strain.highStrain).toBe(true);
+  });
+
+  it("does not flag when too few sets are rated", () => {
+    const workouts = [workoutWithEfforts("2026-07-15", ["hard", "hard"])];
+
+    const strain = getRecentEffortStrain(workouts);
+
+    expect(strain.ratedSets).toBe(2);
+    expect(strain.highStrain).toBe(false);
+  });
+
+  it("does not flag when most sets felt moderate", () => {
+    const mostlyModerate: ("moderate" | "hard")[] = [
+      "moderate",
+      "moderate",
+      "moderate",
+      "moderate",
+      "moderate",
+      "moderate",
+      "hard",
+      "hard",
+    ];
+    const workouts = [workoutWithEfforts("2026-07-15", mostlyModerate)];
+
+    const strain = getRecentEffortStrain(workouts);
+
+    expect(strain.highStrain).toBe(false);
+  });
+
+  it("ignores unrated and incomplete sets", () => {
+    const workouts: RecommendationWorkout[] = [
+      {
+        id: "w1",
+        date: "2026-07-15",
+        name: "W",
+        volumeKg: 1000,
+        exercises: [
+          {
+            id: "bench-press",
+            name: "Bench Press",
+            sets: [
+              { reps: 8, weight: 60, completed: true }, // unrated
+              { reps: 8, weight: 60, completed: false, effort: "hard" }, // not completed
+            ],
+          },
+        ],
+      },
+    ];
+
+    const strain = getRecentEffortStrain(workouts);
+
+    expect(strain.ratedSets).toBe(0);
+    expect(strain.highStrain).toBe(false);
   });
 });

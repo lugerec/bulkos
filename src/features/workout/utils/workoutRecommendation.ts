@@ -19,6 +19,7 @@ export type RecommendationSet = {
   reps: number;
   weight: number;
   completed?: boolean;
+  effort?: "easy" | "moderate" | "hard";
 };
 
 export type RecommendationExercise = {
@@ -495,6 +496,55 @@ const DELOAD_MIN_WORKOUTS_PER_WEEK = 2;
 const DELOAD_VOLUME_DROP_RATIO = 0.85;
 const DELOAD_LOW_RECOVERY_THRESHOLD = 60;
 
+/** How many recent workouts we scan for an effort-strain signal. */
+const EFFORT_STRAIN_WORKOUTS = 3;
+/** Min rated sets across those workouts for the signal to be meaningful. */
+const EFFORT_STRAIN_MIN_RATED = 8;
+/** Fraction of rated sets that must be "hard" to flag strain. */
+const EFFORT_STRAIN_HARD_RATIO = 0.6;
+
+export type EffortStrain = {
+  /** true when recent sessions were dominated by hard-rated sets */
+  highStrain: boolean;
+  ratedSets: number;
+  hardRatio: number;
+};
+
+/**
+ * Looks at the most recent workouts and measures how many completed, rated
+ * sets felt "hard". A high share of hard sets across several sessions is a
+ * fatigue signal independent of volume — you can grind the same numbers
+ * while every set creeps toward failure. Needs a minimum number of rated
+ * sets so a single tough day doesn't trip it.
+ */
+export function getRecentEffortStrain(
+  workouts: readonly RecommendationWorkout[]
+): EffortStrain {
+  const recent = [...workouts]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, EFFORT_STRAIN_WORKOUTS);
+
+  let rated = 0;
+  let hard = 0;
+
+  for (const workout of recent) {
+    for (const exercise of workout.exercises ?? []) {
+      for (const set of exercise.sets) {
+        if (set.completed && set.effort) {
+          rated += 1;
+          if (set.effort === "hard") hard += 1;
+        }
+      }
+    }
+  }
+
+  const hardRatio = rated > 0 ? hard / rated : 0;
+  const highStrain =
+    rated >= EFFORT_STRAIN_MIN_RATED && hardRatio >= EFFORT_STRAIN_HARD_RATIO;
+
+  return { highStrain, ratedSets: rated, hardRatio };
+}
+
 type WeeklyLoad = {
   workoutCount: number;
   volumeKg: number;
@@ -539,6 +589,8 @@ export type DeloadSignal = {
   volumeDropping: boolean;
   /** true when average recovery across trained muscles is low */
   lowRecovery: boolean;
+  /** true when recent sessions were dominated by hard-rated sets */
+  highStrain: boolean;
 };
 
 /**
@@ -581,11 +633,17 @@ export function detectDeload(
     loadedWeekStreak >= DELOAD_MIN_LOADED_WEEKS &&
     averageRecovery < DELOAD_LOW_RECOVERY_THRESHOLD;
 
+  // Effort strain works independently of the loaded-week streak: several
+  // recent hard-dominated sessions warrant backing off even if the block
+  // isn't long yet.
+  const { highStrain } = getRecentEffortStrain(workouts);
+
   return {
-    isDeloadWeek: volumeDropping || lowRecovery,
+    isDeloadWeek: volumeDropping || lowRecovery || highStrain,
     loadedWeekStreak,
     volumeDropping,
     lowRecovery,
+    highStrain,
   };
 }
 
@@ -1040,7 +1098,9 @@ export function getWorkoutRecommendation(
       ? " Your body weight also dropped quickly this week, so prioritize food and sleep."
       : "";
     const deloadNote = deload.isDeloadWeek
-      ? ` You've also carried ${deload.loadedWeekStreak} straight weeks of training — treat the whole week as a deload.`
+      ? deload.highStrain && deload.loadedWeekStreak < DELOAD_MIN_LOADED_WEEKS
+        ? " Your recent sessions have been mostly hard-rated, so treat this week as a deload."
+        : ` You've also carried ${deload.loadedWeekStreak} straight weeks of training — treat the whole week as a deload.`
       : "";
 
     return {
