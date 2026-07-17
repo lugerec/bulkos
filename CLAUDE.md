@@ -31,6 +31,9 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Explicit workout start (preview mode): tapping a template now opens a **preview** of the workout (sets visible, timer at 00:00 marked "not started", "‹ Change workout" link) with a prominent "▶ Start Workout" button (top banner + bottom button). The timer/session begins only on that tap; "Finish Workout" appears only once started. This is the flow the user asked for — no timer until an explicit start.
+- `ExerciseMedia` resilience: when the active image source fails to load but another exists, it auto-switches to the working one instead of sticking on the "Image unavailable" placeholder.
+
 - Workout never auto-starts: `WorkoutScreen` calls `endSession()` unconditionally on mount, so arriving at the Workout tab (from anywhere) always shows the template picker; a session begins only by tapping a template there (Dashboard "Start"/Coach Pick just preselects the template). Timer runs only while `sessionActive`.
 - Exercise detail sheet now uses `ExerciseMedia`: the sheet opened during a workout shows the start/finish two-phase animation (Play/Pause) and graceful placeholder, same as the standalone detail, instead of a single static image — kept as a sheet (not a navigation) so it doesn't interrupt the session.
 

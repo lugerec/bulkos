@@ -86,6 +86,19 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
   const active = sources[activeIndex];
   const showPlaceholder = !active || failed[activeIndex];
 
+  // If the active source failed but another one works, switch to it so a
+  // single missing file doesn't leave the viewer stuck on a placeholder.
+  useEffect(() => {
+    if (!failed[activeIndex]) return;
+
+    const fallback = sources.findIndex((_, index) => !failed[index]);
+    if (fallback !== -1 && fallback !== activeIndex) {
+      setPlaying(false);
+      setActiveIndex(fallback);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [failed, activeIndex]);
+
   const togglePlay = () => {
     setPlaying((p) => {
       const next = !p;

@@ -81,11 +81,14 @@ export default function WorkoutScreen() {
   const startSession = useAppStore((s) => s.startSession);
   const endSession = useAppStore((s) => s.endSession);
 
-  // Always land on the template picker when this screen mounts. A workout
-  // starts only when the user taps a template here. This is deliberately
-  // unconditional so no stale store state can auto-start a session.
+  // Always land on the template picker when this screen mounts. Tapping a
+  // template opens a PREVIEW of the workout; the timer starts only when the
+  // user explicitly taps "Start Workout".
+  const [previewing, setPreviewing] = useState(false);
+
   useEffect(() => {
     endSession();
+    setPreviewing(false);
     setElapsed(0);
     setDone(false);
     setIsResting(false);
@@ -182,7 +185,7 @@ export default function WorkoutScreen() {
     return () => clearInterval(t);
   }, [isResting]);
 
-  if (!workoutStarted || !workout) {
+  if (!previewing || !workout) {
     return (
       <div className="px-5 pt-4 pb-8">
         <div className="mb-6">
@@ -227,7 +230,7 @@ export default function WorkoutScreen() {
                 key={template.id}
                 onClick={() => {
                   selectTemplate(template.id);
-                  startSession();
+                  setPreviewing(true);
                 }}
                 className="rounded-[20px] p-4 text-left flex items-center justify-between gap-3"
                 style={{
@@ -896,24 +899,50 @@ export default function WorkoutScreen() {
           <div>
             <p
               className="text-[11px] font-bold uppercase tracking-widest mb-1"
-              style={{ color: C.accent }}
+              style={{ color: workoutStarted ? C.accent : C.fg3 }}
             >
-              Active Workout
+              {workoutStarted ? "Active Workout" : "Preview"}
             </p>
             <h2 className="text-2xl font-extrabold" style={{ color: C.fg }}>
               {workout.name}
             </h2>
+            {!workoutStarted && (
+              <button
+                onClick={() => setPreviewing(false)}
+                className="text-[11px] mt-1"
+                style={{ color: C.fg3, textDecoration: "underline" }}
+              >
+                ‹ Change workout
+              </button>
+            )}
           </div>
 
           <div className="text-right">
-            <p className="text-xl font-bold font-mono" style={{ color: C.fg }}>
+            <p
+              className="text-xl font-bold font-mono"
+              style={{ color: workoutStarted ? C.fg : C.fg3 }}
+            >
               {fmt(elapsed)}
             </p>
             <p className="text-[11px]" style={{ color: C.fg3 }}>
-              elapsed
+              {workoutStarted ? "elapsed" : "not started"}
             </p>
           </div>
         </div>
+
+        {!workoutStarted && (
+          <button
+            onClick={startSession}
+            className="w-full py-4 rounded-[20px] font-bold text-base mt-3"
+            style={{
+              background: C.accent,
+              color: C.bg,
+              boxShadow: `0 8px 32px rgba(163,230,53,0.25)`,
+            }}
+          >
+            ▶ Start Workout
+          </button>
+        )}
 
         <div
           style={{
@@ -1335,19 +1364,33 @@ export default function WorkoutScreen() {
           + Add exercise
         </button>
 
-        <button
-          onClick={handleFinishWorkout}
-          disabled={saving}
-          className="w-full py-4 rounded-[20px] font-bold text-base"
-          style={{
-            background: C.accent,
-            color: C.bg,
-            opacity: saving ? 0.6 : 1,
-            boxShadow: `0 8px 32px rgba(163,230,53,0.25)`,
-          }}
-        >
-          {saving ? "Saving Workout..." : "Finish Workout"}
-        </button>
+        {!workoutStarted ? (
+          <button
+            onClick={startSession}
+            className="w-full py-4 rounded-[20px] font-bold text-base"
+            style={{
+              background: C.accent,
+              color: C.bg,
+              boxShadow: `0 8px 32px rgba(163,230,53,0.25)`,
+            }}
+          >
+            Start Workout
+          </button>
+        ) : (
+          <button
+            onClick={handleFinishWorkout}
+            disabled={saving}
+            className="w-full py-4 rounded-[20px] font-bold text-base"
+            style={{
+              background: C.accent,
+              color: C.bg,
+              opacity: saving ? 0.6 : 1,
+              boxShadow: `0 8px 32px rgba(163,230,53,0.25)`,
+            }}
+          >
+            {saving ? "Saving Workout..." : "Finish Workout"}
+          </button>
+        )}
       </div>
 
       <ExerciseDetailsSheet
