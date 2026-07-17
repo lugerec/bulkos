@@ -31,6 +31,9 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Exercise images centered + unified: `ExerciseMedia` and `ExerciseThumb` now use `object-contain` on a white background (was `object-cover`, which cropped), so wger photos from different contributors read consistently and the whole exercise is visible.
+- Typography scale: added `T` design tokens to `shared/ui.ts` (display/title/heading/body/bodyStrong/label/eyebrow/caption — each an inline-style object with size/weight/spacing/line-height) to replace the ad-hoc mix of a dozen pixel sizes. Being rolled out screen by screen; Dashboard hero started. Use `style={{ ...T.title }}`.
+
 - Effort-based deload signal: `detectDeload` now also fires when recent sessions are dominated by hard-rated sets (`getRecentEffortStrain`: scans the last 3 workouts, needs ≥8 rated completed sets and ≥60% "hard"). This works independently of the loaded-week streak, so a stretch of grinding sessions triggers a deload even in a short block. The coach's recovery-day message explains the strain reason when that's why. Closes the loop on per-set effort ratings feeding real recommendations. Tested (`getRecentEffortStrain`, 4 cases).
 
 - Explicit workout start (preview mode): tapping a template now opens a **preview** of the workout (sets visible, timer at 00:00 marked "not started", "‹ Change workout" link) with a prominent "▶ Start Workout" button (top banner + bottom button). The timer/session begins only on that tap; "Finish Workout" appears only once started. This is the flow the user asked for — no timer until an explicit start.

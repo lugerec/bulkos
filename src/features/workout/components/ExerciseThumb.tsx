@@ -26,7 +26,7 @@ export default function ExerciseThumb({ exercise, size = 44 }: Props) {
       style={{
         width: size,
         height: size,
-        background: C.card2,
+        background: showImage ? "#FFFFFF" : C.card2,
         border: `1px solid ${C.border}`,
       }}
     >
@@ -34,7 +34,7 @@ export default function ExerciseThumb({ exercise, size = 44 }: Props) {
         <img
           src={src}
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain p-0.5"
           loading="lazy"
           onError={() => setFailed(true)}
         />

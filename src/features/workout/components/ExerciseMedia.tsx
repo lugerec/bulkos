@@ -113,12 +113,15 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
         className="relative rounded-[20px] overflow-hidden flex items-center justify-center"
         style={{
           aspectRatio: "4 / 3",
-          background: C.card2,
+          background: "#FFFFFF",
           border: `1px solid ${C.border}`,
         }}
       >
         {showPlaceholder ? (
-          <div className="flex flex-col items-center gap-2 px-6 text-center">
+          <div
+            className="flex flex-col items-center gap-2 px-6 text-center absolute inset-0 justify-center"
+            style={{ background: C.card2 }}
+          >
             {active ? (
               <ImageOff size={28} color={C.fg3} />
             ) : (
@@ -135,7 +138,7 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
           <img
             src={active.src}
             alt={`${name} — ${active.label}`}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain p-2"
             loading="lazy"
             onError={() =>
               setFailed((prev) => ({ ...prev, [activeIndex]: true }))

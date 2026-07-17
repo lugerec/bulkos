@@ -31,7 +31,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { C, type Screen } from "@/shared/ui";
+import { C, T, type Screen } from "@/shared/ui";
 import { ProgressRing, Badge, SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useDailyLogStore } from "@/store/dailyLogStore";
@@ -302,16 +302,16 @@ export default function DashboardScreen({
         heroMessage={heroMessage}
       />
 
-        <p className="text-sm mb-1" style={{ color: C.fg3 }}>
+        <p className="mb-1" style={{ ...T.eyebrow, color: C.fg3 }}>
           Protein remaining
         </p>
 
         <p
-          className="text-[34px] font-extrabold leading-none mb-4"
-          style={{ color: C.fg }}
+          className="mb-4"
+          style={{ ...T.display, color: C.fg }}
         >
           {Math.round(proteinRemaining)}
-          <span className="text-base ml-1" style={{ color: C.fg3 }}>
+          <span className="ml-1" style={{ ...T.body, color: C.fg3 }}>
             g
           </span>
         </p>
