@@ -4,6 +4,7 @@ import { getProgressionSuggestion } from "@/features/workout/utils/progression";
 import ExerciseDetailsSheet from "@/features/workout/components/ExerciseDetailsSheet";
 import SwapExerciseSheet from "@/features/workout/components/SwapExerciseSheet";
 import AddExerciseSheet from "@/features/workout/components/AddExerciseSheet";
+import ExerciseThumb from "@/features/workout/components/ExerciseThumb";
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote } from "lucide-react";
@@ -76,6 +77,20 @@ export default function WorkoutScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [workoutStarted, setWorkoutStarted] = useState(false);
+
+  // Guarantee a clean slate whenever this screen mounts: never resume a
+  // session automatically. The user must pick a template to begin. This
+  // guards against a stale `selected` template in the store making it look
+  // like a workout is already in progress.
+  useEffect(() => {
+    setWorkoutStarted(false);
+    setElapsed(0);
+    setDone(false);
+    setIsResting(false);
+    setRestTimer(0);
+    // Intentionally run only on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [swapExerciseIdx, setSwapExerciseIdx] = useState<number | null>(null);
@@ -1033,7 +1048,14 @@ export default function WorkoutScreen() {
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div className="flex justify-between items-start mb-3">
-                <div>
+                <div className="flex items-start gap-3">
+                  <ExerciseThumb
+                    exercise={{
+                      id: ex.exerciseId ?? ex.id,
+                      media: exerciseDefinition?.media,
+                    }}
+                  />
+                  <div>
                   <div className="flex items-center gap-2">
                   <button
                   type="button"
@@ -1177,6 +1199,7 @@ export default function WorkoutScreen() {
                       </span>
                     </div>
                   )}
+                </div>
                 </div>
 
                 <span className="text-[11px]" style={{ color: C.fg3 }}>

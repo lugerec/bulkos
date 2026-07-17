@@ -31,6 +31,9 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Exercise thumbnails in workout: each exercise card in `WorkoutScreen` shows a small `ExerciseThumb` (square image from `getExerciseThumbnail`, dumbbell-icon fallback) next to the name, so exercises are recognisable without opening the detail.
+- Hard guard against workout auto-start: `WorkoutScreen` resets session state (`workoutStarted`, timer, etc.) on mount so a stale `selected` template in the store can never make a session look already-in-progress; the elapsed timer only runs once `workoutStarted` is true.
+
 - Effort + notes surfaced in workout history: `WorkoutDetailScreen` now shows each set's effort rating as a colored badge and the exercise note (italic) under the header. Required threading `effort` through the log types — added to `LoggedWorkoutSet` (workoutHistoryStore) and the `saveWorkout` input type (workoutService); `notes` was already on the logged exercise. So the RPE/notes captured during a session are visible when reviewing it later.
 
 - Per-exercise notes during a workout: a 📝 button on each exercise card toggles a note textarea (writes to `WorkoutExercise.notes`, saved into history via the existing `...exercise` spread). When collapsed, an existing note shows as italic text; template notes set in the editor show here too. The button is highlighted when a note exists.
