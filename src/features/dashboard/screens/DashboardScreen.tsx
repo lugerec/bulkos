@@ -84,7 +84,6 @@ export default function DashboardScreen({
   const loadTemplates = useWorkoutTemplateStore((s) => s.load);
   const selectTemplate = useWorkoutTemplateStore((s) => s.selectTemplate);
   const selectGenerated = useWorkoutTemplateStore((s) => s.selectGenerated);
-  const startSession = useAppStore((s) => s.startSession);
 
   const bodyEntries = useBodyMetricsStore((s) => s.entries);
   const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
@@ -286,9 +285,6 @@ export default function DashboardScreen({
             }
           }
           onNavigate("workout");
-          // Dashboard "Start" is an explicit intent to begin — mark the
-          // session active after navigating (navigate clears it first).
-          startSession();
         }}
       />
 

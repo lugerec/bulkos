@@ -1,8 +1,8 @@
 import MuscleActivationList from "@/features/workout/components/MuscleActivationList";
+import ExerciseMedia from "@/features/workout/components/ExerciseMedia";
 
 import {
-  getExerciseThumbnail,
-  getExerciseAnimation,
+  getExerciseMedia,
 } from "@/features/workout/utils/exerciseMedia";
 
 import ExerciseProgressChart from "@/features/workout/components/ExerciseProgressChart";
@@ -39,9 +39,6 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
 
   const exercise = exerciseDefinitions.find((e) => e.id === exerciseId);
   if (!exercise) return null;
-
-  const thumbnail = getExerciseThumbnail(exercise);
-  const animation = getExerciseAnimation(exercise);
 
   const getStoredExerciseId = (item: { id: string; exerciseId?: string }) =>
     item.exerciseId ?? item.id;
@@ -175,32 +172,13 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
             </InfoBadge>
           </div>
 
-            {thumbnail ? (
-            <div
-              className="mt-5 rounded-[20px] overflow-hidden"
-              style={{
-                border: `1px solid ${C.border}`,
-                background: C.card,
-              }}
-            >
-              <img
-                src={thumbnail}
-                alt={exercise.name}
-                className="w-full h-56 object-cover"
-              />
-            </div>
-          ) : (
-            <div
-              className="mt-5 h-56 rounded-[20px] flex items-center justify-center"
-              style={{
-                background: C.card,
-                border: `1px solid ${C.border}`,
-                color: C.fg3,
-              }}
-            >
-              No image yet
-            </div>
-          )}
+          <div className="mt-5">
+            <ExerciseMedia
+              media={getExerciseMedia(exercise.id, exercise.media)}
+              name={exercise.name}
+              primaryMuscle={exercise.primaryMuscle}
+            />
+          </div>
 
             <div className="flex flex-wrap gap-2 mt-5">
             <InfoChip label="Primary" value={exercise.primaryMuscle} />

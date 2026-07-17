@@ -79,11 +79,13 @@ export default function WorkoutScreen() {
   const [error, setError] = useState<string | null>(null);
   const workoutStarted = useAppStore((s) => s.sessionActive);
   const startSession = useAppStore((s) => s.startSession);
+  const endSession = useAppStore((s) => s.endSession);
 
-  // Guarantee a clean slate whenever this screen mounts: never resume a
-  // session automatically. `sessionActive` is already cleared by navigation,
-  // this just resets the local timers/flags.
+  // Always land on the template picker when this screen mounts. A workout
+  // starts only when the user taps a template here. This is deliberately
+  // unconditional so no stale store state can auto-start a session.
   useEffect(() => {
+    endSession();
     setElapsed(0);
     setDone(false);
     setIsResting(false);
@@ -183,13 +185,6 @@ export default function WorkoutScreen() {
   if (!workoutStarted || !workout) {
     return (
       <div className="px-5 pt-4 pb-8">
-        <div
-          className="mb-4 rounded-[14px] p-2 text-[10px] font-mono"
-          style={{ background: C.card2, color: C.amber }}
-        >
-          debug: sessionActive={String(workoutStarted)} · workout=
-          {workout ? workout.name : "none"}
-        </div>
         <div className="mb-6">
           <p
             className="text-[11px] font-bold uppercase tracking-widest mb-1"
@@ -896,13 +891,6 @@ export default function WorkoutScreen() {
 
   return (
     <div className="pb-8">
-      <div
-        className="mx-5 mt-2 mb-2 rounded-[14px] p-2 text-[10px] font-mono"
-        style={{ background: C.card2, color: C.amber }}
-      >
-        debug ACTIVE: sessionActive={String(workoutStarted)} · elapsed=
-        {elapsed}s
-      </div>
       <div className="px-5 pt-4 pb-4">
         <div className="flex justify-between items-start mb-1">
           <div>
