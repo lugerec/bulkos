@@ -17,6 +17,13 @@ type AppState = {
   navigate: (to: Screen) => void;
   goBack: () => void;
 
+  /** True only while a workout session is actively in progress. Cleared on
+   * every navigation so returning to the Workout tab always shows the
+   * template picker, never a phantom running session. */
+  sessionActive: boolean;
+  startSession: () => void;
+  endSession: () => void;
+
   selectedMeal: MealType;
   setSelectedMeal: (meal: MealType) => void;
 
@@ -55,15 +62,22 @@ export const useAppStore = create<AppState>((set) => ({
 
   selectedMeal: "breakfast",
 
+  sessionActive: false,
+
   navigate: (to) =>
     set((state) => ({
       prevScreen: state.screen,
       screen: to,
+      sessionActive: false,
     })),
+
+  startSession: () => set({ sessionActive: true }),
+  endSession: () => set({ sessionActive: false }),
 
   goBack: () =>
     set((state) => ({
       screen: state.prevScreen,
+      sessionActive: false,
     })),
 
   setSelectedMeal: (meal) =>

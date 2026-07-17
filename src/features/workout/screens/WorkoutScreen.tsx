@@ -14,6 +14,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import { useAppStore } from "@/store/appStore";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
@@ -76,14 +77,13 @@ export default function WorkoutScreen() {
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [workoutStarted, setWorkoutStarted] = useState(false);
+  const workoutStarted = useAppStore((s) => s.sessionActive);
+  const startSession = useAppStore((s) => s.startSession);
 
   // Guarantee a clean slate whenever this screen mounts: never resume a
-  // session automatically. The user must pick a template to begin. This
-  // guards against a stale `selected` template in the store making it look
-  // like a workout is already in progress.
+  // session automatically. `sessionActive` is already cleared by navigation,
+  // this just resets the local timers/flags.
   useEffect(() => {
-    setWorkoutStarted(false);
     setElapsed(0);
     setDone(false);
     setIsResting(false);
@@ -225,7 +225,7 @@ export default function WorkoutScreen() {
                 key={template.id}
                 onClick={() => {
                   selectTemplate(template.id);
-                  setWorkoutStarted(true);
+                  startSession();
                 }}
                 className="rounded-[20px] p-4 text-left flex items-center justify-between gap-3"
                 style={{

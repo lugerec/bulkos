@@ -31,6 +31,9 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Fixed exercise images not loading: many exercise definitions carry a placeholder `media.thumbnail` (`.../thumbnail.webp`) that was never actually downloaded, and the old merge let it win over the real downloaded start/finish PNGs — so `<img>` pointed at a missing file. `getExerciseMedia` now lets the downloaded map win (`{...own, ...downloaded}`) and `getExerciseThumbnail` prefers start/finish over thumbnail. Regression test in exerciseMedia.test.ts.
+- Fixed workout auto-start for good: session state moved to `appStore.sessionActive`, which `navigate`/`goBack` always clear, so opening the Workout tab (or returning to it) can never show a phantom running session regardless of component mount/unmount. `startSession()` is called on template tap and on Dashboard "Start" (after navigating). The elapsed timer runs only while `sessionActive`.
+
 - Exercise thumbnails in workout: each exercise card in `WorkoutScreen` shows a small `ExerciseThumb` (square image from `getExerciseThumbnail`, dumbbell-icon fallback) next to the name, so exercises are recognisable without opening the detail.
 - Hard guard against workout auto-start: `WorkoutScreen` resets session state (`workoutStarted`, timer, etc.) on mount so a stale `selected` template in the store can never make a session look already-in-progress; the elapsed timer only runs once `workoutStarted` is true.
 
