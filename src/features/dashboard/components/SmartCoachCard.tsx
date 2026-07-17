@@ -1,6 +1,6 @@
 import { Sparkles, Moon, ChevronRight } from "lucide-react";
 
-import { C } from "@/shared/ui";
+import { C, T } from "@/shared/ui";
 import type { WorkoutRecommendation } from "@/features/workout/utils/workoutRecommendation";
 
 type Props = {
@@ -13,7 +13,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
 
   return (
     <div
-      className="rounded-[20px] p-5 mb-5"
+      className="rounded-[20px] p-5 mb-4"
       style={{
         background: isRecovery
           ? "linear-gradient(135deg, rgba(96,165,250,0.14), rgba(192,132,252,0.08))"
@@ -30,25 +30,24 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
           <Sparkles size={15} color={C.purple} />
         )}
         <p
-          className="text-[11px] font-bold uppercase tracking-widest"
-          style={{ color: isRecovery ? C.blue : C.purple }}
+          style={{ ...T.eyebrow, color: isRecovery ? C.blue : C.purple }}
         >
           Smart Coach
         </p>
       </div>
 
       <div className="flex items-center justify-between mb-2">
-        <p className="text-2xl font-extrabold" style={{ color: C.fg }}>
+        <p style={{ ...T.title, color: C.fg }}>
           {recommendation.title}
         </p>
 
         {!isRecovery && (
           <span
-            className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+            className="px-2.5 py-1 rounded-full"
             style={
               recommendation.isDeloadWeek
-                ? { background: "rgba(251,191,36,0.14)", color: C.amber }
-                : { background: C.accentDim, color: C.accent }
+                ? { ...T.caption, fontWeight: 700, background: "rgba(251,191,36,0.14)", color: C.amber }
+                : { ...T.caption, fontWeight: 700, background: C.accentDim, color: C.accent }
             }
           >
             {recommendation.isDeloadWeek
@@ -58,7 +57,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
         )}
       </div>
 
-      <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg }}>
+      <p className="mb-4" style={{ ...T.body, color: C.fg }}>
         {recommendation.reason}
       </p>
 

@@ -36,7 +36,7 @@ export default function FrequencyCard({ adherence }: Props) {
 
   return (
     <div
-      className="rounded-[20px] p-4 mb-5"
+      className="rounded-[20px] p-4 mb-4"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <div className="flex items-center justify-between mb-2">

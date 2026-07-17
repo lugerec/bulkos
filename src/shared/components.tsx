@@ -1,5 +1,65 @@
 import { ArrowLeft } from "lucide-react";
-import { C } from "./ui";
+import { C, T } from "./ui";
+
+type TextProps = {
+  children: React.ReactNode;
+  color?: string;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+/**
+ * Typography components wrapping the `T` scale, so screens use consistent
+ * roles (Title, Heading, Body, Eyebrow, Caption…) instead of ad-hoc pixel
+ * sizes. Default colors follow the intended hierarchy but can be overridden.
+ */
+export function Display({ children, color = C.fg, className, style }: TextProps) {
+  return (
+    <p className={className} style={{ ...T.display, color, ...style }}>
+      {children}
+    </p>
+  );
+}
+
+export function Title({ children, color = C.fg, className, style }: TextProps) {
+  return (
+    <h2 className={className} style={{ ...T.title, color, ...style }}>
+      {children}
+    </h2>
+  );
+}
+
+export function Heading({ children, color = C.fg, className, style }: TextProps) {
+  return (
+    <h3 className={className} style={{ ...T.heading, color, ...style }}>
+      {children}
+    </h3>
+  );
+}
+
+export function Body({ children, color = C.fg2, className, style }: TextProps) {
+  return (
+    <p className={className} style={{ ...T.body, color, ...style }}>
+      {children}
+    </p>
+  );
+}
+
+export function Eyebrow({ children, color = C.fg3, className, style }: TextProps) {
+  return (
+    <p className={className} style={{ ...T.eyebrow, color, ...style }}>
+      {children}
+    </p>
+  );
+}
+
+export function Caption({ children, color = C.fg3, className, style }: TextProps) {
+  return (
+    <p className={className} style={{ ...T.caption, color, ...style }}>
+      {children}
+    </p>
+  );
+}
 
 export function ProgressRing({
   value,

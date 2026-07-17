@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Typography components + dashboard polish: added `Display/Title/Heading/Body/Eyebrow/Caption` components (shared/components.tsx) wrapping the `T` scale. Applied to dashboard hero, StreakCard, SmartCoachCard; unified card spacing to a consistent `mb-4` rhythm across all dashboard cards (was a mix of mb-5/4). Rollout to remaining screens/cards is ongoing — the pattern is `style={{ ...T.role }}` or the `<Title>`/`<Body>` components.
+
 - Exercise images centered + unified: `ExerciseMedia` and `ExerciseThumb` now use `object-contain` on a white background (was `object-cover`, which cropped), so wger photos from different contributors read consistently and the whole exercise is visible.
 - Typography scale: added `T` design tokens to `shared/ui.ts` (display/title/heading/body/bodyStrong/label/eyebrow/caption — each an inline-style object with size/weight/spacing/line-height) to replace the ad-hoc mix of a dozen pixel sizes. Being rolled out screen by screen; Dashboard hero started. Use `style={{ ...T.title }}`.
 

@@ -33,7 +33,7 @@ export default function WorkoutSection({
       />
 
       <div
-        className="rounded-[20px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-4"
         style={{
           background:
             "linear-gradient(135deg, rgba(163,230,53,0.12), rgba(251,191,36,0.07))",
