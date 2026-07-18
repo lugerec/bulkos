@@ -25,7 +25,7 @@ export default function MuscleVolumeCard({
 
   return (
     <div
-      className="rounded-[20px] p-4 mb-5"
+      className="rounded-[20px] p-4 mb-4"
       style={{
         background: C.card,
         border: `1px solid ${C.border}`,
@@ -95,7 +95,7 @@ export default function MuscleVolumeCard({
                     </span>
 
                     <span
-                      className="text-[10px]"
+                      className="text-[11px]"
                       style={{
                         color:
                           difference > 0

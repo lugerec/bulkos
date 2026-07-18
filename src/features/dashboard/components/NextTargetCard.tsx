@@ -1,6 +1,6 @@
 import { Target } from "lucide-react";
 
-import { C } from "@/shared/ui";
+import { C, T } from "@/shared/ui";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 
 function estimateOneRepMax(weight: number, reps: number) {
@@ -57,7 +57,7 @@ export default function NextTargetCard() {
             Next Target
           </p>
 
-          <p className="text-lg font-extrabold" style={{ color: C.fg }}>
+          <p className="text-[17px] font-extrabold" style={{ color: C.fg }}>
             {bestSet.exerciseName}
           </p>
 
@@ -65,7 +65,7 @@ export default function NextTargetCard() {
             Recommended next set
           </p>
 
-          <p className="text-2xl font-extrabold mt-3" style={{ color: C.fg }}>
+          <p className=" mt-3" style={{ ...T.title, color: C.fg }}>
             {suggested.weight} kg × {suggested.reps}
           </p>
         </div>

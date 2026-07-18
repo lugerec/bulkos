@@ -111,7 +111,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
         <ArrowLeft size={18} color={C.fg} />
       </button>
 
-      <h2 className="text-2xl font-extrabold mb-1" style={{ color: C.fg }}>
+      <h2 className="text-[22px] font-extrabold mb-1" style={{ color: C.fg }}>
         {exerciseName ?? "Exercise"}
       </h2>
 
@@ -128,7 +128,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
 
       {chartData.length > 0 && (
         <div
-          className="rounded-[20px] p-4 mb-5"
+          className="rounded-[20px] p-4 mb-4"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <div className="flex justify-between items-start mb-4">
@@ -282,7 +282,7 @@ function Stat({ label, value }: { label: string; value: string }) {
       className="rounded-[14px] px-3 py-2"
       style={{ background: C.card2, border: `1px solid ${C.border}` }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
       <p className="text-xs font-bold" style={{ color: C.fg }}>

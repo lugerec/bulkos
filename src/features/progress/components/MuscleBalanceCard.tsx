@@ -38,7 +38,7 @@ export default function MuscleBalanceCard({ balances }: Props) {
       <SectionHeader title="Muscle Balance" />
 
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center gap-2 mb-4">
@@ -62,7 +62,7 @@ export default function MuscleBalanceCard({ balances }: Props) {
                     {balance.label}
                   </span>
                   <span
-                    className="text-[10px] font-bold uppercase tracking-wide"
+                    className="text-[11px] font-bold uppercase tracking-wide"
                     style={{ color }}
                   >
                     {statusLabel(balance.status)}
@@ -90,16 +90,16 @@ export default function MuscleBalanceCard({ balances }: Props) {
                 </div>
 
                 <div className="flex justify-between mt-1">
-                  <span className="text-[10px]" style={{ color: C.fg3 }}>
+                  <span className="text-[11px]" style={{ color: C.fg3 }}>
                     {balance.leftLabel} {balance.leftSets}
                   </span>
-                  <span className="text-[10px]" style={{ color: C.fg3 }}>
+                  <span className="text-[11px]" style={{ color: C.fg3 }}>
                     {balance.rightSets} {balance.rightLabel}
                   </span>
                 </div>
 
                 {balance.weakerSide && (
-                  <p className="text-[10px] mt-1" style={{ color }}>
+                  <p className="text-[11px] mt-1" style={{ color }}>
                     Add volume to {balance.weakerSide} to even this out.
                   </p>
                 )}
@@ -108,7 +108,7 @@ export default function MuscleBalanceCard({ balances }: Props) {
           })}
         </div>
 
-        <p className="text-[10px] mt-4" style={{ color: C.fg3 }}>
+        <p className="text-[11px] mt-4" style={{ color: C.fg3 }}>
           Based on this week's weighted sets. Aim for roughly even antagonist
           volume to support posture and joint health.
         </p>

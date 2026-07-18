@@ -47,7 +47,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
           inputMode="decimal"
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="flex-1 bg-transparent outline-none text-lg font-bold w-full"
+          className="flex-1 bg-transparent outline-none text-[17px] font-bold w-full"
           style={{ color: C.fg }}
         />
         <span className="text-xs" style={{ color: C.fg3 }}>
@@ -63,7 +63,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
 
       <div className="px-5">
         <div
-          className="rounded-[20px] p-4 mb-5"
+          className="rounded-[20px] p-4 mb-4"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <div className="flex gap-3 mb-4">
@@ -85,13 +85,13 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
                   Estimated 1RM
                 </span>
               </div>
-              <p className="text-3xl font-extrabold" style={{ color: C.fg }}>
+              <p className="text-[32px] font-extrabold" style={{ color: C.fg }}>
                 {estimate.average}
                 <span className="text-base font-medium ml-1" style={{ color: C.fg2 }}>
                   kg
                 </span>
               </p>
-              <p className="text-[10px] mt-1" style={{ color: C.fg2 }}>
+              <p className="text-[11px] mt-1" style={{ color: C.fg2 }}>
                 Epley {estimate.epley} · Brzycki {estimate.brzycki} · Lombardi{" "}
                 {estimate.lombardi}
               </p>
@@ -118,13 +118,13 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
               className="flex items-center px-4 py-3"
               style={{ borderBottom: `1px solid ${C.border}` }}
             >
-              <span className="text-[10px] uppercase tracking-wide flex-1" style={{ color: C.fg3 }}>
+              <span className="text-[11px] uppercase tracking-wide flex-1" style={{ color: C.fg3 }}>
                 Reps
               </span>
-              <span className="text-[10px] uppercase tracking-wide flex-1 text-center" style={{ color: C.fg3 }}>
+              <span className="text-[11px] uppercase tracking-wide flex-1 text-center" style={{ color: C.fg3 }}>
                 % of 1RM
               </span>
-              <span className="text-[10px] uppercase tracking-wide flex-1 text-right" style={{ color: C.fg3 }}>
+              <span className="text-[11px] uppercase tracking-wide flex-1 text-right" style={{ color: C.fg3 }}>
                 Weight
               </span>
             </div>

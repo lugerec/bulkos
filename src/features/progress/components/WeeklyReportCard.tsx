@@ -26,7 +26,7 @@ export default function WeeklyReportCard({ report }: Props) {
       <SectionHeader title="Last Week in Review" />
 
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center gap-2 mb-3">
@@ -39,32 +39,32 @@ export default function WeeklyReportCard({ report }: Props) {
         <div className="grid grid-cols-3 gap-3">
           <div>
             <p
-              className="text-lg font-extrabold"
+              className="text-[17px] font-extrabold"
               style={{ color: hitTarget ? C.accent : C.amber }}
             >
               {report.trainingDays}/{report.targetTrainingDays}
             </p>
-            <p className="text-[10px]" style={{ color: C.fg3 }}>
+            <p className="text-[11px]" style={{ color: C.fg3 }}>
               Training days
             </p>
           </div>
 
           <div>
-            <p className="text-lg font-extrabold" style={{ color: C.fg }}>
+            <p className="text-[17px] font-extrabold" style={{ color: C.fg }}>
               {report.volumeKg.toLocaleString()} kg
             </p>
-            <p className="text-[10px]" style={{ color: C.fg3 }}>
+            <p className="text-[11px]" style={{ color: C.fg3 }}>
               Volume ({signed(report.volumeDeltaKg, " kg")} vs prior)
             </p>
           </div>
 
           <div>
-            <p className="text-lg font-extrabold" style={{ color: C.fg }}>
+            <p className="text-[17px] font-extrabold" style={{ color: C.fg }}>
               {report.weightChangeKg === null
                 ? "—"
                 : signed(report.weightChangeKg, " kg")}
             </p>
-            <p className="text-[10px]" style={{ color: C.fg3 }}>
+            <p className="text-[11px]" style={{ color: C.fg3 }}>
               Body weight
             </p>
           </div>

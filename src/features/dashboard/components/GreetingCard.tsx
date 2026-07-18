@@ -13,7 +13,7 @@ export default function GreetingCard({ name, date }: Props) {
       </p>
 
       <h1
-        className="text-[30px] font-extrabold leading-none tracking-tight"
+        className="text-[32px] font-extrabold leading-none tracking-tight"
         style={{ color: C.fg }}
       >
         {name}

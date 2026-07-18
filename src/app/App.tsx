@@ -154,7 +154,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         </button>
         <div className="absolute bottom-0 left-0 right-0 px-5 pb-4">
           <Badge>Post-Workout</Badge>
-          <h2 className="text-xl font-bold mt-1.5" style={{ color: C.fg }}>Salmon & Quinoa Bowl</h2>
+          <h2 className="text-[22px] font-bold mt-1.5" style={{ color: C.fg }}>Salmon & Quinoa Bowl</h2>
           <p className="text-xs mt-0.5" style={{ color: "rgba(240,240,240,0.6)" }}>
             15 min prep · 20 min cook · 1 serving
           </p>
@@ -175,9 +175,9 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
               className="rounded-[14px] py-3 px-2 text-center"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
-              <p className="text-lg font-bold leading-none" style={{ color }}>{val}</p>
-              <p className="text-[9px] mt-1" style={{ color: C.fg3 }}>{unit}</p>
-              <p className="text-[9px] mt-0.5" style={{ color: C.fg2 }}>{label}</p>
+              <p className="text-[17px] font-bold leading-none" style={{ color }}>{val}</p>
+              <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>{unit}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: C.fg2 }}>{label}</p>
             </div>
           ))}
         </div>
@@ -442,7 +442,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
                 <div className="flex justify-between items-start mb-3">
                   <p className="text-[11px] leading-tight" style={{ color: C.fg2, maxWidth: 72 }}>{label}</p>
                   <ProgressRing value={value ?? 0} max={100} size={38} stroke={4} color={color}>
-                    <span className="text-[10px] font-bold" style={{ color: C.fg }}>{value ?? "—"}</span>
+                    <span className="text-[11px] font-bold" style={{ color: C.fg }}>{value ?? "—"}</span>
                   </ProgressRing>
                 </div>
                 <p className="text-sm font-bold" style={{ color }}>{description}</p>
@@ -452,13 +452,13 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Calorie chart */}
-        <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex justify-between items-center mb-4">
             <div>
               <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: C.fg2 }}>
                 Weekly Avg Calories
               </p>
-              <p className="text-2xl font-extrabold mt-0.5 leading-none" style={{ color: C.fg }}>
+              <p className="text-[22px] font-extrabold mt-0.5 leading-none" style={{ color: C.fg }}>
                 {weeklyAvgCalories.toLocaleString()}<span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>kcal</span>
               </p>
             </div>
@@ -490,7 +490,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
         {/* Macro adherence */}
         {macroAdherence && (
-          <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
             <SectionHeader title="Macro Adherence" />
             <div className="flex flex-col gap-4">
               {macroAdherence.map(({ label, percent }, index) => {
@@ -509,7 +509,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
                 );
               })}
             </div>
-            <p className="text-[10px] mt-3" style={{ color: C.fg3 }}>
+            <p className="text-[11px] mt-3" style={{ color: C.fg3 }}>
               Average of the last 7 days with logged food vs your targets.
             </p>
           </div>
@@ -532,7 +532,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider" style={{ color: C.accent }}>Coach Insight</p>
-              <p className="text-[10px]" style={{ color: C.fg2 }}>Based on the last 14 days of check-ins</p>
+              <p className="text-[11px]" style={{ color: C.fg2 }}>Based on the last 14 days of check-ins</p>
             </div>
           </div>
           <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg }}>
@@ -678,7 +678,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
 
       <div className="px-5">
         {/* Summary */}
-        <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold" style={{ color: C.fg }}>Shopping progress</span>
             <span className="text-sm font-bold" style={{ color: C.accent }}>
@@ -702,7 +702,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Add item */}
-        <div className="rounded-[20px] p-4 mb-5" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex items-center gap-2 mb-1">
             <Search size={14} color={C.fg3} />
             <input
@@ -810,7 +810,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
 
                 {item.source === "off" && (
                   <span
-                    className="text-[9px] font-bold px-1.5 py-0.5 rounded flex-shrink-0"
+                    className="text-[11px] font-bold px-1.5 py-0.5 rounded flex-shrink-0"
                     style={{ background: "rgba(96,165,250,0.15)", color: C.blue }}
                   >
                     STORE
@@ -869,7 +869,7 @@ function BottomNav({ active, onNavigate }: {
               strokeWidth={isActive ? 2.2 : 1.5}
             />
             <span
-              className="text-[10px] font-semibold"
+              className="text-[11px] font-semibold"
               style={{ color: isActive ? C.accent : C.fg3 }}
             >
               {label}

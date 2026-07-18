@@ -49,7 +49,7 @@ export default function StrengthStandardsCard({ standards }: Props) {
       <SectionHeader title="Strength Standards" />
 
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center gap-2 mb-4">
@@ -79,7 +79,7 @@ export default function StrengthStandardsCard({ standards }: Props) {
 
                   <div className="flex items-center gap-2">
                     <span
-                      className="text-[10px] font-bold uppercase tracking-wide"
+                      className="text-[11px] font-bold uppercase tracking-wide"
                       style={{ color }}
                     >
                       {LEVEL_LABELS[standard.level]}
@@ -108,7 +108,7 @@ export default function StrengthStandardsCard({ standards }: Props) {
                 </div>
 
                 {standard.nextLevel && standard.nextLevelWeightKg !== null && (
-                  <p className="text-[10px] mt-1" style={{ color: C.fg3 }}>
+                  <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
                     {standard.nextLevelWeightKg} kg to reach{" "}
                     {LEVEL_LABELS[standard.nextLevel]}
                   </p>

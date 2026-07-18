@@ -95,7 +95,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </button>
 
       <div
-        className="rounded-[20px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-4"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -105,7 +105,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <h2
-                className="text-2xl font-extrabold"
+                className="text-[22px] font-extrabold"
                 style={{ color: C.fg }}
               >
                 {food.name}
@@ -127,7 +127,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
           </div>
 
           <p
-            className="text-xl font-extrabold flex-shrink-0"
+            className="text-[22px] font-extrabold flex-shrink-0"
             style={{ color: C.amber }}
           >
             {Math.round(food.calories)}
@@ -160,7 +160,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </div>
 
       <div
-        className="rounded-[20px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-4"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -174,7 +174,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         </p>
 
         <p
-          className="text-xl font-extrabold"
+          className="text-[22px] font-extrabold"
           style={{ color: C.fg }}
         >
           {mealLabels[selectedMeal]}
@@ -182,7 +182,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </div>
 
       <div
-        className="rounded-[20px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-4"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -244,7 +244,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       </div>
 
       <div
-        className="rounded-[20px] p-5 mb-5"
+        className="rounded-[20px] p-5 mb-4"
         style={{
           background:
             "linear-gradient(135deg, rgba(163,230,53,0.08), rgba(96,165,250,0.06))",
@@ -336,7 +336,7 @@ function Macro({
         border: `1px solid ${C.border}`,
       }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
 
@@ -370,7 +370,7 @@ function BigMacro({
         {label}
       </p>
 
-      <p className="text-2xl font-extrabold" style={{ color }}>
+      <p className="text-[22px] font-extrabold" style={{ color }}>
         {value}
         <span
           className="text-xs ml-1"

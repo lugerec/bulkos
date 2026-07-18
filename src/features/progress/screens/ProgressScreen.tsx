@@ -314,7 +314,7 @@ const averageWorkoutDuration =
     <div className="px-5 pb-8 pt-4">
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h2 className="text-2xl font-bold mb-0.5" style={{ color: C.fg }}>
+          <h2 className="text-[22px] font-bold mb-0.5" style={{ color: C.fg }}>
             Progress
           </h2>
           <p className="text-sm" style={{ color: C.fg3 }}>
@@ -410,7 +410,7 @@ const averageWorkoutDuration =
               </p>
 
               <p
-                className="text-2xl font-bold leading-none"
+                className="text-[22px] font-bold leading-none"
                 style={{ color: C.fg }}
               >
                 {hasValue ? current : "--"}
@@ -447,7 +447,7 @@ const averageWorkoutDuration =
       </div>
 
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between">
@@ -460,11 +460,11 @@ const averageWorkoutDuration =
             </p>
 
             <p
-              className="text-3xl font-extrabold leading-none"
+              className="text-[32px] font-extrabold leading-none"
               style={{ color: C.fg }}
             >
               {currentBodyFat?.toFixed(1) ?? "--"}
-              <span className="text-lg ml-0.5">%</span>
+              <span className="text-[17px] ml-0.5">%</span>
             </p>
 
             {bodyFatChange == null ? (
@@ -506,7 +506,7 @@ const averageWorkoutDuration =
       <SectionHeader title="Personal Records" action="View all" />
 
       <div
-        className="rounded-[20px] mb-5 overflow-hidden"
+        className="rounded-[20px] mb-4 overflow-hidden"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         {strengthPRs.length === 0 ? (
@@ -600,7 +600,7 @@ function Stat({ label, value }: { label: string; value: string }) {
         {label}
       </p>
 
-      <p className="text-xl font-bold leading-none" style={{ color: C.fg }}>
+      <p className="text-[22px] font-bold leading-none" style={{ color: C.fg }}>
         {value}
       </p>
     </div>

@@ -40,7 +40,7 @@ export default function LoginScreen() {
             <Dumbbell size={30} color={C.accent} />
           </div>
 
-          <h1 className="text-3xl font-extrabold" style={{ color: C.fg }}>
+          <h1 className="text-[32px] font-extrabold" style={{ color: C.fg }}>
             BulkOS
           </h1>
 

@@ -52,7 +52,7 @@ export default function WorkoutHistoryScreen({
         <ArrowLeft size={18} color={C.fg} />
       </button>
 
-      <h2 className="text-2xl font-extrabold mb-1" style={{ color: C.fg }}>
+      <h2 className="text-[22px] font-extrabold mb-1" style={{ color: C.fg }}>
         Workout History
       </h2>
 
@@ -115,7 +115,7 @@ function Stat({ label, value }: { label: string; value: string }) {
       className="rounded-[14px] px-3 py-2"
       style={{ background: C.card2, border: `1px solid ${C.border}` }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
       <p className="text-xs font-bold" style={{ color: C.fg }}>

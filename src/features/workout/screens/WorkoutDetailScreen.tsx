@@ -37,7 +37,7 @@ export default function WorkoutDetailScreen({
     <div className="px-5 pb-8 pt-4">
       <BackButton onBack={onBack} />
 
-      <h2 className="text-2xl font-extrabold mb-1" style={{ color: C.fg }}>
+      <h2 className="text-[22px] font-extrabold mb-1" style={{ color: C.fg }}>
         {workout.name}
       </h2>
 
@@ -110,7 +110,7 @@ export default function WorkoutDetailScreen({
                     <div className="flex items-center gap-2">
                       {set.effort && (
                         <span
-                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize"
+                          className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
                           style={{
                             background: C.card,
                             border: `1px solid ${C.border}`,
@@ -162,7 +162,7 @@ function Stat({ label, value }: { label: string; value: string }) {
       className="rounded-[14px] px-3 py-3"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
       <p className="text-xs font-bold" style={{ color: C.fg }}>

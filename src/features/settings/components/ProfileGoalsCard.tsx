@@ -110,7 +110,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
       <SectionHeader title="Profile & Goals" />
 
       <div
-        className="rounded-[20px] mb-5 overflow-hidden"
+        className="rounded-[20px] mb-4 overflow-hidden"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div

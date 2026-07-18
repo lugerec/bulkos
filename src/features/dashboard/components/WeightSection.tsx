@@ -25,7 +25,7 @@ export default function WeightSection({
           Current
         </p>
 
-        <p className="text-[26px] font-bold leading-none" style={{ color: C.fg }}>
+        <p className="text-[22px] font-bold leading-none" style={{ color: C.fg }}>
           {currentWeight}
           <span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>
             kg
@@ -49,7 +49,7 @@ export default function WeightSection({
           Goal
         </p>
 
-        <p className="text-[26px] font-bold leading-none" style={{ color: C.fg }}>
+        <p className="text-[22px] font-bold leading-none" style={{ color: C.fg }}>
           {goalWeight}
           <span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>
             kg

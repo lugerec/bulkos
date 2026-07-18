@@ -79,7 +79,7 @@ export default function MuscleRecoveryCard({ data, workouts }: Props) {
       <SectionHeader title="Muscle Recovery" />
 
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -145,7 +145,7 @@ export default function MuscleRecoveryCard({ data, workouts }: Props) {
                     </span>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px]" style={{ color: C.fg3 }}>
+                      <span className="text-[11px]" style={{ color: C.fg3 }}>
                         {formatLastTrained(item.hoursSinceTrained)}
                       </span>
                       <span
@@ -209,7 +209,7 @@ export default function MuscleRecoveryCard({ data, workouts }: Props) {
                                 {session.workoutName}
                               </p>
                               <p
-                                className="text-[10px]"
+                                className="text-[11px]"
                                 style={{ color: C.fg3 }}
                               >
                                 {session.date}

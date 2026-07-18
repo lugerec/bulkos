@@ -69,7 +69,7 @@ export default function FoodDatabaseScreen() {
 
   return (
     <div className="px-5 pb-8 pt-4">
-      <h2 className="text-2xl font-bold mb-1" style={{ color: C.fg }}>
+      <h2 className="text-[22px] font-bold mb-1" style={{ color: C.fg }}>
         Food Database
       </h2>
 

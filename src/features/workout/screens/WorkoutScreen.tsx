@@ -196,7 +196,7 @@ export default function WorkoutScreen() {
             Train
           </p>
   
-          <h2 className="text-2xl font-extrabold" style={{ color: C.fg }}>
+          <h2 className="text-[22px] font-extrabold" style={{ color: C.fg }}>
             Select Workout
           </h2>
   
@@ -709,13 +709,13 @@ export default function WorkoutScreen() {
           <CheckCircle2 size={48} color={C.accent} />
         </div>
   
-        <h2 className="text-3xl font-extrabold mb-2" style={{ color: C.fg }}>
+        <h2 className="text-[32px] font-extrabold mb-2" style={{ color: C.fg }}>
           Workout Complete
         </h2>
 
         <div className="mb-4">
         <p
-          className="text-xl font-bold"
+          className="text-[22px] font-bold"
           style={{ color: C.accent }}
         >
           {workoutRating.emoji} {workoutRating.text}
@@ -742,7 +742,7 @@ export default function WorkoutScreen() {
               className="rounded-[14px] p-3 text-center"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
-              <p className="text-lg font-bold" style={{ color: C.accent }}>
+              <p className="text-[17px] font-bold" style={{ color: C.accent }}>
                 {val}
               </p>
               <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
@@ -754,10 +754,10 @@ export default function WorkoutScreen() {
   
         {sessionEffort.overall && (
           <div
-            className="w-full rounded-[20px] p-4 mb-5 flex items-center gap-3"
+            className="w-full rounded-[20px] p-4 mb-4 flex items-center gap-3"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
-            <span className="text-2xl">
+            <span className="text-[22px]">
               {describeSessionEffort(sessionEffort.overall).emoji}
             </span>
             <div className="text-left flex-1">
@@ -781,7 +781,7 @@ export default function WorkoutScreen() {
 
         {prList.length > 0 && (
           <div
-            className="w-full rounded-[20px] p-4 mb-5 text-left"
+            className="w-full rounded-[20px] p-4 mb-4 text-left"
             style={{
               background: "rgba(163,230,53,0.07)",
               border: "1px solid rgba(163,230,53,0.2)",
@@ -809,7 +809,7 @@ export default function WorkoutScreen() {
 
         {strongestSet && (
           <div
-            className="w-full rounded-[20px] p-4 mb-5 text-left"
+            className="w-full rounded-[20px] p-4 mb-4 text-left"
             style={{
               background: C.card,
               border: `1px solid ${C.border}`,
@@ -840,7 +840,7 @@ export default function WorkoutScreen() {
   
         {comparison && (
           <div
-            className="w-full rounded-[20px] p-4 mb-5 text-left"
+            className="w-full rounded-[20px] p-4 mb-4 text-left"
             style={{
               background: C.card,
               border: `1px solid ${C.border}`,
@@ -903,7 +903,7 @@ export default function WorkoutScreen() {
             >
               {workoutStarted ? "Active Workout" : "Preview"}
             </p>
-            <h2 className="text-2xl font-extrabold" style={{ color: C.fg }}>
+            <h2 className="text-[22px] font-extrabold" style={{ color: C.fg }}>
               {workout.name}
             </h2>
             {!workoutStarted && (
@@ -919,7 +919,7 @@ export default function WorkoutScreen() {
 
           <div className="text-right">
             <p
-              className="text-xl font-bold font-mono"
+              className="text-[22px] font-bold font-mono"
               style={{ color: workoutStarted ? C.fg : C.fg3 }}
             >
               {fmt(elapsed)}
@@ -1012,12 +1012,12 @@ export default function WorkoutScreen() {
 
             <div className="text-right">
               <p
-                className="text-2xl font-bold font-mono leading-none"
+                className="text-[22px] font-bold font-mono leading-none"
                 style={{ color: C.accent }}
               >
                 {fmt(restTimer)}
               </p>
-              <p className="text-[10px] mt-1" style={{ color: C.fg3 }}>
+              <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
                 Recommended rest
               </p>
             </div>
@@ -1103,7 +1103,7 @@ export default function WorkoutScreen() {
 
                     {exerciseHasPR(ex.id) && (
                       <span
-                        className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                        className="px-2 py-0.5 rounded-full text-[11px] font-bold"
                         style={{
                           background: "rgba(163,230,53,0.15)",
                           color: C.accent,
@@ -1275,13 +1275,13 @@ export default function WorkoutScreen() {
               />
 
               <div className="flex items-center gap-2 mb-2 px-1">
-                <span className="text-[10px] uppercase tracking-wide w-8 text-center" style={{ color: C.fg3 }}>
+                <span className="text-[11px] uppercase tracking-wide w-8 text-center" style={{ color: C.fg3 }}>
                   Set
                 </span>
-                <span className="text-[10px] uppercase tracking-wide flex-1 text-center" style={{ color: C.fg3 }}>
+                <span className="text-[11px] uppercase tracking-wide flex-1 text-center" style={{ color: C.fg3 }}>
                   Weight
                 </span>
-                <span className="text-[10px] uppercase tracking-wide flex-1 text-center" style={{ color: C.fg3 }}>
+                <span className="text-[11px] uppercase tracking-wide flex-1 text-center" style={{ color: C.fg3 }}>
                   Reps
                 </span>
                 <div className="w-8" />
@@ -1441,7 +1441,7 @@ function DiffStat({
       className="rounded-[14px] px-3 py-3"
       style={{ background: C.card2, border: `1px solid ${C.border}` }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
       <p
@@ -1463,7 +1463,7 @@ function LiveStat({ label, value }: { label: string; value: string }) {
         border: `1px solid ${C.border}`,
       }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
       <p className="text-xs font-bold" style={{ color: C.fg }}>

@@ -1,4 +1,4 @@
-import { C } from "@/shared/ui";
+import { C, T } from "@/shared/ui";
 
 type Props = {
   proteinRemaining: number;
@@ -32,11 +32,11 @@ export default function TodayGoalCard({
       </p>
 
       <p
-        className="text-[34px] font-extrabold leading-none mb-4"
-        style={{ color: C.fg }}
+        className="mb-4"
+        style={{ ...T.display, color: C.fg }}
       >
         {Math.round(proteinRemaining)}
-        <span className="text-base ml-1" style={{ color: C.fg3 }}>
+        <span className="ml-1" style={{ ...T.body, color: C.fg3 }}>
           g
         </span>
       </p>

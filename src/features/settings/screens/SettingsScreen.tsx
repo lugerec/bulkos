@@ -92,7 +92,7 @@ export default function SettingsScreen({
 
   return (
     <div className="px-5 pb-8 pt-4">
-      <h2 className="text-2xl font-bold mb-5" style={{ color: C.fg }}>
+      <h2 className="text-[22px] font-bold mb-5" style={{ color: C.fg }}>
         Settings
       </h2>
 
@@ -107,7 +107,7 @@ export default function SettingsScreen({
       <SectionHeader title="Tools" />
 
       <div
-        className="rounded-[20px] mb-5 overflow-hidden"
+        className="rounded-[20px] mb-4 overflow-hidden"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         {[
@@ -167,7 +167,7 @@ export default function SettingsScreen({
       <SectionHeader title="Preferences" />
 
       <div
-        className="rounded-[20px] mb-5 overflow-hidden"
+        className="rounded-[20px] mb-4 overflow-hidden"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div

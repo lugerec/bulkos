@@ -32,7 +32,7 @@ import {
   }: Props) {
     return (
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
@@ -48,7 +48,7 @@ import {
             </p>
   
             <p
-              className="text-2xl font-extrabold mt-0.5 leading-none"
+              className="text-[22px] font-extrabold mt-0.5 leading-none"
               style={{ color: C.fg }}
             >
               {currentWeight ?? "--"}

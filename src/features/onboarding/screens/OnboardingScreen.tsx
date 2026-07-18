@@ -416,7 +416,7 @@ function NumberStep({
         <div className="flex items-center justify-between gap-5">
           <button
             onClick={decrease}
-            className="w-14 h-14 rounded-full text-3xl font-bold"
+            className="w-14 h-14 rounded-full text-[32px] font-bold"
             style={{ background: C.card2, color: C.fg }}
           >
             −
@@ -433,7 +433,7 @@ function NumberStep({
 
           <button
             onClick={increase}
-            className="w-14 h-14 rounded-full text-3xl font-bold"
+            className="w-14 h-14 rounded-full text-[32px] font-bold"
             style={{ background: C.accent, color: C.bg }}
           >
             +
@@ -573,7 +573,7 @@ function Macro({
           {label}
         </p>
       </div>
-      <p className="text-2xl font-extrabold" style={{ color }}>
+      <p className="text-[22px] font-extrabold" style={{ color }}>
         {value}
         <span className="text-xs ml-1" style={{ color: C.fg3 }}>
           {unit}

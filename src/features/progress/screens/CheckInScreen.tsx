@@ -111,7 +111,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
         <ArrowLeft size={18} color={C.fg} />
       </button>
 
-      <h2 className="text-2xl font-extrabold mb-1" style={{ color: C.fg }}>
+      <h2 className="text-[22px] font-extrabold mb-1" style={{ color: C.fg }}>
         Weekly Check-in
       </h2>
 
@@ -184,7 +184,7 @@ function MetricInput({
           onWheel={(e) => e.currentTarget.blur()}
           type="number"
           inputMode="decimal"
-          className="flex-1 bg-transparent outline-none text-xl font-bold min-w-0"
+          className="flex-1 bg-transparent outline-none text-[22px] font-bold min-w-0"
           style={{ color: C.fg }}
         />
 
@@ -227,7 +227,7 @@ function PhotoInput({
         {label}
       </p>
 
-      <p className="text-[10px] mt-1" style={{ color: file ? C.accent : C.fg3 }}>
+      <p className="text-[11px] mt-1" style={{ color: file ? C.accent : C.fg3 }}>
         {file ? "Selected" : "Upload"}
       </p>
     </label>

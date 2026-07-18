@@ -102,7 +102,7 @@ export default function WorkoutSetRow({
 
       {completed && (
         <div className="flex items-center gap-2 pl-10 pr-1 pb-2">
-          <span className="text-[10px]" style={{ color: C.fg3 }}>
+          <span className="text-[11px]" style={{ color: C.fg3 }}>
             Felt
           </span>
           {EFFORTS.map((option) => {
@@ -112,7 +112,7 @@ export default function WorkoutSetRow({
               <button
                 key={option.value}
                 onClick={() => onEffortChange(option.value)}
-                className="px-2.5 py-1 rounded-full text-[10px] font-semibold"
+                className="px-2.5 py-1 rounded-full text-[11px] font-semibold"
                 style={{
                   background: active ? option.color : C.card2,
                   border: `1px solid ${active ? option.color : C.border}`,

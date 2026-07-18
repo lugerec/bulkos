@@ -1,5 +1,5 @@
 import { Badge } from "@/shared/components";
-import { C } from "@/shared/ui";
+import { C, T } from "@/shared/ui";
 
 type Props = {
   workoutsThisWeek: number;
@@ -34,7 +34,7 @@ export default function WeeklyProgressCard({
             This Week
           </p>
 
-          <p className="text-2xl font-extrabold" style={{ color: C.fg }}>
+          <p className="" style={{ ...T.title, color: C.fg }}>
             {workoutsThisWeek}/{weeklyWorkoutGoal} workouts
           </p>
         </div>
@@ -80,7 +80,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
         border: `1px solid ${C.border}`,
       }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
 

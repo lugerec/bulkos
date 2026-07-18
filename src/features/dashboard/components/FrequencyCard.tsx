@@ -1,6 +1,6 @@
 import { CalendarCheck } from "lucide-react";
 
-import { C } from "@/shared/ui";
+import { C, T } from "@/shared/ui";
 import type { FrequencyAdherence } from "@/features/workout/utils/frequencyAdherence";
 
 type Props = {
@@ -52,7 +52,7 @@ export default function FrequencyCard({ adherence }: Props) {
         </span>
       </div>
 
-      <p className="text-2xl font-extrabold mb-1" style={{ color: C.fg }}>
+      <p className=" mb-1" style={{ ...T.title, color: C.fg }}>
         {adherence.completedThisWeek}
         <span className="text-sm font-semibold" style={{ color: C.fg2 }}>
           {" "}
@@ -65,7 +65,7 @@ export default function FrequencyCard({ adherence }: Props) {
       </p>
 
       <div className="flex items-center gap-2">
-        <span className="text-[10px]" style={{ color: C.fg3 }}>
+        <span className="text-[11px]" style={{ color: C.fg3 }}>
           Last 4 weeks
         </span>
 

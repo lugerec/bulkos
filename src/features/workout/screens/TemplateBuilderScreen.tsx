@@ -59,7 +59,7 @@ export default function TemplateBuilderScreen({
           >
             Workout
           </p>
-          <h2 className="text-2xl font-extrabold" style={{ color: C.fg }}>
+          <h2 className="text-[22px] font-extrabold" style={{ color: C.fg }}>
             Templates
           </h2>
         </div>
@@ -79,7 +79,7 @@ export default function TemplateBuilderScreen({
 
       <button
         onClick={handleCreate}
-        className="w-full py-4 rounded-[20px] font-bold text-base flex items-center justify-center gap-2 mb-5"
+        className="w-full py-4 rounded-[20px] font-bold text-base flex items-center justify-center gap-2 mb-4"
         style={{ background: C.accent, color: C.bg }}
       >
         <Plus size={18} />

@@ -61,7 +61,7 @@ export default function MuscleSetTargetCard({ data }: Props) {
       <SectionHeader title="Weekly Set Targets" />
 
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -99,7 +99,7 @@ export default function MuscleSetTargetCard({ data }: Props) {
                   </span>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px]" style={{ color: C.fg3 }}>
+                    <span className="text-[11px]" style={{ color: C.fg3 }}>
                       {STATUS_LABELS[item.status]}
                     </span>
                     <span
@@ -146,7 +146,7 @@ export default function MuscleSetTargetCard({ data }: Props) {
           })}
         </div>
 
-        <p className="text-[10px] mt-4" style={{ color: C.fg3 }}>
+        <p className="text-[11px] mt-4" style={{ color: C.fg3 }}>
           Bar shows weekly sets out of MAV (max adaptive volume). The grey tick
           marks MEV (minimum effective volume).
         </p>

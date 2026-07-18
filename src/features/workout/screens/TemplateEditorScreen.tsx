@@ -252,7 +252,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
       <input
         value={name}
         onChange={(event) => setName(event.target.value)}
-        className="w-full bg-transparent outline-none text-3xl font-extrabold mt-1 mb-6"
+        className="w-full bg-transparent outline-none text-[32px] font-extrabold mt-1 mb-6"
         style={{ color: C.fg }}
       />
 
@@ -521,7 +521,7 @@ function ExerciseDefinitionCard({
             <Tag>🏋️ {exercise.equipment}</Tag>
 
             <span
-              className="px-2 py-1 rounded-full text-[10px]"
+              className="px-2 py-1 rounded-full text-[11px]"
               style={{
                 background:
                   exercise.category === "compound"
@@ -628,7 +628,7 @@ function ControlButton({
 function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span
-      className="px-2 py-1 rounded-full text-[10px]"
+      className="px-2 py-1 rounded-full text-[11px]"
       style={{ background: C.card2, color: C.fg2 }}
     >
       {children}

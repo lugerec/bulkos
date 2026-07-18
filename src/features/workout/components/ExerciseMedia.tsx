@@ -130,7 +130,7 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
             <p className="text-xs font-medium" style={{ color: C.fg2 }}>
               {active ? "Image unavailable" : "No demo yet"}
             </p>
-            <p className="text-[10px] capitalize" style={{ color: C.fg3 }}>
+            <p className="text-[11px] capitalize" style={{ color: C.fg3 }}>
               {primaryMuscle}
             </p>
           </div>
@@ -159,7 +159,7 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
 
         {animatable && playing && (
           <div
-            className="absolute bottom-3 left-3 px-2 py-1 rounded-full text-[10px] font-bold"
+            className="absolute bottom-3 left-3 px-2 py-1 rounded-full text-[11px] font-bold"
             style={{ background: "rgba(0,0,0,0.5)", color: C.fg }}
           >
             {active?.label}
@@ -189,7 +189,7 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
       )}
 
       {animatable && (
-        <p className="text-[10px] mt-2 text-center" style={{ color: C.fg3 }}>
+        <p className="text-[11px] mt-2 text-center" style={{ color: C.fg3 }}>
           {playing
             ? "Playing start → finish"
             : "Tap play to see the movement"}

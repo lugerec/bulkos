@@ -35,12 +35,12 @@ export default function NutritionMealCard({
         <div className="flex items-center justify-between mb-3">
           <div>
             <span
-              className="text-[10px] font-bold uppercase tracking-wider"
+              className="text-[11px] font-bold uppercase tracking-wider"
               style={{ color: C.accent }}
             >
               {meal.label}
             </span>
-            <p className="text-[10px] mt-0.5" style={{ color: C.fg3 }}>
+            <p className="text-[11px] mt-0.5" style={{ color: C.fg3 }}>
               {meal.time}
             </p>
           </div>
@@ -78,7 +78,7 @@ export default function NutritionMealCard({
                     <p className="text-sm font-semibold" style={{ color: C.fg }}>
                       {food.name}
                     </p>
-                    <p className="text-[10px]" style={{ color: C.fg3 }}>
+                    <p className="text-[11px]" style={{ color: C.fg3 }}>
                       {food.grams}g
                     </p>
                   </div>
@@ -89,13 +89,13 @@ export default function NutritionMealCard({
                 </div>
 
                 <div className="flex gap-2 mt-1">
-                  <span className="text-[10px]" style={{ color: C.fg3 }}>
+                  <span className="text-[11px]" style={{ color: C.fg3 }}>
                     P{food.protein}g
                   </span>
-                  <span className="text-[10px]" style={{ color: C.fg3 }}>
+                  <span className="text-[11px]" style={{ color: C.fg3 }}>
                     C{food.carbs}g
                   </span>
-                  <span className="text-[10px]" style={{ color: C.fg3 }}>
+                  <span className="text-[11px]" style={{ color: C.fg3 }}>
                     F{food.fat}g
                   </span>
                 </div>

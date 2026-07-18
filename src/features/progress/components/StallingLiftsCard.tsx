@@ -23,7 +23,7 @@ export default function StallingLiftsCard({ plateaus }: Props) {
       <SectionHeader title="Stalling Lifts" />
 
       <div
-        className="rounded-[20px] p-4 mb-5"
+        className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center gap-2 mb-3">
@@ -49,7 +49,7 @@ export default function StallingLiftsCard({ plateaus }: Props) {
                     >
                       {item.exerciseName}
                     </p>
-                    <p className="text-[10px]" style={{ color: C.fg3 }}>
+                    <p className="text-[11px]" style={{ color: C.fg3 }}>
                       Best est. 1RM {item.bestEst1RM} kg · recent{" "}
                       {item.recentBestEst1RM} kg
                     </p>
@@ -66,7 +66,7 @@ export default function StallingLiftsCard({ plateaus }: Props) {
                 </div>
 
                 {variations.length > 0 && (
-                  <p className="text-[10px] mt-0.5" style={{ color: C.fg2 }}>
+                  <p className="text-[11px] mt-0.5" style={{ color: C.fg2 }}>
                     Try:{" "}
                     {variations.map((variation) => variation.name).join(" · ")}
                   </p>
@@ -76,7 +76,7 @@ export default function StallingLiftsCard({ plateaus }: Props) {
           })}
         </div>
 
-        <p className="text-[10px] mt-3" style={{ color: C.fg3 }}>
+        <p className="text-[11px] mt-3" style={{ color: C.fg3 }}>
           Try a different rep range, add a back-off set, or swap in a close
           variation for a few weeks.
         </p>

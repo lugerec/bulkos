@@ -52,7 +52,7 @@ export default function AddExerciseSheet({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-extrabold" style={{ color: C.fg }}>
+          <h3 className="text-[17px] font-extrabold" style={{ color: C.fg }}>
             Add exercise
           </h3>
           <button
@@ -118,7 +118,7 @@ export default function AddExerciseSheet({
 
                   {added && (
                     <span
-                      className="text-[10px] font-semibold px-2 py-1 rounded-full"
+                      className="text-[11px] font-semibold px-2 py-1 rounded-full"
                       style={{ background: C.accentDim, color: C.accent }}
                     >
                       Added

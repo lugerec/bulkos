@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- App-wide typographic + rhythm cleanup: headings collapsed to three sizes (32 / 22 / 17px — was a mix of 30/24/22/20/18), all sub-11px text raised to 11px (9px and 10px were below mobile legibility), and every card unified to `mb-4` spacing across all features (was mostly mb-5 outside the dashboard). Body/label text left on Tailwind's sm/xs. This is the main fix for the "unfinished" feel — the app previously mixed ~12 different type sizes.
+
 - Typography components + dashboard polish: added `Display/Title/Heading/Body/Eyebrow/Caption` components (shared/components.tsx) wrapping the `T` scale. Applied to dashboard hero, StreakCard, SmartCoachCard; unified card spacing to a consistent `mb-4` rhythm across all dashboard cards (was a mix of mb-5/4). Rollout to remaining screens/cards is ongoing — the pattern is `style={{ ...T.role }}` or the `<Title>`/`<Body>` components.
 
 - Exercise images centered + unified: `ExerciseMedia` and `ExerciseThumb` now use `object-contain` on a white background (was `object-cover`, which cropped), so wger photos from different contributors read consistently and the whole exercise is visible.

@@ -410,7 +410,7 @@ export default function DashboardScreen({
             <p className="text-[22px] font-bold leading-none" style={{ color: C.fg }}>
               {Math.round(remaining)}
             </p>
-            <p className="text-[10px] mt-1.5" style={{ color: C.fg3 }}>
+            <p className="text-[11px] mt-1.5" style={{ color: C.fg3 }}>
               {unit} left
             </p>
           </div>
@@ -463,7 +463,7 @@ export default function DashboardScreen({
               },
             ].map(({ label, pct, color }) => (
               <div key={label} className="flex items-center gap-2">
-                <span className="text-[10px] w-10" style={{ color: C.fg3 }}>
+                <span className="text-[11px] w-10" style={{ color: C.fg3 }}>
                   {label}
                 </span>
                 <div
@@ -652,7 +652,7 @@ function MetricCard({ label, value }: { label: string; value: string }) {
       <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
         {label}
       </p>
-      <p className="text-[20px] font-bold leading-none" style={{ color: C.fg }}>
+      <p className="text-[22px] font-bold leading-none" style={{ color: C.fg }}>
         {value}
       </p>
     </div>
@@ -668,7 +668,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
         border: `1px solid ${C.border}`,
       }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
       <p className="text-sm font-bold" style={{ color: C.fg }}>

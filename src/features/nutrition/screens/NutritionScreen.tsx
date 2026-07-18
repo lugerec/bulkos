@@ -67,7 +67,7 @@ export default function NutritionScreen({
   return (
     <div className="pb-8">
       <div className="px-5 pt-4 pb-5">
-        <h2 className="text-2xl font-bold mb-0.5" style={{ color: C.fg }}>
+        <h2 className="text-[22px] font-bold mb-0.5" style={{ color: C.fg }}>
           Nutrition
         </h2>
 
@@ -81,7 +81,7 @@ export default function NutritionScreen({
       </div>
 
       <div
-        className="mx-5 mb-5 rounded-[20px] p-5"
+        className="mx-5 mb-4 rounded-[20px] p-5"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-start justify-between mb-5">
@@ -91,7 +91,7 @@ export default function NutritionScreen({
             </p>
 
             <p
-              className="text-3xl font-extrabold mt-0.5 leading-none"
+              className="text-[32px] font-extrabold mt-0.5 leading-none"
               style={{ color: C.fg }}
             >
               {Math.round(totals.calories).toLocaleString()}
@@ -112,7 +112,7 @@ export default function NutritionScreen({
             stroke={5}
             color={C.amber}
           >
-            <span className="text-[12px] font-bold" style={{ color: C.fg }}>
+            <span className="text-[13px] font-bold" style={{ color: C.fg }}>
               {Math.round((totals.calories / goals.cal) * 100)}%
             </span>
           </ProgressRing>

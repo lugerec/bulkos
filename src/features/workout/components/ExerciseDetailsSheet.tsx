@@ -147,7 +147,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
               Exercise Detail
             </p>
 
-            <h2 className="text-2xl font-extrabold" style={{ color: C.fg }}>
+            <h2 className="text-[22px] font-extrabold" style={{ color: C.fg }}>
               {exercise.name}
             </h2>
 
@@ -241,7 +241,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
         </div>
 
         <div
-          className="rounded-[20px] p-5 mb-5 flex items-center justify-center"
+          className="rounded-[20px] p-5 mb-4 flex items-center justify-center"
           style={{
             background:
               "linear-gradient(135deg, rgba(163,230,53,0.10), rgba(96,165,250,0.08))",
@@ -425,10 +425,10 @@ function MiniStat({ label, value }: { label: string; value: string }) {
       className="rounded-[14px] p-3 text-center"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
-      <p className="text-lg font-bold" style={{ color: C.fg }}>
+      <p className="text-[17px] font-bold" style={{ color: C.fg }}>
         {value}
       </p>
-      <p className="text-[10px] mt-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
         {label}
       </p>
     </div>
@@ -465,7 +465,7 @@ function StatCard({
     >
       <div className="flex items-center gap-2 mb-1">
         {icon}
-        <p className="text-[10px]" style={{ color: C.fg3 }}>
+        <p className="text-[11px]" style={{ color: C.fg3 }}>
           {label}
         </p>
       </div>
@@ -492,7 +492,7 @@ function InfoChip({
         }}
       >
         <div
-          className="text-[10px] uppercase"
+          className="text-[11px] uppercase"
           style={{ color: C.fg3 }}
         >
           {label}

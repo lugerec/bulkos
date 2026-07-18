@@ -50,7 +50,7 @@ export default function WorkoutSection({
         <div className="flex items-start justify-between mb-4">
           <div>
             <p
-              className="text-2xl font-extrabold leading-none"
+              className="text-[22px] font-extrabold leading-none"
               style={{ color: C.fg }}
             >
               {latestWorkout?.name ?? "Push Day A"}
@@ -141,7 +141,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
         border: `1px solid ${C.border}`,
       }}
     >
-      <p className="text-[10px] mb-1" style={{ color: C.fg3 }}>
+      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
         {label}
       </p>
       <p className="text-sm font-bold" style={{ color: C.fg }}>

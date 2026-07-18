@@ -52,7 +52,7 @@ export default function SwapExerciseSheet({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-lg font-extrabold" style={{ color: C.fg }}>
+          <h3 className="text-[17px] font-extrabold" style={{ color: C.fg }}>
             Swap exercise
           </h3>
           <button

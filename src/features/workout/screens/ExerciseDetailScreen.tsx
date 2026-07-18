@@ -55,7 +55,7 @@ export default function ExerciseDetailScreen({ onBack }: Props) {
       </p>
 
       <h1
-        className="text-3xl font-extrabold mt-1"
+        className="text-[32px] font-extrabold mt-1"
         style={{ color: C.fg }}
       >
         {exercise.name}

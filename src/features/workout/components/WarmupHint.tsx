@@ -66,7 +66,7 @@ export default function WarmupHint({ workingWeight, equipment }: Props) {
                   >
                     {set.weight} kg × {set.reps}
                     <span
-                      className="text-[10px] font-normal ml-1.5"
+                      className="text-[11px] font-normal ml-1.5"
                       style={{ color: C.fg3 }}
                     >
                       {Math.round(set.ratio * 100)}%
@@ -74,7 +74,7 @@ export default function WarmupHint({ workingWeight, equipment }: Props) {
                   </span>
 
                   {plates && plates.platesPerSide.length > 0 && (
-                    <span className="text-[10px]" style={{ color: C.fg3 }}>
+                    <span className="text-[11px]" style={{ color: C.fg3 }}>
                       {plates.platesPerSide.join(" · ")} / side
                     </span>
                   )}
@@ -84,7 +84,7 @@ export default function WarmupHint({ workingWeight, equipment }: Props) {
           </div>
 
           {isBar && (
-            <p className="text-[10px] mt-2" style={{ color: C.fg3 }}>
+            <p className="text-[11px] mt-2" style={{ color: C.fg3 }}>
               Plates per side assume a 20 kg bar.
             </p>
           )}
