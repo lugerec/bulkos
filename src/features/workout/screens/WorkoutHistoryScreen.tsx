@@ -3,6 +3,7 @@ import { ArrowLeft, Dumbbell } from "lucide-react";
 
 import { C, type Screen } from "@/shared/ui";
 import EmptyState from "@/shared/EmptyState";
+import { classifyWorkoutSplit } from "@/features/workout/utils/workoutRecommendation";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 
@@ -15,13 +16,28 @@ function fmt(seconds: number) {
   return rest > 0 ? `${minutes}m ${rest}s` : `${minutes}m`;
 }
 
-function formatType(templateId?: string) {
-  if (!templateId) return "Custom";
+const SPLIT_LABELS: Record<string, string> = {
+  push: "Push",
+  pull: "Pull",
+  lower: "Legs",
+  full: "Full body",
+};
 
-  return templateId
-    .replace("-a", "")
-    .replace("-b", "")
-    .replace(/^./, (c) => c.toUpperCase());
+function formatSplit(workout: { exercises?: { id: string; exerciseId?: string; name: string; sets: { reps: number; weight: number }[] }[] }) {
+  const split = classifyWorkoutSplit(workout);
+
+  return split ? SPLIT_LABELS[split] ?? "Mixed" : "Mixed";
+}
+
+function formatDate(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  if (!year || !month || !day) return dateKey;
+
+  return new Date(year, month - 1, day).toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 }
 
 export default function WorkoutHistoryScreen({
@@ -90,7 +106,11 @@ export default function WorkoutHistoryScreen({
                 onNavigate("workout-detail");
               }}
               className="w-full text-left rounded-[20px] p-4"
-              style={{ background: C.card, border: `1px solid ${C.border}` }}
+              style={{
+                background: C.card,
+                border: `1px solid ${C.border}`,
+                opacity: workout.completedSets === 0 ? 0.55 : 1,
+              }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
@@ -98,7 +118,7 @@ export default function WorkoutHistoryScreen({
                     {workout.name}
                   </p>
                   <p className="text-xs mt-0.5" style={{ color: C.fg3 }}>
-                    {workout.date}
+                    {formatDate(workout.date)}
                   </p>
                 </div>
 
@@ -110,7 +130,7 @@ export default function WorkoutHistoryScreen({
               <div className="grid grid-cols-3 gap-2">
                 <Stat label="Volume" value={`${workout.volumeKg.toLocaleString()} kg`} />
                 <Stat label="Sets" value={`${workout.completedSets}/${workout.totalSets}`} />
-                <Stat label="Type" value={formatType(workout.templateId)} />
+                <Stat label="Type" value={formatSplit(workout)} />
               </div>
             </button>
           ))

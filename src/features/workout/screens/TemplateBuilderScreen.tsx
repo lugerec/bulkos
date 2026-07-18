@@ -26,7 +26,9 @@ export default function TemplateBuilderScreen({
 
     await saveTemplate(user.uid, {
       id,
-      name: "New Template",
+      // Numbered default so multiple new templates stay distinguishable
+      // until the user names them properly in the editor.
+      name: `Workout ${templates.length + 1}`,
       description: "",
       exercises: [],
     });
