@@ -62,7 +62,7 @@ export default function WorkoutDetailScreen({
           return (
             <div
               key={exercise.id}
-              className="rounded-[20px] p-4"
+              className="rounded-[20px] p-4 card-lit"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div className="mb-3">

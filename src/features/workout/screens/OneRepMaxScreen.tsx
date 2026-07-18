@@ -63,7 +63,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
 
       <div className="px-5">
         <div
-          className="rounded-[20px] p-4 mb-4"
+          className="rounded-[20px] p-4 mb-4 card-lit"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <div className="flex gap-3 mb-4">
@@ -111,7 +111,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
 
         {repTargets.length > 0 && (
           <div
-            className="rounded-[20px] overflow-hidden"
+            className="rounded-[20px] overflow-hidden card-lit"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
             <div

@@ -33,7 +33,7 @@ export default function WorkoutSection({
       />
 
       <div
-        className="rounded-[20px] p-5 mb-4"
+        className="rounded-[20px] p-5 mb-4 card-lit"
         style={{
           background:
             "linear-gradient(135deg, rgba(163,230,53,0.12), rgba(251,191,36,0.07))",
@@ -117,7 +117,7 @@ export default function WorkoutSection({
 
         <button
           onClick={() => onNavigate("workout")}
-          className="w-full py-4 rounded-[20px] font-bold text-base flex items-center justify-center gap-2"
+          className="w-full py-4 rounded-[20px] font-bold text-base flex items-center justify-center gap-2 card-lit"
           style={{
             background: C.accent,
             color: C.bg,

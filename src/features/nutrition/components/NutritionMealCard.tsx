@@ -28,7 +28,7 @@ export default function NutritionMealCard({
 }: Props) {
   return (
     <div
-      className="rounded-[20px] overflow-hidden"
+      className="rounded-[20px] overflow-hidden card-lit"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <div className="p-4">

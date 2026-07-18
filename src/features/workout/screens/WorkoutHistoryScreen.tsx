@@ -81,7 +81,7 @@ export default function WorkoutHistoryScreen({
         {workouts.length === 0 ? (
           loading ? (
             <div
-              className="rounded-[20px] p-5"
+              className="rounded-[20px] p-5 card-lit"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <p className="text-sm" style={{ color: C.fg3 }}>
@@ -105,7 +105,7 @@ export default function WorkoutHistoryScreen({
                 selectWorkout(workout.id);
                 onNavigate("workout-detail");
               }}
-              className="w-full text-left rounded-[20px] p-4"
+              className="w-full text-left rounded-[20px] p-4 card-lit"
               style={{
                 background: C.card,
                 border: `1px solid ${C.border}`,

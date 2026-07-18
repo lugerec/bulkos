@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Premium app-feel pass ("upgrade" of Iron & Lime, not a redesign): (1) global micro-interactions in theme.css — every button scales down slightly on press with a smooth transition, tap highlight removed, iOS momentum scrolling, no overscroll bounce; (2) floating pill bottom nav — inset from edges, 26px radius, blur + dark glass, soft drop shadow, active tab gets an accentDim spotlight pill; (3) `.card-lit` utility (inset top light edge) applied to all cards for machined depth on dark UI; (4) dashboard hero card gets an outer lime glow + light edge. All additive CSS/classNames, no behavior changes.
+
 - `EmptyState` component (shared/EmptyState.tsx): icon + title naming the space + one-line explanation + optional verb-first CTA. Replaces bare "No X yet." text on workout history (CTA → start a workout), template builder (CTA → create template), and the workout template picker. Use it for any new empty screen rather than a lone sentence.
 
 - App-wide typographic + rhythm cleanup: headings collapsed to three sizes (32 / 22 / 17px — was a mix of 30/24/22/20/18), all sub-11px text raised to 11px (9px and 10px were below mobile legibility), and every card unified to `mb-4` spacing across all features (was mostly mb-5 outside the dashboard). Body/label text left on Tailwind's sm/xs. This is the main fix for the "unfinished" feel — the app previously mixed ~12 different type sizes.

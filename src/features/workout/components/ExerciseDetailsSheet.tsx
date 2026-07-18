@@ -241,7 +241,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
         </div>
 
         <div
-          className="rounded-[20px] p-5 mb-4 flex items-center justify-center"
+          className="rounded-[20px] p-5 mb-4 flex items-center justify-center card-lit"
           style={{
             background:
               "linear-gradient(135deg, rgba(163,230,53,0.10), rgba(96,165,250,0.08))",
@@ -408,7 +408,7 @@ function Section({
 }) {
   return (
     <div
-      className="rounded-[20px] p-4 mb-4"
+      className="rounded-[20px] p-4 mb-4 card-lit"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <h3 className="text-sm font-bold mb-3" style={{ color: C.fg }}>

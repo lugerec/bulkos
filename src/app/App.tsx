@@ -183,7 +183,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Micronutrients */}
-        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <SectionHeader title="Micronutrients" />
           <div className="grid grid-cols-2 gap-x-5 gap-y-3">
             {[
@@ -215,7 +215,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Ingredients */}
-        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <SectionHeader title="Ingredients" />
           {[
             { item: "Atlantic Salmon Fillet", qty: "180g" },
@@ -238,7 +238,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Preparation */}
-        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <SectionHeader title="Preparation" />
           {[
             "Season salmon with salt, pepper, and minced garlic.",
@@ -261,7 +261,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
 
         {/* Meal prep tip */}
         <div
-          className="rounded-[20px] p-4 mb-4"
+          className="rounded-[20px] p-4 mb-4 card-lit"
           style={{ background: C.accentDim2, border: "1px solid rgba(163,230,53,0.15)" }}
         >
           <div className="flex gap-3 items-start">
@@ -277,7 +277,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Alternative ingredients */}
-        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <SectionHeader title="Alternatives" />
           <div className="flex flex-wrap gap-2">
             {["Brown rice instead of quinoa", "Tuna instead of salmon", "Kale instead of spinach", "Lime instead of lemon"].map((alt) => (
@@ -294,7 +294,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
 
         {/* Allergen warning */}
         <div
-          className="rounded-[20px] p-4"
+          className="rounded-[20px] p-4 card-lit"
           style={{ background: "rgba(255,76,76,0.06)", border: "1px solid rgba(255,76,76,0.2)" }}
         >
           <div className="flex gap-3 items-start">
@@ -438,7 +438,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
             const color = scoreColors[index % scoreColors.length];
 
             return (
-              <div key={label} className="rounded-[20px] p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+              <div key={label} className="rounded-[20px] p-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
                 <div className="flex justify-between items-start mb-3">
                   <p className="text-[11px] leading-tight" style={{ color: C.fg2, maxWidth: 72 }}>{label}</p>
                   <ProgressRing value={value ?? 0} max={100} size={38} stroke={4} color={color}>
@@ -452,7 +452,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Calorie chart */}
-        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex justify-between items-center mb-4">
             <div>
               <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: C.fg2 }}>
@@ -490,7 +490,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
         {/* Macro adherence */}
         {macroAdherence && (
-          <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
             <SectionHeader title="Macro Adherence" />
             <div className="flex flex-col gap-4">
               {macroAdherence.map(({ label, percent }, index) => {
@@ -517,7 +517,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
 
         {/* Coach insight */}
         <div
-          className="rounded-[20px] p-5"
+          className="rounded-[20px] p-5 card-lit"
           style={{
             background: "linear-gradient(135deg, rgba(163,230,53,0.07) 0%, rgba(96,165,250,0.07) 100%)",
             border: "1px solid rgba(163,230,53,0.18)",
@@ -678,7 +678,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
 
       <div className="px-5">
         {/* Summary */}
-        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold" style={{ color: C.fg }}>Shopping progress</span>
             <span className="text-sm font-bold" style={{ color: C.accent }}>
@@ -702,7 +702,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Add item */}
-        <div className="rounded-[20px] p-4 mb-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+        <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex items-center gap-2 mb-1">
             <Search size={14} color={C.fg3} />
             <input
@@ -772,14 +772,14 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
         {loadingList ? (
           <p className="text-sm" style={{ color: C.fg3 }}>Loading list…</p>
         ) : items.length === 0 ? (
-          <div className="rounded-[20px] p-5 text-center" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <div className="rounded-[20px] p-5 text-center card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
             <p className="text-sm font-semibold" style={{ color: C.fg }}>Your list is empty</p>
             <p className="text-xs mt-1" style={{ color: C.fg3 }}>
               Search real products above or tap a suggestion from your meals.
             </p>
           </div>
         ) : (
-          <div className="rounded-[20px] overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+          <div className="rounded-[20px] overflow-hidden card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
             {items.map((item, index) => (
               <div
                 key={item.id}
@@ -847,36 +847,45 @@ function BottomNav({ active, onNavigate }: {
   active: Screen; onNavigate: (s: Screen) => void;
 }) {
   return (
-    <div
-      className="absolute bottom-0 left-0 right-0 flex justify-around items-center pt-2 pb-6"
-      style={{
-        background: "rgba(10,10,11,0.95)",
-        borderTop: `1px solid ${C.border}`,
-        backdropFilter: "blur(24px)",
-      }}
-    >
-      {navItems.map(({ id, icon: Icon, label }) => {
-        const isActive = active === id;
-        return (
-          <button
-            key={id}
-            onClick={() => onNavigate(id)}
-            className="flex flex-col items-center gap-1 px-4 py-0.5"
-          >
-            <Icon
-              size={22}
-              color={isActive ? C.accent : C.fg3}
-              strokeWidth={isActive ? 2.2 : 1.5}
-            />
-            <span
-              className="text-[11px] font-semibold"
-              style={{ color: isActive ? C.accent : C.fg3 }}
+    <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 pt-2 pointer-events-none">
+      <div
+        className="flex justify-around items-center py-2 px-2 rounded-[26px] pointer-events-auto"
+        style={{
+          background: "rgba(22,22,26,0.82)",
+          border: `1px solid ${C.border}`,
+          backdropFilter: "blur(28px)",
+          WebkitBackdropFilter: "blur(28px)",
+          boxShadow:
+            "0 12px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05)",
+        }}
+      >
+        {navItems.map(({ id, icon: Icon, label }) => {
+          const isActive = active === id;
+          return (
+            <button
+              key={id}
+              onClick={() => onNavigate(id)}
+              aria-label={label}
+              className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-[18px] flex-1"
+              style={{
+                background: isActive ? C.accentDim : "transparent",
+              }}
             >
-              {label}
-            </span>
-          </button>
-        );
-      })}
+              <Icon
+                size={21}
+                color={isActive ? C.accent : C.fg3}
+                strokeWidth={isActive ? 2.2 : 1.6}
+              />
+              <span
+                className="text-[11px] font-semibold"
+                style={{ color: isActive ? C.accent : C.fg3 }}
+              >
+                {label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -71,7 +71,7 @@ export default function OnboardingScreen() {
       style={{ background: "#050505", fontFamily: "'Inter', sans-serif" }}
     >
       <div
-        className="relative w-full max-w-[430px] min-h-[720px] rounded-[20px] p-6 flex flex-col"
+        className="relative w-full max-w-[430px] min-h-[720px] rounded-[20px] p-6 flex flex-col card-lit"
         style={{ background: C.bg, border: `1px solid ${C.border}` }}
       >
         <div className="mb-8">
@@ -209,7 +209,7 @@ export default function OnboardingScreen() {
             <button
               onClick={finish}
               disabled={saving}
-              className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2 card-lit"
               style={{
                 background: C.accent,
                 color: C.bg,
@@ -222,7 +222,7 @@ export default function OnboardingScreen() {
           ) : (
             <button
               onClick={next}
-              className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2 card-lit"
               style={{ background: C.accent, color: C.bg }}
             >
               Continue
@@ -341,7 +341,7 @@ function ChoiceStep({
             <button
               key={option.value}
               onClick={() => onChange(option.value)}
-              className="text-left rounded-[20px] p-4 flex gap-4 items-start"
+              className="text-left rounded-[20px] p-4 flex gap-4 items-start card-lit"
               style={{
                 background: active ? C.accentDim : C.card,
                 border: `1px solid ${active ? "rgba(163,230,53,0.45)" : C.border}`,
@@ -410,7 +410,7 @@ function NumberStep({
       </p>
 
       <div
-        className="rounded-[20px] p-6 text-center"
+        className="rounded-[20px] p-6 text-center card-lit"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between gap-5">
@@ -510,7 +510,7 @@ function SummaryStep({
       </div>
 
       <div
-        className="rounded-[20px] p-5"
+        className="rounded-[20px] p-5 card-lit"
         style={{
           background: "linear-gradient(135deg, rgba(163,230,53,0.08), rgba(96,165,250,0.06))",
           border: "1px solid rgba(163,230,53,0.2)",

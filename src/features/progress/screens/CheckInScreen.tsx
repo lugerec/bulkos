@@ -144,7 +144,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
       <button
         onClick={handleSave}
         disabled={loading || !weight}
-        className="w-full py-4 rounded-[20px] font-bold text-base"
+        className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
         style={{
           background: C.accent,
           color: C.bg,
@@ -170,7 +170,7 @@ function MetricInput({
 }) {
   return (
     <div
-      className="rounded-[20px] px-4 py-3"
+      className="rounded-[20px] px-4 py-3 card-lit"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <p className="text-[11px] mb-2" style={{ color: C.fg3 }}>
@@ -207,7 +207,7 @@ function PhotoInput({
 }) {
   return (
     <label
-      className="rounded-[20px] p-3 flex flex-col items-center justify-center text-center cursor-pointer"
+      className="rounded-[20px] p-3 flex flex-col items-center justify-center text-center cursor-pointer card-lit"
       style={{
         background: C.card,
         border: `1px solid ${file ? C.accent : C.border}`,

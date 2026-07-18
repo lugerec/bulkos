@@ -29,7 +29,7 @@ export default function LoginScreen() {
       style={{ background: "#050505", fontFamily: "'Inter', sans-serif" }}
     >
       <div
-        className="w-full max-w-[390px] rounded-[20px] p-6"
+        className="w-full max-w-[390px] rounded-[20px] p-6 card-lit"
         style={{ background: C.bg, border: `1px solid ${C.border}` }}
       >
         <div className="flex flex-col items-center text-center mb-8">

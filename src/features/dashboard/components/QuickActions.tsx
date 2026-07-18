@@ -54,7 +54,7 @@ function QuickAction({
   return (
     <button
       onClick={onClick}
-      className="rounded-[20px] py-4 flex flex-col items-center gap-2"
+      className="rounded-[20px] py-4 flex flex-col items-center gap-2 card-lit"
       style={{
         background: C.card,
         border: `1px solid ${C.border}`,

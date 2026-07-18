@@ -13,7 +13,7 @@ export default function TodayGoalCard({
 }: Props) {
   return (
     <div
-      className="rounded-[20px] p-5 mb-4"
+      className="rounded-[20px] p-5 mb-4 card-lit"
       style={{
         background:
           "linear-gradient(135deg, rgba(163,230,53,0.16), rgba(96,165,250,0.08))",

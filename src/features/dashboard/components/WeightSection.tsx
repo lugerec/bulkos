@@ -18,7 +18,7 @@ export default function WeightSection({
   return (
     <div className="flex gap-3 mb-5">
       <div
-        className="flex-1 rounded-[20px] p-4"
+        className="flex-1 rounded-[20px] p-4 card-lit"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
@@ -42,7 +42,7 @@ export default function WeightSection({
       </div>
 
       <div
-        className="flex-1 rounded-[20px] p-4"
+        className="flex-1 rounded-[20px] p-4 card-lit"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>

@@ -221,7 +221,7 @@ export default function WorkoutScreen() {
                   selectTemplate(template.id);
                   setPreviewing(true);
                 }}
-                className="rounded-[20px] p-4 text-left flex items-center justify-between gap-3"
+                className="rounded-[20px] p-4 text-left flex items-center justify-between gap-3 card-lit"
                 style={{
                   background: C.card,
                   border: `1px solid ${C.border}`,
@@ -743,7 +743,7 @@ export default function WorkoutScreen() {
   
         {sessionEffort.overall && (
           <div
-            className="w-full rounded-[20px] p-4 mb-4 flex items-center gap-3"
+            className="w-full rounded-[20px] p-4 mb-4 flex items-center gap-3 card-lit"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
             <span className="text-[22px]">
@@ -770,7 +770,7 @@ export default function WorkoutScreen() {
 
         {prList.length > 0 && (
           <div
-            className="w-full rounded-[20px] p-4 mb-4 text-left"
+            className="w-full rounded-[20px] p-4 mb-4 text-left card-lit"
             style={{
               background: "rgba(163,230,53,0.07)",
               border: "1px solid rgba(163,230,53,0.2)",
@@ -798,7 +798,7 @@ export default function WorkoutScreen() {
 
         {strongestSet && (
           <div
-            className="w-full rounded-[20px] p-4 mb-4 text-left"
+            className="w-full rounded-[20px] p-4 mb-4 text-left card-lit"
             style={{
               background: C.card,
               border: `1px solid ${C.border}`,
@@ -829,7 +829,7 @@ export default function WorkoutScreen() {
   
         {comparison && (
           <div
-            className="w-full rounded-[20px] p-4 mb-4 text-left"
+            className="w-full rounded-[20px] p-4 mb-4 text-left card-lit"
             style={{
               background: C.card,
               border: `1px solid ${C.border}`,
@@ -868,7 +868,7 @@ export default function WorkoutScreen() {
             setElapsed(0);
             setPrs({});
           }}
-          className="w-full py-4 rounded-[20px] font-semibold"
+          className="w-full py-4 rounded-[20px] font-semibold card-lit"
           style={{
             background: C.card,
             border: `1px solid ${C.border}`,
@@ -922,7 +922,7 @@ export default function WorkoutScreen() {
         {!workoutStarted && (
           <button
             onClick={startSession}
-            className="w-full py-4 rounded-[20px] font-bold text-base mt-3"
+            className="w-full py-4 rounded-[20px] font-bold text-base mt-3 card-lit"
             style={{
               background: C.accent,
               color: C.bg,
@@ -982,7 +982,7 @@ export default function WorkoutScreen() {
 
       {isResting && (
         <div
-          className="mx-5 mb-4 rounded-[20px] p-4"
+          className="mx-5 mb-4 rounded-[20px] p-4 card-lit"
           style={{
             background: "rgba(163,230,53,0.07)",
             border: "1px solid rgba(163,230,53,0.2)",
@@ -1064,7 +1064,7 @@ export default function WorkoutScreen() {
           return (
             <div
               key={ex.id}
-              className="rounded-[20px] p-4"
+              className="rounded-[20px] p-4 card-lit"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div className="flex justify-between items-start mb-3">
@@ -1343,7 +1343,7 @@ export default function WorkoutScreen() {
       <div className="px-5 mt-6">
         <button
           onClick={() => setAddingExercise(true)}
-          className="w-full py-3 rounded-[20px] font-semibold text-sm mb-3"
+          className="w-full py-3 rounded-[20px] font-semibold text-sm mb-3 card-lit"
           style={{
             background: "transparent",
             border: `1px dashed ${C.border}`,
@@ -1356,7 +1356,7 @@ export default function WorkoutScreen() {
         {!workoutStarted ? (
           <button
             onClick={startSession}
-            className="w-full py-4 rounded-[20px] font-bold text-base"
+            className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
             style={{
               background: C.accent,
               color: C.bg,
@@ -1369,7 +1369,7 @@ export default function WorkoutScreen() {
           <button
             onClick={handleFinishWorkout}
             disabled={saving}
-            className="w-full py-4 rounded-[20px] font-bold text-base"
+            className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
             style={{
               background: C.accent,
               color: C.bg,

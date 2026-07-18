@@ -82,7 +82,7 @@ export default function TemplateBuilderScreen({
 
       <button
         onClick={handleCreate}
-        className="w-full py-4 rounded-[20px] font-bold text-base flex items-center justify-center gap-2 mb-4"
+        className="w-full py-4 rounded-[20px] font-bold text-base flex items-center justify-center gap-2 mb-4 card-lit"
         style={{ background: C.accent, color: C.bg }}
       >
         <Plus size={18} />
@@ -103,7 +103,7 @@ export default function TemplateBuilderScreen({
             <button
               key={template.id}
               onClick={() => handleOpen(template.id)}
-              className="rounded-[20px] p-4 flex items-center justify-between gap-3 text-left"
+              className="rounded-[20px] p-4 flex items-center justify-between gap-3 text-left card-lit"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div>

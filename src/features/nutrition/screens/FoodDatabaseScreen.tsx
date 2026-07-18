@@ -100,7 +100,7 @@ export default function FoodDatabaseScreen() {
 
       {!loading && filteredFoods.length === 0 && (
         <div
-          className="rounded-[20px] p-5 text-center"
+          className="rounded-[20px] p-5 text-center card-lit"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <p className="text-sm font-semibold" style={{ color: C.fg }}>
@@ -121,7 +121,7 @@ export default function FoodDatabaseScreen() {
             <button
               key={food.id}
               onClick={() => setSelectedFood(food)}
-              className="w-full text-left rounded-[20px] p-4"
+              className="w-full text-left rounded-[20px] p-4 card-lit"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div className="flex items-start justify-between gap-3">
@@ -196,7 +196,7 @@ export default function FoodDatabaseScreen() {
                   <button
                     key={food.id}
                     onClick={() => setSelectedFood(food)}
-                    className="w-full text-left rounded-[20px] p-4"
+                    className="w-full text-left rounded-[20px] p-4 card-lit"
                     style={{
                       background: C.card,
                       border: `1px solid ${C.border}`,

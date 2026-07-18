@@ -128,7 +128,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
 
       {chartData.length > 0 && (
         <div
-          className="rounded-[20px] p-4 mb-4"
+          className="rounded-[20px] p-4 mb-4 card-lit"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <div className="flex justify-between items-start mb-4">
@@ -189,7 +189,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
       <div className="flex flex-col gap-3">
         {history.length === 0 ? (
           <div
-            className="rounded-[20px] p-5"
+            className="rounded-[20px] p-5 card-lit"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
             <p className="text-sm" style={{ color: C.fg3 }}>
@@ -200,7 +200,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
           history.map((entry) => (
             <div
               key={entry.workoutId}
-              className="rounded-[20px] p-4"
+              className="rounded-[20px] p-4 card-lit"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div className="flex items-start justify-between mb-3">

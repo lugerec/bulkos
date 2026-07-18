@@ -26,7 +26,7 @@ export default function WeeklyReportCard({ report }: Props) {
       <SectionHeader title="Last Week in Review" />
 
       <div
-        className="rounded-[20px] p-4 mb-4"
+        className="rounded-[20px] p-4 mb-4 card-lit"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center gap-2 mb-3">

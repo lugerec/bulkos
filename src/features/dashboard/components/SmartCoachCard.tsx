@@ -13,7 +13,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
 
   return (
     <div
-      className="rounded-[20px] p-5 mb-4"
+      className="rounded-[20px] p-5 mb-4 card-lit"
       style={{
         background: isRecovery
           ? "linear-gradient(135deg, rgba(96,165,250,0.14), rgba(192,132,252,0.08))"

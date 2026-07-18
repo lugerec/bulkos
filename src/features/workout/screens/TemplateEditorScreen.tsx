@@ -259,7 +259,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
       <div className="flex flex-col gap-3">
         {exercises.length === 0 ? (
           <div
-            className="rounded-[20px] p-5 text-center"
+            className="rounded-[20px] p-5 text-center card-lit"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
             <p className="text-sm" style={{ color: C.fg3 }}>
@@ -331,7 +331,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
 
       <button
         onClick={handleSave}
-        className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2"
+        className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2 card-lit"
         style={{ background: C.accent, color: C.bg }}
       >
         <Save size={18} />
@@ -366,7 +366,7 @@ function TemplateExerciseCard({
 }) {
   return (
     <div
-      className="rounded-[20px] p-4"
+      className="rounded-[20px] p-4 card-lit"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -504,7 +504,7 @@ function ExerciseDefinitionCard({
 }) {
   return (
     <div
-      className="rounded-[20px] p-4 text-left"
+      className="rounded-[20px] p-4 text-left card-lit"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       <div className="flex items-start justify-between gap-4">

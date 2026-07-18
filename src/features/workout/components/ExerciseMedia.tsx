@@ -110,7 +110,7 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
   return (
     <div>
       <div
-        className="relative rounded-[20px] overflow-hidden flex items-center justify-center"
+        className="relative rounded-[20px] overflow-hidden flex items-center justify-center card-lit"
         style={{
           aspectRatio: "4 / 3",
           background: "#FFFFFF",

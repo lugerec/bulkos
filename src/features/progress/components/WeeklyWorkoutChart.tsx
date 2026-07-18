@@ -23,7 +23,7 @@ import {
   
     return (
       <div
-        className="rounded-[20px] p-4 mb-4"
+        className="rounded-[20px] p-4 mb-4 card-lit"
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
