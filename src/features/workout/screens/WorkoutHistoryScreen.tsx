@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Dumbbell } from "lucide-react";
 
 import { C, type Screen } from "@/shared/ui";
+import EmptyState from "@/shared/EmptyState";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 
@@ -62,14 +63,24 @@ export default function WorkoutHistoryScreen({
 
       <div className="flex flex-col gap-3">
         {workouts.length === 0 ? (
-          <div
-            className="rounded-[20px] p-5"
-            style={{ background: C.card, border: `1px solid ${C.border}` }}
-          >
-            <p className="text-sm" style={{ color: C.fg3 }}>
-              {loading ? "Loading workouts..." : "No workouts logged yet."}
-            </p>
-          </div>
+          loading ? (
+            <div
+              className="rounded-[20px] p-5"
+              style={{ background: C.card, border: `1px solid ${C.border}` }}
+            >
+              <p className="text-sm" style={{ color: C.fg3 }}>
+                Loading workouts…
+              </p>
+            </div>
+          ) : (
+            <EmptyState
+              icon={Dumbbell}
+              title="No workouts yet"
+              body="Finish a session and it'll show up here with your volume, sets and personal records."
+              actionLabel="Start a workout"
+              onAction={() => onNavigate("workout")}
+            />
+          )
         ) : (
           workouts.map((workout) => (
             <button

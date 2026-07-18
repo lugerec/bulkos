@@ -4,6 +4,7 @@ import { getProgressionSuggestion } from "@/features/workout/utils/progression";
 import ExerciseDetailsSheet from "@/features/workout/components/ExerciseDetailsSheet";
 import SwapExerciseSheet from "@/features/workout/components/SwapExerciseSheet";
 import AddExerciseSheet from "@/features/workout/components/AddExerciseSheet";
+import EmptyState from "@/shared/EmptyState";
 import ExerciseThumb from "@/features/workout/components/ExerciseThumb";
 
 import { useEffect, useState } from "react";
@@ -206,23 +207,11 @@ export default function WorkoutScreen() {
         </div>
   
         {templates.length === 0 ? (
-          <div
-            className="rounded-[20px] p-5 text-center"
-            style={{
-              background: C.card,
-              border: `1px solid ${C.border}`,
-            }}
-          >
-            <Dumbbell size={24} color={C.fg3} className="mx-auto mb-3" />
-  
-            <p className="text-sm font-semibold" style={{ color: C.fg }}>
-              No workout templates yet.
-            </p>
-  
-            <p className="text-xs mt-2" style={{ color: C.fg3 }}>
-              Create one in Settings → Workout Templates.
-            </p>
-          </div>
+          <EmptyState
+            icon={Dumbbell}
+            title="No templates yet"
+            body="Build a workout template first — pick your exercises once and start it any time. Head to Settings → Workout Templates."
+          />
         ) : (
           <div className="flex flex-col gap-3">
             {templates.map((template) => (

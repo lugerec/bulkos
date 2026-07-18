@@ -1,6 +1,7 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ClipboardList } from "lucide-react";
 
 import { C, type Screen } from "@/shared/ui";
+import EmptyState from "@/shared/EmptyState";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 
@@ -88,14 +89,13 @@ export default function TemplateBuilderScreen({
 
       <div className="flex flex-col gap-3">
         {templates.length === 0 ? (
-          <div
-            className="rounded-[20px] p-5 text-center"
-            style={{ background: C.card, border: `1px solid ${C.border}` }}
-          >
-            <p className="text-sm" style={{ color: C.fg3 }}>
-              No templates yet.
-            </p>
-          </div>
+          <EmptyState
+            icon={ClipboardList}
+            title="No templates yet"
+            body="A template is a reusable workout — pick the exercises once, then start it any time."
+            actionLabel="Create template"
+            onAction={handleCreate}
+          />
         ) : (
           templates.map((template) => (
             <button
