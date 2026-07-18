@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- Premium pass 2: (1) **text contrast raised** — fg2 `#A6A6B0`, fg3 `#8B8B95` (was #71717A, ~4.2:1, borderline on cards; now ~5.6:1, safe for small text) — fixes remaining grey-on-dark legibility across all 214 fg3 usages; (2) **screen transitions** — content fades/rises in on every screen change (`.screen-in` keyframe, `key={screen}` remounts + resets scroll); (3) **ambient background depth** — faint lime glow top / blue glow bottom-right radial gradients behind the app instead of flat black; (4) **skeleton shimmer loading** (`.skeleton` utility) replaces "Loading…" text in workout history and food db; (5) **haptic tick** on set completion (`hapticTick` in restNotify.ts, 10ms vibrate).
+
 - Premium app-feel pass ("upgrade" of Iron & Lime, not a redesign): (1) global micro-interactions in theme.css — every button scales down slightly on press with a smooth transition, tap highlight removed, iOS momentum scrolling, no overscroll bounce; (2) floating pill bottom nav — inset from edges, 26px radius, blur + dark glass, soft drop shadow, active tab gets an accentDim spotlight pill; (3) `.card-lit` utility (inset top light edge) applied to all cards for machined depth on dark UI; (4) dashboard hero card gets an outer lime glow + light edge. All additive CSS/classNames, no behavior changes.
 
 - `EmptyState` component (shared/EmptyState.tsx): icon + title naming the space + one-line explanation + optional verb-first CTA. Replaces bare "No X yet." text on workout history (CTA → start a workout), template builder (CTA → create template), and the workout template picker. Use it for any new empty screen rather than a lone sentence.

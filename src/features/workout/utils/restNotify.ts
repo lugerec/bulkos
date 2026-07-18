@@ -55,3 +55,14 @@ function playBeep(): void {
 export function adjustRest(current: number, delta: number): number {
   return Math.max(0, current + delta);
 }
+
+/** A tiny tactile tick for small confirmations (set completed, etc.). */
+export function hapticTick(): void {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    try {
+      navigator.vibrate(10);
+    } catch {
+      // best-effort
+    }
+  }
+}

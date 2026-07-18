@@ -93,9 +93,11 @@ export default function FoodDatabaseScreen() {
       </div>
 
       {loading && (
-        <p className="text-sm" style={{ color: C.fg3 }}>
-          Loading foods...
-        </p>
+        <div className="flex flex-col gap-2">
+          <div className="skeleton" style={{ height: 64 }} />
+          <div className="skeleton" style={{ height: 64, opacity: 0.7 }} />
+          <div className="skeleton" style={{ height: 64, opacity: 0.4 }} />
+        </div>
       )}
 
       {!loading && filteredFoods.length === 0 && (

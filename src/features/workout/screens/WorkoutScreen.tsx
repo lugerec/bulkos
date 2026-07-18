@@ -19,7 +19,7 @@ import { useAppStore } from "@/store/appStore";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
-import { notifyRestComplete, adjustRest } from "@/features/workout/utils/restNotify";
+import { notifyRestComplete, adjustRest, hapticTick } from "@/features/workout/utils/restNotify";
 import {
   getSessionEffort,
   describeSessionEffort,
@@ -269,6 +269,7 @@ export default function WorkoutScreen() {
         next.delete(key);
       } else {
         next.add(key);
+        hapticTick();
 
         const current = exercises[exIdx].sets[setIdx];
 

@@ -80,14 +80,11 @@ export default function WorkoutHistoryScreen({
       <div className="flex flex-col gap-3">
         {workouts.length === 0 ? (
           loading ? (
-            <div
-              className="rounded-[20px] p-5 card-lit"
-              style={{ background: C.card, border: `1px solid ${C.border}` }}
-            >
-              <p className="text-sm" style={{ color: C.fg3 }}>
-                Loading workouts…
-              </p>
-            </div>
+            <>
+              <div className="skeleton" style={{ height: 108 }} />
+              <div className="skeleton" style={{ height: 108, opacity: 0.7 }} />
+              <div className="skeleton" style={{ height: 108, opacity: 0.4 }} />
+            </>
           ) : (
             <EmptyState
               icon={Dumbbell}

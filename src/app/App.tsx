@@ -939,7 +939,7 @@ export default function App() {
         style={{
           width: 390,
           height: 844,
-          background: C.bg,
+          background: `radial-gradient(ellipse 90% 40% at 50% -5%, rgba(163,230,53,0.06), transparent 60%), radial-gradient(ellipse 70% 30% at 85% 110%, rgba(96,165,250,0.04), transparent 55%), ${C.bg}`,
           borderRadius: 44,
           border: `1px solid ${C.border}`,
           boxShadow: `0 0 0 8px #111111, 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(163,230,53,0.04)`,
@@ -955,7 +955,8 @@ export default function App() {
 
         {/* Screen content */}
         <div
-          className="absolute overflow-y-auto"
+          key={screen}
+          className="absolute overflow-y-auto screen-in"
           style={{ top: 44, left: 0, right: 0, bottom: showNav ? 82 : 0 }}
         >
           {screen === "dashboard" && <DashboardScreen onNavigate={navigate} />}
