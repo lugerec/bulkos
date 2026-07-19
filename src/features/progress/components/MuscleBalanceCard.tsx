@@ -75,6 +75,7 @@ export default function MuscleBalanceCard({ balances }: Props) {
                 >
                   <div
                     style={{
+                      transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
                       width: `${leftPercent}%`,
                       background: color,
                       opacity: 0.9,
@@ -82,6 +83,7 @@ export default function MuscleBalanceCard({ balances }: Props) {
                   />
                   <div
                     style={{
+                      transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
                       width: `${100 - leftPercent}%`,
                       background: color,
                       opacity: 0.35,

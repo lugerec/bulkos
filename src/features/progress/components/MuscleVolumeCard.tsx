@@ -120,6 +120,7 @@ export default function MuscleVolumeCard({
                 >
                   <div
                     style={{
+                      transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
                       width: `${percentage}%`,
                       height: "100%",
                       background: C.accent,

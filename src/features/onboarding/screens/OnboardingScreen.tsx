@@ -98,10 +98,10 @@ export default function OnboardingScreen() {
             <div
               style={{
                 height: "100%",
-                width: `${progress}%`,
+                transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${progress}%`,
                 background: C.accent,
                 borderRadius: 99,
-                transition: "width 0.25s ease",
+                
               }}
             />
           </div>

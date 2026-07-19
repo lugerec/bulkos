@@ -945,10 +945,10 @@ export default function WorkoutScreen() {
           <div
             style={{
               height: "100%",
-              width: `${totalSets > 0 ? (doneSets / totalSets) * 100 : 0}%`,
+              transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${totalSets > 0 ? (doneSets / totalSets) * 100 : 0}%`,
               background: C.accent,
               borderRadius: 99,
-              transition: "width 0.4s ease",
+              
             }}
           />
         </div>

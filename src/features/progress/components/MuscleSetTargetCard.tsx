@@ -122,7 +122,7 @@ export default function MuscleSetTargetCard({ data }: Props) {
                   <div
                     style={{
                       height: "100%",
-                      width: `${fillPercent}%`,
+                      transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${fillPercent}%`,
                       background: color,
                       borderRadius: 99,
                     }}

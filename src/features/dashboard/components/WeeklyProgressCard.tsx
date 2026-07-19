@@ -53,7 +53,7 @@ export default function WeeklyProgressCard({
         <div
           style={{
             height: "100%",
-            width: `${Math.min(weeklyProgress * 100, 100)}%`,
+            transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${Math.min(weeklyProgress * 100, 100)}%`,
             background: C.accent,
             borderRadius: 99,
           }}

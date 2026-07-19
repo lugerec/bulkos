@@ -329,7 +329,7 @@ export default function DashboardScreen({
           <div
             style={{
               height: "100%",
-              width: `${Math.min(proteinProgress * 100, 100)}%`,
+              transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${Math.min(proteinProgress * 100, 100)}%`,
               background: C.accent,
               borderRadius: 99,
             }}
@@ -475,7 +475,7 @@ export default function DashboardScreen({
                   <div
                     style={{
                       height: "100%",
-                      width: `${Math.min(pct * 100, 100)}%`,
+                      transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${Math.min(pct * 100, 100)}%`,
                       background: color,
                       borderRadius: 99,
                     }}
@@ -593,7 +593,7 @@ export default function DashboardScreen({
           <div
             style={{
               height: "100%",
-              width: `${(water / waterGoal) * 100}%`,
+              transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${(water / waterGoal) * 100}%`,
               background: C.blue,
               borderRadius: 99,
             }}

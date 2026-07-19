@@ -156,10 +156,10 @@ export function MacroBar({
         <div
           style={{
             height: "100%",
-            width: `${pct}%`,
+            transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${pct}%`,
             background: color,
             borderRadius: 99,
-            transition: "width 0.6s ease",
+            
           }}
         />
       </div>

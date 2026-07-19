@@ -167,7 +167,7 @@ export default function MuscleRecoveryCard({ data, workouts }: Props) {
                     <div
                       style={{
                         height: "100%",
-                        width: `${Math.min(item.recoveryPercent, 100)}%`,
+                        transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${Math.min(item.recoveryPercent, 100)}%`,
                         background: color,
                         borderRadius: 99,
                       }}
