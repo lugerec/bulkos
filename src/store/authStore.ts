@@ -41,16 +41,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initAuth: () => {
-    // Safety net: if Firebase never resolves (flaky network, native webview
-    // quirks), stop blocking the UI after a few seconds — the login screen
-    // is a better outcome than an infinite black screen.
+    // Safety net: if anything below never resolves (flaky network, native
+    // webview quirks, Firestore waiting forever for a connection), stop
+    // blocking the UI after a few seconds. Deliberately NOT cleared when the
+    // auth callback starts — only on unmount — because the callback itself
+    // can hang on the profile fetch; if everything resolves normally this
+    // fires as a harmless no-op.
     const failSafe = setTimeout(() => {
       if (get().loading) set({ loading: false });
-    }, 7000);
+    }, 8000);
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      clearTimeout(failSafe);
-
       if (!user) {
         set({
           user: null,
@@ -63,7 +64,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       try {
-        const profile = await getUserProfile(user.uid);
+        // Firestore reads don't time out on their own — race one in so a
+        // dead connection can't hang the splash forever.
+        const profile = await Promise.race([
+          getUserProfile(user.uid),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("profile timeout")), 6000)
+          ),
+        ]);
 
         set({
           user,
@@ -72,8 +80,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           error: null,
         });
       } catch {
-        // Profile fetch failed (offline, rules, etc.) — still let the user
-        // into the app; screens handle a missing profile gracefully.
+        // Profile fetch failed or timed out — still let the user into the
+        // app; screens handle a missing profile gracefully.
         set({ user, profile: null, loading: false, error: null });
       }
     });
