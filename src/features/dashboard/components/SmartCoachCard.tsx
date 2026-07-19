@@ -17,7 +17,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
       style={{
         background: isRecovery
           ? "linear-gradient(135deg, rgba(96,165,250,0.14), rgba(192,132,252,0.08))"
-          : "linear-gradient(135deg, rgba(192,132,252,0.14), rgba(163,230,53,0.08))",
+          : "linear-gradient(135deg, rgba(192,132,252,0.14), rgba(74,222,128,0.08))",
         border: `1px solid ${
           isRecovery ? "rgba(96,165,250,0.25)" : "rgba(192,132,252,0.25)"
         }`,

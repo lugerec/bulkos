@@ -47,7 +47,7 @@ export default function EmptyState({
         <button
           onClick={onAction}
           className="mt-4 px-4 py-2.5 rounded-[14px]"
-          style={{ ...T.bodyStrong, background: C.accent, color: C.onAccent }}
+          style={{ ...T.bodyStrong, background: C.accentGradient, color: C.onAccent }}
         >
           {actionLabel}
         </button>

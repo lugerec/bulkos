@@ -262,7 +262,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
         {/* Meal prep tip */}
         <div
           className="rounded-[20px] p-4 mb-4 card-lit"
-          style={{ background: C.accentDim2, border: "1px solid rgba(163,230,53,0.15)" }}
+          style={{ background: C.accentDim2, border: "1px solid rgba(74,222,128,0.15)" }}
         >
           <div className="flex gap-3 items-start">
             <Zap size={16} color={C.accent} className="mt-0.5 flex-shrink-0" />
@@ -519,8 +519,8 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
         <div
           className="rounded-[20px] p-5 card-lit"
           style={{
-            background: "linear-gradient(135deg, rgba(163,230,53,0.07) 0%, rgba(96,165,250,0.07) 100%)",
-            border: "1px solid rgba(163,230,53,0.18)",
+            background: "linear-gradient(135deg, rgba(74,222,128,0.07) 0%, rgba(96,165,250,0.07) 100%)",
+            border: "1px solid rgba(74,222,128,0.18)",
           }}
         >
           <div className="flex items-center gap-3 mb-3">
@@ -545,7 +545,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
               className="w-full py-3 rounded-[14px] text-sm font-bold"
               style={{
                 background: C.accentDim,
-                border: "1px solid rgba(163,230,53,0.2)",
+                border: "1px solid rgba(74,222,128,0.2)",
                 color: C.accent,
                 opacity: applyingInsight ? 0.6 : 1,
               }}
@@ -939,10 +939,10 @@ export default function App() {
         style={{
           width: 390,
           height: 844,
-          background: `radial-gradient(ellipse 90% 40% at 50% -5%, rgba(163,230,53,0.06), transparent 60%), radial-gradient(ellipse 70% 30% at 85% 110%, rgba(96,165,250,0.04), transparent 55%), ${C.bg}`,
+          background: `radial-gradient(ellipse 90% 40% at 50% -5%, rgba(74,222,128,0.06), transparent 60%), radial-gradient(ellipse 70% 30% at 85% 110%, rgba(34,211,238,0.05), transparent 55%), ${C.bg}`,
           borderRadius: 44,
           border: `1px solid ${C.border}`,
-          boxShadow: `0 0 0 8px #111111, 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(163,230,53,0.04)`,
+          boxShadow: `0 0 0 8px #111111, 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(74,222,128,0.04)`,
         }}
       >
         {/* Notch */}

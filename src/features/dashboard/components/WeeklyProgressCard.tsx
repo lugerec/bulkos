@@ -21,8 +21,8 @@ export default function WeeklyProgressCard({
       className="rounded-[20px] p-5 mb-4 card-lit"
       style={{
         background:
-          "linear-gradient(135deg, rgba(163,230,53,0.10), rgba(96,165,250,0.08))",
-        border: "1px solid rgba(163,230,53,0.18)",
+          "linear-gradient(135deg, rgba(74,222,128,0.10), rgba(96,165,250,0.08))",
+        border: "1px solid rgba(74,222,128,0.18)",
       }}
     >
       <div className="flex justify-between items-start mb-4">

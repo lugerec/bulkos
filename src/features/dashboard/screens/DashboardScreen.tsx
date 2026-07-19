@@ -292,10 +292,10 @@ export default function DashboardScreen({
         className="rounded-[20px] p-5 mb-4 card-lit"
         style={{
           background:
-            "linear-gradient(135deg, rgba(163,230,53,0.16), rgba(96,165,250,0.08))",
-          border: "1px solid rgba(163,230,53,0.22)",
+            "linear-gradient(135deg, rgba(74,222,128,0.16), rgba(34,211,238,0.08))",
+          border: "1px solid rgba(74,222,128,0.22)",
           boxShadow:
-            "0 0 60px rgba(163,230,53,0.07), inset 0 1px 0 rgba(255,255,255,0.06)",
+            "0 0 60px rgba(74,222,128,0.07), inset 0 1px 0 rgba(255,255,255,0.06)",
         }}
       >
        <TodayGoalCard
@@ -310,10 +310,22 @@ export default function DashboardScreen({
 
         <p
           className="mb-4"
-          style={{ ...T.display, color: C.fg }}
+          style={{
+            ...T.display,
+            background: C.accentGradient,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
         >
           {Math.round(proteinRemaining)}
-          <span className="ml-1" style={{ ...T.body, color: C.fg3 }}>
+          <span
+            className="ml-1"
+            style={{
+              ...T.body,
+              WebkitTextFillColor: C.fg3,
+            }}
+          >
             g
           </span>
         </p>
@@ -636,7 +648,7 @@ export default function DashboardScreen({
         style={{
           background: C.accent,
           color: C.bg,
-          boxShadow: `0 8px 32px rgba(163,230,53,0.25)`,
+          boxShadow: `0 8px 32px rgba(74,222,128,0.25)`,
         }}
       >
         Start Today's Workout
