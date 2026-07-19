@@ -919,7 +919,35 @@ export default function App() {
 
   const profile = useAuthStore((s) => s.profile);
 
-  if (loading) return null;
+  if (loading)
+    return (
+      <div
+        className="min-h-screen w-full flex flex-col items-center justify-center gap-4"
+        style={{
+          background: `radial-gradient(ellipse 90% 40% at 50% -5%, rgba(74,222,128,0.08), transparent 60%), ${C.bg}`,
+        }}
+      >
+        <p
+          style={{
+            fontSize: 34,
+            fontWeight: 800,
+            letterSpacing: "-0.02em",
+            background: C.accentGradient,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          BulkOS
+        </p>
+        <div
+          className="w-6 h-6 rounded-full animate-spin"
+          style={{
+            border: `2.5px solid ${C.border}`,
+            borderTopColor: C.accent,
+          }}
+        />
+      </div>
+    );
   if (!user) return <LoginScreen />;
   if (!profile?.onboardingCompleted) return <OnboardingScreen />;
 

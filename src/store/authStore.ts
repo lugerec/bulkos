@@ -41,7 +41,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initAuth: () => {
+    // Safety net: if Firebase never resolves (flaky network, native webview
+    // quirks), stop blocking the UI after a few seconds — the login screen
+    // is a better outcome than an infinite black screen.
+    const failSafe = setTimeout(() => {
+      if (get().loading) set({ loading: false });
+    }, 7000);
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      clearTimeout(failSafe);
+
       if (!user) {
         set({
           user: null,
@@ -53,17 +62,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return;
       }
 
-      const profile = await getUserProfile(user.uid);
+      try {
+        const profile = await getUserProfile(user.uid);
 
-      set({
-        user,
-        profile,
-        loading: false,
-        error: null,
-      });
+        set({
+          user,
+          profile,
+          loading: false,
+          error: null,
+        });
+      } catch {
+        // Profile fetch failed (offline, rules, etc.) — still let the user
+        // into the app; screens handle a missing profile gracefully.
+        set({ user, profile: null, loading: false, error: null });
+      }
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(failSafe);
+      unsubscribe();
+    };
   },
 
   register: async (email, password) => {
