@@ -1,0 +1,9 @@
+{
+  "appId": "com.lugerec.bulkos",
+  "appName": "BulkOS",
+  "webDir": "dist",
+  "backgroundColor": "#0A0A0B",
+  "ios": {
+    "contentInset": "never"
+  }
+}
