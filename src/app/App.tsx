@@ -847,7 +847,10 @@ function BottomNav({ active, onNavigate }: {
   active: Screen; onNavigate: (s: Screen) => void;
 }) {
   return (
-    <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 pt-2 pointer-events-none">
+    <div
+      className="absolute bottom-0 left-0 right-0 px-4 pt-2 pointer-events-none"
+      style={{ paddingBottom: "max(20px, env(safe-area-inset-bottom, 20px))" }}
+    >
       <div
         className="flex justify-around items-center py-2 px-2 rounded-[26px] pointer-events-auto"
         style={{
@@ -922,6 +925,12 @@ export default function App() {
 
   const showNav = mainScreens.includes(screen);
 
+  // On a real phone (or inside the native Capacitor shell) the app fills the
+  // actual screen; the decorative phone frame + fake notch/status bar are a
+  // desktop-preview nicety only.
+  const isFullscreenDevice =
+    typeof window !== "undefined" && window.innerWidth <= 500;
+
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center"
@@ -933,31 +942,54 @@ export default function App() {
         *::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* Phone frame */}
+      {/* Phone frame (decorative on desktop; the real screen on devices) */}
       <div
         className="relative overflow-hidden flex-shrink-0"
-        style={{
-          width: 390,
-          height: 844,
-          background: `radial-gradient(ellipse 90% 40% at 50% -5%, rgba(74,222,128,0.06), transparent 60%), radial-gradient(ellipse 70% 30% at 85% 110%, rgba(34,211,238,0.05), transparent 55%), ${C.bg}`,
-          borderRadius: 44,
-          border: `1px solid ${C.border}`,
-          boxShadow: `0 0 0 8px #111111, 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(74,222,128,0.04)`,
-        }}
+        style={
+          isFullscreenDevice
+            ? {
+                width: "100vw",
+                height: "100dvh",
+                background: `radial-gradient(ellipse 90% 40% at 50% -5%, rgba(74,222,128,0.06), transparent 60%), radial-gradient(ellipse 70% 30% at 85% 110%, rgba(34,211,238,0.05), transparent 55%), ${C.bg}`,
+              }
+            : {
+                width: 390,
+                height: 844,
+                background: `radial-gradient(ellipse 90% 40% at 50% -5%, rgba(74,222,128,0.06), transparent 60%), radial-gradient(ellipse 70% 30% at 85% 110%, rgba(34,211,238,0.05), transparent 55%), ${C.bg}`,
+                borderRadius: 44,
+                border: `1px solid ${C.border}`,
+                boxShadow: `0 0 0 8px #111111, 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(74,222,128,0.04)`,
+              }
+        }
       >
-        {/* Notch */}
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
-          style={{ width: 120, height: 32, background: "#050505", borderRadius: "0 0 16px 16px" }}
-        />
+        {!isFullscreenDevice && (
+          <>
+            {/* Notch */}
+            <div
+              className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
+              style={{ width: 120, height: 32, background: "#050505", borderRadius: "0 0 16px 16px" }}
+            />
 
-        <StatusBar />
+            <StatusBar />
+          </>
+        )}
 
         {/* Screen content */}
         <div
           key={screen}
           className="absolute overflow-y-auto screen-in"
-          style={{ top: 44, left: 0, right: 0, bottom: showNav ? 82 : 0 }}
+          style={{
+            top: isFullscreenDevice ? "env(safe-area-inset-top, 12px)" : 44,
+            left: 0,
+            right: 0,
+            bottom: showNav
+              ? isFullscreenDevice
+                ? "calc(74px + env(safe-area-inset-bottom, 8px))"
+                : 82
+              : isFullscreenDevice
+              ? "env(safe-area-inset-bottom, 0px)"
+              : 0,
+          }}
         >
           {screen === "dashboard" && <DashboardScreen onNavigate={navigate} />}
           {screen === "nutrition" && <NutritionScreen onNavigate={navigate} />}

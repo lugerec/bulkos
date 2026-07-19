@@ -4,3 +4,8 @@ dist
 .DS_Store
 .env
 .env.local
+# iOS build artifacts (project files stay committed)
+ios/App/Pods
+ios/App/App/public
+ios/App/output
+ios/DerivedData
