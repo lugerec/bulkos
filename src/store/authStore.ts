@@ -134,8 +134,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         profile,
       });
     } catch (error) {
+      const code =
+        error && typeof error === "object" && "code" in error
+          ? ` [${(error as { code: string }).code}]`
+          : "";
+
       set({
-        error: error instanceof Error ? error.message : "Registration failed",
+        error:
+          (error instanceof Error
+            ? error.message
+            : "Registration failed") + code,
       });
     } finally {
       set({ loading: false });
@@ -167,8 +175,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         profile,
       });
     } catch (error) {
+      const code =
+        error && typeof error === "object" && "code" in error
+          ? ` [${(error as { code: string }).code}]`
+          : "";
+
       set({
-        error: error instanceof Error ? error.message : "Login failed",
+        error:
+          (error instanceof Error ? error.message : "Login failed") + code,
       });
     } finally {
       set({ loading: false });
