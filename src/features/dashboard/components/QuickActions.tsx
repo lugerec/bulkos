@@ -60,7 +60,12 @@ function QuickAction({
         border: `1px solid ${C.border}`,
       }}
     >
-      <div style={{ color: C.accent }}>{icon}</div>
+      <div
+        className="w-10 h-10 rounded-[12px] flex items-center justify-center"
+        style={{ background: C.accentDim, color: C.accent }}
+      >
+        {icon}
+      </div>
 
       <span className="text-[11px] font-medium" style={{ color: C.fg }}>
         {label}

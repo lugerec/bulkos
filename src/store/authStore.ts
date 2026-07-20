@@ -24,6 +24,20 @@ type AuthState = {
   refreshProfile: () => Promise<void>;
 };
 
+/**
+ * Firestore reads never time out on their own — a cold or dead connection
+ * can hang forever. Every profile fetch goes through this race so the UI
+ * is never blocked more than a few seconds.
+ */
+async function getProfileWithTimeout(uid: string, ms = 6000) {
+  return Promise.race([
+    getUserProfile(uid),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("profile timeout")), ms)
+    ),
+  ]);
+}
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   profile: null,
@@ -64,14 +78,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       try {
-        // Firestore reads don't time out on their own — race one in so a
-        // dead connection can't hang the splash forever.
-        const profile = await Promise.race([
-          getUserProfile(user.uid),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error("profile timeout")), 6000)
-          ),
-        ]);
+        const profile = await getProfileWithTimeout(user.uid);
 
         set({
           user,
@@ -104,7 +111,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       await createUserProfile(credentials.user.uid, email);
 
-      const profile = await getUserProfile(credentials.user.uid);
+      let profile = null;
+
+      try {
+        profile = await getProfileWithTimeout(credentials.user.uid);
+      } catch {
+        // Slow read right after create — proceed; screens handle it.
+      }
 
       set({
         user: credentials.user,
@@ -129,7 +142,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         password
       );
 
-      const profile = await getUserProfile(credentials.user.uid);
+      let profile = null;
+
+      try {
+        profile = await getProfileWithTimeout(credentials.user.uid);
+      } catch {
+        // Slow/absent profile shouldn't block getting into the app.
+      }
 
       set({
         user: credentials.user,

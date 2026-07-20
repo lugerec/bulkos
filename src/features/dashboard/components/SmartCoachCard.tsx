@@ -17,7 +17,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
       style={{
         background: isRecovery
           ? "linear-gradient(135deg, rgba(96,165,250,0.14), rgba(192,132,252,0.08))"
-          : "linear-gradient(135deg, rgba(192,132,252,0.14), rgba(74,222,128,0.08))",
+          : "linear-gradient(135deg, rgba(192,132,252,0.14), rgba(204,242,50,0.08))",
         border: `1px solid ${
           isRecovery ? "rgba(96,165,250,0.25)" : "rgba(192,132,252,0.25)"
         }`,
@@ -95,10 +95,11 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
       {!isRecovery && (
         <button
           onClick={onStart}
-          className="w-full py-3 rounded-[14px] text-sm font-bold flex items-center justify-center gap-1.5"
+          className="w-full py-3.5 rounded-full text-sm font-bold flex items-center justify-center gap-1.5"
           style={{
             background: C.accent,
-            color: C.bg,
+            color: "#0A0A0B",
+            boxShadow: "0 8px 28px rgba(204,242,50,0.22)",
           }}
         >
           {recommendation.template

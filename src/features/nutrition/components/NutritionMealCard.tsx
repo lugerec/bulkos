@@ -51,7 +51,7 @@ export default function NutritionMealCard({
             style={{
               background: C.accentDim,
               color: C.accent,
-              border: `1px solid rgba(74,222,128,0.2)`,
+              border: `1px solid rgba(204,242,50,0.2)`,
             }}
           >
             + Add

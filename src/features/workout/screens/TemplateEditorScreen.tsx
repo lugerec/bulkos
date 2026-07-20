@@ -525,7 +525,7 @@ function ExerciseDefinitionCard({
               style={{
                 background:
                   exercise.category === "compound"
-                    ? "rgba(74,222,128,.12)"
+                    ? "rgba(204,242,50,.12)"
                     : C.card2,
                 color: exercise.category === "compound" ? C.accent : C.fg2,
               }}

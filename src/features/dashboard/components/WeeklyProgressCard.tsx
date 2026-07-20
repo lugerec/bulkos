@@ -1,3 +1,6 @@
+import type { ReactNode } from "react";
+import { Dumbbell, Timer, TrendingUp } from "lucide-react";
+
 import { Badge } from "@/shared/components";
 import { C, T } from "@/shared/ui";
 
@@ -18,75 +21,88 @@ export default function WeeklyProgressCard({
 }: Props) {
   return (
     <div
-      className="rounded-[20px] p-5 mb-4 card-lit"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(74,222,128,0.10), rgba(96,165,250,0.08))",
-        border: "1px solid rgba(74,222,128,0.18)",
-      }}
+      className="rounded-[24px] p-5 mb-4 card-lit"
+      style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <p
-            className="text-[11px] font-bold uppercase tracking-widest mb-1"
-            style={{ color: C.accent }}
-          >
-            This Week
-          </p>
-
-          <p className="" style={{ ...T.title, color: C.fg }}>
-            {workoutsThisWeek}/{weeklyWorkoutGoal} workouts
-          </p>
-        </div>
-
+      <div className="flex justify-between items-center mb-4">
+        <p style={{ ...T.eyebrow, color: C.fg3 }}>This week</p>
         <Badge>{Math.round(weeklyProgress * 100)}%</Badge>
       </div>
 
       <div
         style={{
-          height: 5,
-          background: C.border,
+          height: 8,
+          background: C.card2,
           borderRadius: 99,
-          marginBottom: 14,
+          marginBottom: 16,
         }}
       >
         <div
           style={{
             height: "100%",
-            transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${Math.min(weeklyProgress * 100, 100)}%`,
+            width: `${Math.min(weeklyProgress * 100, 100)}%`,
+            transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
             background: C.accent,
             borderRadius: 99,
           }}
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <MiniStat
-          label="Volume"
-          value={`${volumeThisWeek.toLocaleString()} kg`}
+      <div className="grid grid-cols-3 gap-2.5">
+        <StatTile
+          icon={<Dumbbell size={16} />}
+          value={`${workoutsThisWeek}/${weeklyWorkoutGoal}`}
+          label="Workouts"
         />
-        <MiniStat label="Time" value={trainingTimeThisWeek} />
+        <StatTile
+          icon={<TrendingUp size={16} />}
+          value={formatVolume(volumeThisWeek)}
+          label="Volume"
+        />
+        <StatTile
+          icon={<Timer size={16} />}
+          value={trainingTimeThisWeek}
+          label="Time"
+        />
       </div>
     </div>
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: string }) {
+function formatVolume(kg: number) {
+  if (kg >= 10000) return `${(kg / 1000).toFixed(1)}t`;
+
+  return `${kg.toLocaleString()} kg`;
+}
+
+/** Reference-style stat tile: icon in a tinted squircle, value, quiet label. */
+function StatTile({
+  icon,
+  value,
+  label,
+}: {
+  icon: ReactNode;
+  value: string;
+  label: string;
+}) {
   return (
     <div
-      className="rounded-[14px] px-3 py-2"
-      style={{
-        background: "rgba(255,255,255,0.04)",
-        border: `1px solid ${C.border}`,
-      }}
+      className="rounded-[16px] px-3 py-3 flex flex-col items-start gap-2"
+      style={{ background: C.card2, border: `1px solid ${C.border}` }}
     >
-      <p className="text-[11px] mb-1" style={{ color: C.fg3 }}>
-        {label}
-      </p>
+      <div
+        className="w-8 h-8 rounded-[10px] flex items-center justify-center"
+        style={{ background: C.accentDim, color: C.accent }}
+      >
+        {icon}
+      </div>
 
-      <p className="text-sm font-bold" style={{ color: C.fg }}>
-        {value}
-      </p>
+      <div>
+        <p style={{ ...T.bodyStrong, color: C.fg }}>{value}</p>
+        <p className="mt-0.5" style={{ ...T.caption, color: C.fg3 }}>
+          {label}
+        </p>
+      </div>
     </div>
   );
 }

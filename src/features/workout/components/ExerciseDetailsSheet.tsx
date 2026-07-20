@@ -244,8 +244,8 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           className="rounded-[20px] p-5 mb-4 flex items-center justify-center card-lit"
           style={{
             background:
-              "linear-gradient(135deg, rgba(74,222,128,0.10), rgba(96,165,250,0.08))",
-            border: "1px solid rgba(74,222,128,0.18)",
+              "linear-gradient(135deg, rgba(204,242,50,0.10), rgba(96,165,250,0.08))",
+            border: "1px solid rgba(204,242,50,0.18)",
             height: 150,
           }}
         >

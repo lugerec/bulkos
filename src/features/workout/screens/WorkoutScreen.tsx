@@ -693,7 +693,7 @@ export default function WorkoutScreen() {
           style={{
             background: C.accentDim,
             border: `2px solid ${C.accent}`,
-            boxShadow: `0 0 40px rgba(74,222,128,0.2)`,
+            boxShadow: `0 0 40px rgba(204,242,50,0.2)`,
           }}
         >
           <CheckCircle2 size={48} color={C.accent} />
@@ -773,8 +773,8 @@ export default function WorkoutScreen() {
           <div
             className="w-full rounded-[20px] p-4 mb-4 text-left card-lit"
             style={{
-              background: "rgba(74,222,128,0.07)",
-              border: "1px solid rgba(74,222,128,0.2)",
+              background: "rgba(204,242,50,0.07)",
+              border: "1px solid rgba(204,242,50,0.2)",
             }}
           >
             <p className="text-sm font-bold mb-3" style={{ color: C.accent }}>
@@ -927,7 +927,7 @@ export default function WorkoutScreen() {
             style={{
               background: C.accent,
               color: C.bg,
-              boxShadow: `0 8px 32px rgba(74,222,128,0.25)`,
+              boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
             }}
           >
             ▶ Start Workout
@@ -985,8 +985,8 @@ export default function WorkoutScreen() {
         <div
           className="mx-5 mb-4 rounded-[20px] p-4 card-lit"
           style={{
-            background: "rgba(74,222,128,0.07)",
-            border: "1px solid rgba(74,222,128,0.2)",
+            background: "rgba(204,242,50,0.07)",
+            border: "1px solid rgba(204,242,50,0.2)",
           }}
         >
           <div className="flex items-center gap-4">
@@ -1095,9 +1095,9 @@ export default function WorkoutScreen() {
                       <span
                         className="px-2 py-0.5 rounded-full text-[11px] font-bold"
                         style={{
-                          background: "rgba(74,222,128,0.15)",
+                          background: "rgba(204,242,50,0.15)",
                           color: C.accent,
-                          border: "1px solid rgba(74,222,128,0.25)",
+                          border: "1px solid rgba(204,242,50,0.25)",
                         }}
                       >
                         🏆 NEW PR
@@ -1172,9 +1172,9 @@ export default function WorkoutScreen() {
                         }
                         className="px-2 py-1 rounded-lg text-[11px] font-semibold"
                         style={{
-                          background: "rgba(74,222,128,0.12)",
+                          background: "rgba(204,242,50,0.12)",
                           color: C.accent,
-                          border: "1px solid rgba(74,222,128,0.25)",
+                          border: "1px solid rgba(204,242,50,0.25)",
                         }}
                       >
                         ⭐ Apply
@@ -1361,7 +1361,7 @@ export default function WorkoutScreen() {
             style={{
               background: C.accent,
               color: C.bg,
-              boxShadow: `0 8px 32px rgba(74,222,128,0.25)`,
+              boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
             }}
           >
             Start Workout
@@ -1375,7 +1375,7 @@ export default function WorkoutScreen() {
               background: C.accent,
               color: C.bg,
               opacity: saving ? 0.6 : 1,
-              boxShadow: `0 8px 32px rgba(74,222,128,0.25)`,
+              boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
             }}
           >
             {saving ? "Saving Workout..." : "Finish Workout"}

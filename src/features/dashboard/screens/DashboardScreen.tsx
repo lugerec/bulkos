@@ -288,70 +288,11 @@ export default function DashboardScreen({
         }}
       />
 
-      <div
-        className="rounded-[20px] p-5 mb-4 card-lit"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(74,222,128,0.16), rgba(34,211,238,0.08))",
-          border: "1px solid rgba(74,222,128,0.22)",
-          boxShadow:
-            "0 0 60px rgba(74,222,128,0.07), inset 0 1px 0 rgba(255,255,255,0.06)",
-        }}
-      >
-       <TodayGoalCard
+      <TodayGoalCard
         proteinRemaining={proteinRemaining}
         proteinProgress={proteinProgress}
         heroMessage={heroMessage}
       />
-
-        <p className="mb-1" style={{ ...T.eyebrow, color: C.fg3 }}>
-          Protein remaining
-        </p>
-
-        <p
-          className="mb-4"
-          style={{
-            ...T.display,
-            background: C.accentGradient,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          {Math.round(proteinRemaining)}
-          <span
-            className="ml-1"
-            style={{
-              ...T.body,
-              WebkitTextFillColor: C.fg3,
-            }}
-          >
-            g
-          </span>
-        </p>
-
-        <div
-          style={{
-            height: 6,
-            background: C.border,
-            borderRadius: 99,
-            marginBottom: 12,
-          }}
-        >
-          <div
-            style={{
-              height: "100%",
-              transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${Math.min(proteinProgress * 100, 100)}%`,
-              background: C.accent,
-              borderRadius: 99,
-            }}
-          />
-        </div>
-
-        <p className="text-sm font-semibold" style={{ color: C.fg }}>
-          {heroMessage}
-        </p>
-      </div>
 
       <QuickActions onNavigate={onNavigate} />
 
@@ -648,7 +589,7 @@ export default function DashboardScreen({
         style={{
           background: C.accent,
           color: C.bg,
-          boxShadow: `0 8px 32px rgba(74,222,128,0.25)`,
+          boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
         }}
       >
         Start Today's Workout

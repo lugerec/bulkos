@@ -247,8 +247,8 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         className="rounded-[20px] p-5 mb-4 card-lit"
         style={{
           background:
-            "linear-gradient(135deg, rgba(74,222,128,0.08), rgba(96,165,250,0.06))",
-          border: "1px solid rgba(74,222,128,0.2)",
+            "linear-gradient(135deg, rgba(204,242,50,0.08), rgba(96,165,250,0.06))",
+          border: "1px solid rgba(204,242,50,0.2)",
         }}
       >
         <p

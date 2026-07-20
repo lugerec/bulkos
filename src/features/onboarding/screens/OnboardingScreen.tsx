@@ -344,7 +344,7 @@ function ChoiceStep({
               className="text-left rounded-[20px] p-4 flex gap-4 items-start card-lit"
               style={{
                 background: active ? C.accentDim : C.card,
-                border: `1px solid ${active ? "rgba(74,222,128,0.45)" : C.border}`,
+                border: `1px solid ${active ? "rgba(204,242,50,0.45)" : C.border}`,
               }}
             >
               <div
@@ -512,8 +512,8 @@ function SummaryStep({
       <div
         className="rounded-[20px] p-5 card-lit"
         style={{
-          background: "linear-gradient(135deg, rgba(74,222,128,0.08), rgba(96,165,250,0.06))",
-          border: "1px solid rgba(74,222,128,0.2)",
+          background: "linear-gradient(135deg, rgba(204,242,50,0.08), rgba(96,165,250,0.06))",
+          border: "1px solid rgba(204,242,50,0.2)",
         }}
       >
         <div className="flex items-center gap-3 mb-5">

@@ -6,6 +6,15 @@ type Props = {
   heroMessage: string;
 };
 
+/** Ink colors for content sitting on the solid lime hero surface. */
+const INK = "#0A0A0B";
+const INK_SOFT = "rgba(10,10,11,0.62)";
+const INK_TRACK = "rgba(10,10,11,0.16)";
+
+/**
+ * Dashboard hero: a solid accent surface with dark ink — the app's signature
+ * card. Label → big number → progress → one-line message.
+ */
 export default function TodayGoalCard({
   proteinRemaining,
   proteinProgress,
@@ -13,53 +22,43 @@ export default function TodayGoalCard({
 }: Props) {
   return (
     <div
-      className="rounded-[20px] p-5 mb-4 card-lit"
+      className="rounded-[24px] p-5 mb-4"
       style={{
-        background:
-          "linear-gradient(135deg, rgba(74,222,128,0.16), rgba(96,165,250,0.08))",
-        border: "1px solid rgba(74,222,128,0.22)",
+        background: C.accent,
+        boxShadow: "0 12px 40px rgba(204,242,50,0.18)",
       }}
     >
-      <p
-        className="text-[11px] font-bold uppercase tracking-widest mb-2"
-        style={{ color: C.accent }}
-      >
-        Today's Goal
+      <p className="mb-3" style={{ ...T.eyebrow, color: INK_SOFT }}>
+        Today's goal
       </p>
 
-      <p className="text-sm mb-1" style={{ color: C.fg3 }}>
-        Protein remaining
-      </p>
-
-      <p
-        className="mb-4"
-        style={{ ...T.display, color: C.fg }}
-      >
+      <p style={{ ...T.display, color: INK }}>
         {Math.round(proteinRemaining)}
-        <span className="ml-1" style={{ ...T.body, color: C.fg3 }}>
-          g
+        <span className="ml-1.5" style={{ ...T.bodyStrong, color: INK_SOFT }}>
+          g protein left
         </span>
       </p>
 
       <div
+        className="mt-4"
         style={{
-          height: 6,
-          background: C.border,
+          height: 8,
+          background: INK_TRACK,
           borderRadius: 99,
-          marginBottom: 12,
         }}
       >
         <div
           style={{
             height: "100%",
-            transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)", width: `${Math.min(proteinProgress * 100, 100)}%`,
-            background: C.accent,
+            width: `${Math.min(proteinProgress * 100, 100)}%`,
+            transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+            background: INK,
             borderRadius: 99,
           }}
         />
       </div>
 
-      <p className="text-sm font-semibold" style={{ color: C.fg }}>
+      <p className="mt-3" style={{ ...T.label, color: INK, fontWeight: 600 }}>
         {heroMessage}
       </p>
     </div>
