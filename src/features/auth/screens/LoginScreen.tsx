@@ -79,6 +79,11 @@ export default function LoginScreen() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             type="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            autoComplete="email"
             className="w-full px-4 py-4 rounded-2xl outline-none text-sm"
             style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
           />
@@ -88,6 +93,10 @@ export default function LoginScreen() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             type="password"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            autoComplete="current-password"
             className="w-full px-4 py-4 rounded-2xl outline-none text-sm"
             style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
           />

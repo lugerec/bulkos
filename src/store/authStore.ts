@@ -114,12 +114,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true, error: null });
 
       const credentials = await withTimeout(
-        createUserWithEmailAndPassword(auth, email, password),
+        createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password),
         12000,
         "Can't reach the sign-up server — check your connection and try again."
       );
 
-      await createUserProfile(credentials.user.uid, email);
+      await createUserProfile(credentials.user.uid, email.trim().toLowerCase());
 
       let profile = null;
 
@@ -147,7 +147,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true, error: null });
 
       const credentials = await withTimeout(
-        signInWithEmailAndPassword(auth, email, password),
+        // iOS keyboards love to append a space or capitalize the email —
+        // normalise so a stray autocorrect can't fail the login.
+        signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password),
         12000,
         "Can't reach the sign-in server — check your connection and try again."
       );
