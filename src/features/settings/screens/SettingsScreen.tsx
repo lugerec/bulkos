@@ -13,6 +13,7 @@ import { SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import ProfileGoalsCard from "../components/ProfileGoalsCard";
 import {
   buildBodyMetricsCsv,
@@ -27,7 +28,8 @@ export default function SettingsScreen({
   onNavigate: (s: Screen) => void;
 }) {
   const [notifications, setNotifications] = useState(true);
-  const [units, setUnits] = useState<"metric" | "imperial">("metric");
+  const units = useSettingsStore((s) => s.units);
+  const setUnits = useSettingsStore((s) => s.setUnits);
 
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
@@ -190,7 +192,12 @@ export default function SettingsScreen({
           <span className="text-sm" style={{ color: C.fg2 }}>
             Dark Mode
           </span>
-          <Toggle value={true} onChange={() => {}} />
+          <span
+            className="text-[11px] px-2.5 py-1 rounded-full"
+            style={{ background: C.accentDim, color: C.accent }}
+          >
+            Always on
+          </span>
         </div>
 
         <div className="flex justify-between items-center px-4 py-3.5">
@@ -209,7 +216,7 @@ export default function SettingsScreen({
                 className="px-3 py-1.5 text-xs font-semibold capitalize"
                 style={{
                   background: units === u ? C.accent : "transparent",
-                  color: units === u ? C.bg : C.fg3,
+                  color: units === u ? "#0A0A0B" : C.fg2,
                 }}
               >
                 {u}

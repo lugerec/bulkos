@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+import { useSettingsStore, weightUnit } from "@/store/settingsStore";
 import { Calculator } from "lucide-react";
 
 import { C } from "@/shared/ui";
@@ -13,6 +15,8 @@ import { SubScreenHeader } from "@/shared/components";
  * one-rep-max estimate plus a percent-of-1RM training table.
  */
 export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
+  const units = useSettingsStore((s) => s.units);
+  const unitLabel = weightUnit(units);
   const [weight, setWeight] = useState("100");
   const [reps, setReps] = useState("5");
 
@@ -67,7 +71,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <div className="flex gap-3 mb-4">
-            <Field label="Weight" value={weight} onChange={setWeight} unit="kg" />
+            <Field label="Weight" value={weight} onChange={setWeight} unit={unitLabel} />
             <Field label="Reps" value={reps} onChange={setReps} unit="reps" />
           </div>
 
@@ -88,7 +92,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
               <p className="text-[32px] font-extrabold" style={{ color: C.fg }}>
                 {estimate.average}
                 <span className="text-base font-medium ml-1" style={{ color: C.fg2 }}>
-                  kg
+                  {unitLabel}
                 </span>
               </p>
               <p className="text-[11px] mt-1" style={{ color: C.fg2 }}>
@@ -145,7 +149,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
                   {target.percent}%
                 </span>
                 <span className="text-sm font-bold flex-1 text-right" style={{ color: C.accent }}>
-                  {target.weight} kg
+                  {target.weight} {unitLabel}
                 </span>
               </div>
             ))}
