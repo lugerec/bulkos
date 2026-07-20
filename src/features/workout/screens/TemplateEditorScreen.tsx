@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Copy, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Copy, Plus, Save, Trash2 } from "lucide-react";
 
 import { exerciseDefinitions } from "@/data/exercises";
 import { C } from "@/shared/ui";
@@ -323,20 +323,38 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
           <ExerciseDefinitionCard
             key={exercise.id}
             exercise={exercise}
+            added={exercises.some(
+              (item) => (item.exerciseId ?? item.id) === exercise.id
+            )}
             onAdd={addExercise}
             onInfo={openExerciseDetail}
           />
         ))}
       </div>
 
-      <button
-        onClick={handleSave}
-        className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2 card-lit"
-        style={{ background: C.accent, color: C.bg }}
+      {/* Spacer so the last cards aren't hidden behind the sticky bar */}
+      <div style={{ height: 76 }} />
+
+      <div
+        className="sticky bottom-0 left-0 right-0 -mx-5 px-5 pb-4 pt-2"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(10,10,11,0.96) 70%, transparent)",
+        }}
       >
-        <Save size={18} />
-        Save Template
-      </button>
+        <button
+          onClick={handleSave}
+          className="w-full py-4 rounded-full font-bold flex items-center justify-center gap-2"
+          style={{
+            background: C.accent,
+            color: "#0A0A0B",
+            boxShadow: "0 8px 28px rgba(204,242,50,0.25)",
+          }}
+        >
+          <Save size={18} />
+          Save Template
+        </button>
+      </div>
     </div>
   );
 }
@@ -495,17 +513,25 @@ function TemplateExerciseCard({
 
 function ExerciseDefinitionCard({
   exercise,
+  added,
   onAdd,
   onInfo,
 }: {
   exercise: ExerciseDefinition;
+  /** Already in the template — shown dimmed and not addable again. */
+  added: boolean;
   onAdd: (exercise: ExerciseDefinition) => void;
   onInfo: (exercise: ExerciseDefinition) => void;
 }) {
   return (
     <div
       className="rounded-[20px] p-4 text-left card-lit"
-      style={{ background: C.card, border: `1px solid ${C.border}` }}
+      style={{
+        background: C.card,
+        border: `1px solid ${C.border}`,
+        opacity: added ? 0.45 : 1,
+        transition: "opacity 0.2s",
+      }}
     >
       <div className="flex items-start justify-between gap-4">
         <button
@@ -544,12 +570,17 @@ function ExerciseDefinitionCard({
         </button>
 
         <button
-          onClick={() => onAdd(exercise)}
-          aria-label={`Add ${exercise.name}`}
+          onClick={() => !added && onAdd(exercise)}
+          disabled={added}
+          aria-label={added ? `${exercise.name} added` : `Add ${exercise.name}`}
           className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: C.accent, color: C.bg }}
+          style={{
+            background: added ? C.card2 : C.accent,
+            border: added ? `1px solid ${C.border}` : "none",
+            color: added ? C.fg3 : C.bg,
+          }}
         >
-          <Plus size={18} />
+          {added ? <Check size={18} /> : <Plus size={18} />}
         </button>
       </div>
     </div>

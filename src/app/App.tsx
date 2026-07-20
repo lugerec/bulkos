@@ -1021,7 +1021,7 @@ export default function App() {
         >
           {screen === "dashboard" && <DashboardScreen onNavigate={navigate} />}
           {screen === "nutrition" && <NutritionScreen onNavigate={navigate} />}
-          {screen === "food-db" && <FoodDatabaseScreenNew />}
+          {screen === "food-db" && <FoodDatabaseScreenNew onBack={() => navigate("nutrition")} />}
           
           {screen === "template-editor" && (<TemplateEditorScreen onBack={() => navigate("template-builder")} />
           )}

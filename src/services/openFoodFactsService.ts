@@ -80,9 +80,23 @@ export async function searchOpenFoodFacts(
 
     const data: OffSearchResponse = await response.json();
 
+    const q = query.trim().toLowerCase();
+
     return (data.products ?? [])
       .map(mapOffProductToFoodItem)
-      .filter((item): item is FoodItem => item !== null);
+      .filter((item): item is FoodItem => item !== null)
+      // OFF's own ranking is loose ("chick" → hummus); prefer names that
+      // actually start with or contain the query, then shorter names.
+      .sort((a, b) => {
+        const an = a.name.toLowerCase();
+        const bn = b.name.toLowerCase();
+
+        const score = (n: string) =>
+          n.startsWith(q) ? 0 : n.includes(q) ? 1 : 2;
+
+        return score(an) - score(bn) || an.length - bn.length;
+      })
+      .slice(0, 8);
   } catch {
     return [];
   }

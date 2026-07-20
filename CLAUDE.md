@@ -31,6 +31,8 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- UX feedback round 1 (from real phone use): (1) **Workout select** now has two actions up top — "AI workout" (lime, opens `AiWorkoutSheet`: pick Push/Pull/Legs/Full body → `generateWorkoutTemplate` from the coach engine → straight into preview) and "My templates" (→ template-builder). (2) **Template editor**: already-added exercises are dimmed (opacity 0.45) with a disabled ✓ button instead of +; Save is a **sticky bottom bar** (gradient fade) so no scrolling to the end to save. (3) **Food Database**: back-arrow header (was a trap with no way out — screen isn't in mainScreens so the nav is hidden), food names wrap to 2 lines instead of truncating, and Open Food Facts results are re-ranked by query relevance (startsWith > includes > rest, shorter first) and capped at 8 — OFF's own ranking returned hummus for "chick".
+
 - **Firestore long polling on native (critical iOS fix):** Firestore's default WebChannel transport hangs inside WKWebView — every read spun forever in the Capacitor app while desktop Safari worked. `config/firebase.ts` now uses `initializeFirestore` with `experimentalForceLongPolling` when `Capacitor.isNativePlatform()`, auto-detect otherwise. Also 12s `withTimeout` on sign-in/sign-up calls so auth can never spin indefinitely (surfaces a clear error).
 - Reference-style pass continued: shared `StatTile` (shared/components.tsx) used by dashboard week card and the active-workout header (Volume/Best set/Est 1RM tiles with icons); template picker cards rebuilt as reference rows (icon squircle, name, chip badges for exercises/sets, lime play button).
 

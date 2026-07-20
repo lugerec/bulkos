@@ -4,11 +4,13 @@ import { getProgressionSuggestion } from "@/features/workout/utils/progression";
 import ExerciseDetailsSheet from "@/features/workout/components/ExerciseDetailsSheet";
 import SwapExerciseSheet from "@/features/workout/components/SwapExerciseSheet";
 import AddExerciseSheet from "@/features/workout/components/AddExerciseSheet";
+import AiWorkoutSheet, { type AiSplit } from "@/features/workout/components/AiWorkoutSheet";
+import { generateWorkoutTemplate } from "@/features/workout/utils/workoutRecommendation";
 import EmptyState from "@/shared/EmptyState";
 import ExerciseThumb from "@/features/workout/components/ExerciseThumb";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote, TrendingUp, Trophy, Play } from "lucide-react";
+import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote, TrendingUp, Trophy, Play, Sparkles, Pencil } from "lucide-react";
 
 import { C, T } from "@/shared/ui";
 import { StatTile } from "@/shared/components";
@@ -56,6 +58,8 @@ export default function WorkoutScreen() {
   const workout = useWorkoutTemplateStore((s) => s.selected);
   const templates = useWorkoutTemplateStore((s) => s.templates);
   const selectTemplate = useWorkoutTemplateStore((s) => s.selectTemplate);
+  const selectGenerated = useWorkoutTemplateStore((s) => s.selectGenerated);
+  const navigateTo = useAppStore((s) => s.navigate);
 
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
@@ -102,6 +106,7 @@ export default function WorkoutScreen() {
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [swapExerciseIdx, setSwapExerciseIdx] = useState<number | null>(null);
   const [addingExercise, setAddingExercise] = useState(false);
+  const [aiSheetOpen, setAiSheetOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState<Set<number>>(new Set());
 
   const exerciseHasPR = (exerciseId: string) => Boolean(prs[exerciseId]);
@@ -206,6 +211,49 @@ export default function WorkoutScreen() {
             Choose a template to start your session.
           </p>
         </div>
+
+        <div className="grid grid-cols-2 gap-2.5 mb-5">
+          <button
+            onClick={() => setAiSheetOpen(true)}
+            className="rounded-[16px] py-3.5 px-3 flex items-center justify-center gap-2 font-bold text-sm"
+            style={{
+              background: C.accent,
+              color: "#0A0A0B",
+              boxShadow: "0 8px 24px rgba(204,242,50,0.2)",
+            }}
+          >
+            <Sparkles size={16} />
+            AI workout
+          </button>
+
+          <button
+            onClick={() => navigateTo("template-builder")}
+            className="rounded-[16px] py-3.5 px-3 flex items-center justify-center gap-2 font-bold text-sm card-lit"
+            style={{
+              background: C.card,
+              border: `1px solid ${C.border}`,
+              color: C.fg,
+            }}
+          >
+            <Pencil size={15} />
+            My templates
+          </button>
+        </div>
+
+        <AiWorkoutSheet
+          open={aiSheetOpen}
+          onClose={() => setAiSheetOpen(false)}
+          onGenerate={(split: AiSplit) => {
+            const template = generateWorkoutTemplate(split, workouts);
+
+            setAiSheetOpen(false);
+
+            if (template.exercises.length > 0) {
+              selectGenerated(template);
+              setPreviewing(true);
+            }
+          }}
+        />
   
         {templates.length === 0 ? (
           <EmptyState

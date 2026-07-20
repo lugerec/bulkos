@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Globe, Search, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Globe, Search, CheckCircle2 } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useFoodStore } from "@/store/foodStore";
@@ -10,7 +10,7 @@ import FoodDetailScreen from "./FoodDetailScreen";
 const ONLINE_SEARCH_MIN_CHARS = 3;
 const ONLINE_SEARCH_DEBOUNCE_MS = 500;
 
-export default function FoodDatabaseScreen() {
+export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) {
   const { foods, loadFoods, loading } = useFoodStore();
   const [search, setSearch] = useState("");
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
@@ -69,9 +69,21 @@ export default function FoodDatabaseScreen() {
 
   return (
     <div className="px-5 pb-8 pt-4">
-      <h2 className="text-[22px] font-bold mb-1" style={{ color: C.fg }}>
-        Food Database
-      </h2>
+      <div className="flex items-center gap-3 mb-1">
+        {onBack && (
+          <button
+            onClick={onBack}
+            aria-label="Back"
+            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
+          >
+            <ArrowLeft size={17} />
+          </button>
+        )}
+        <h2 className="text-[22px] font-bold" style={{ color: C.fg }}>
+          Food Database
+        </h2>
+      </div>
 
       <p className="text-sm mb-5" style={{ color: C.fg3 }}>
         Search your foods and Open Food Facts
@@ -130,8 +142,15 @@ export default function FoodDatabaseScreen() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p
-                      className="text-base font-bold truncate"
-                      style={{ color: C.fg }}
+                      className="text-base font-bold"
+                      style={{
+                        color: C.fg,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        lineHeight: 1.25,
+                      }}
                     >
                       {food.name}
                     </p>
