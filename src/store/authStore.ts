@@ -24,6 +24,16 @@ type AuthState = {
   refreshProfile: () => Promise<void>;
 };
 
+/** Reject a hanging network call after `ms` so the UI can show a real error. */
+async function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(message)), ms)
+    ),
+  ]);
+}
+
 /**
  * Firestore reads never time out on their own — a cold or dead connection
  * can hang forever. Every profile fetch goes through this race so the UI
@@ -103,10 +113,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true, error: null });
 
-      const credentials = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
+      const credentials = await withTimeout(
+        createUserWithEmailAndPassword(auth, email, password),
+        12000,
+        "Can't reach the sign-up server — check your connection and try again."
       );
 
       await createUserProfile(credentials.user.uid, email);
@@ -136,10 +146,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true, error: null });
 
-      const credentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
+      const credentials = await withTimeout(
+        signInWithEmailAndPassword(auth, email, password),
+        12000,
+        "Can't reach the sign-in server — check your connection and try again."
       );
 
       let profile = null;
