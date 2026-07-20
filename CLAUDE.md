@@ -31,6 +31,9 @@ Known quirk: TWO different `WorkoutLog` types exist (`types/workout.ts` vs `stor
 
 ## Completed features
 
+- **Firestore long polling on native (critical iOS fix):** Firestore's default WebChannel transport hangs inside WKWebView — every read spun forever in the Capacitor app while desktop Safari worked. `config/firebase.ts` now uses `initializeFirestore` with `experimentalForceLongPolling` when `Capacitor.isNativePlatform()`, auto-detect otherwise. Also 12s `withTimeout` on sign-in/sign-up calls so auth can never spin indefinitely (surfaces a clear error).
+- Reference-style pass continued: shared `StatTile` (shared/components.tsx) used by dashboard week card and the active-workout header (Volume/Best set/Est 1RM tiles with icons); template picker cards rebuilt as reference rows (icon squircle, name, chip badges for exercises/sets, lime play button).
+
 - Charts + bars polish: `ExerciseProgressChart` rebuilt as an AreaChart with a lime gradient fill, dark themed tooltip (was recharts' default white box), quiet borderless axes with short "16 Jul" tick labels, and accent active dot. All progress bars app-wide (recovery, set targets, strength standards, weekly, onboarding, workout header, ProgressRing bars…) animate width changes with a 0.6s spring-like ease.
 
 - Premium pass 2: (1) **text contrast raised** — fg2 `#A6A6B0`, fg3 `#8B8B95` (was #71717A, ~4.2:1, borderline on cards; now ~5.6:1, safe for small text) — fixes remaining grey-on-dark legibility across all 214 fg3 usages; (2) **screen transitions** — content fades/rises in on every screen change (`.screen-in` keyframe, `key={screen}` remounts + resets scroll); (3) **ambient background depth** — faint lime glow top / blue glow bottom-right radial gradients behind the app instead of flat black; (4) **skeleton shimmer loading** (`.skeleton` utility) replaces "Loading…" text in workout history and food db; (5) **haptic tick** on set completion (`hapticTick` in restNotify.ts, 10ms vibrate).

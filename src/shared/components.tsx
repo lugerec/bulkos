@@ -273,3 +273,34 @@ export function SubScreenHeader({
     </div>
   );
 }
+/** Reference-style stat tile: icon in a tinted squircle, value, quiet label. */
+export function StatTile({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: string;
+  label: string;
+}) {
+  return (
+    <div
+      className="rounded-[16px] px-3 py-3 flex flex-col items-start gap-2"
+      style={{ background: C.card2, border: `1px solid ${C.border}` }}
+    >
+      <div
+        className="w-8 h-8 rounded-[10px] flex items-center justify-center"
+        style={{ background: C.accentDim, color: C.accent }}
+      >
+        {icon}
+      </div>
+
+      <div>
+        <p style={{ ...T.bodyStrong, color: C.fg }}>{value}</p>
+        <p className="mt-0.5" style={{ ...T.caption, color: C.fg3 }}>
+          {label}
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -8,9 +8,10 @@ import EmptyState from "@/shared/EmptyState";
 import ExerciseThumb from "@/features/workout/components/ExerciseThumb";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote } from "lucide-react";
+import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote, TrendingUp, Trophy, Play } from "lucide-react";
 
-import { C } from "@/shared/ui";
+import { C, T } from "@/shared/ui";
+import { StatTile } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
@@ -214,45 +215,79 @@ export default function WorkoutScreen() {
           />
         ) : (
           <div className="flex flex-col gap-3">
-            {templates.map((template) => (
-              <button
-                key={template.id}
-                onClick={() => {
-                  selectTemplate(template.id);
-                  setPreviewing(true);
-                }}
-                className="rounded-[20px] p-4 text-left flex items-center justify-between gap-3 card-lit"
-                style={{
-                  background: C.card,
-                  border: `1px solid ${C.border}`,
-                }}
-              >
-                <div>
-                  <p className="text-base font-bold" style={{ color: C.fg }}>
-                    {template.name}
-                  </p>
-  
-                  <p className="text-xs mt-1" style={{ color: C.fg3 }}>
-                    {template.exercises.length} exercises ·{" "}
-                    {template.exercises.reduce(
-                      (sum, exercise) => sum + exercise.sets.length,
-                      0
-                    )}{" "}
-                    sets
-                  </p>
-                </div>
-  
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
+            {templates.map((template) => {
+              const totalSets = template.exercises.reduce(
+                (sum, exercise) => sum + exercise.sets.length,
+                0
+              );
+
+              return (
+                <button
+                  key={template.id}
+                  onClick={() => {
+                    selectTemplate(template.id);
+                    setPreviewing(true);
+                  }}
+                  className="rounded-[20px] p-4 text-left flex items-center gap-3.5 card-lit"
                   style={{
-                    background: C.accent,
-                    color: C.bg,
+                    background: C.card,
+                    border: `1px solid ${C.border}`,
                   }}
                 >
-                  <Dumbbell size={17} />
-                </div>
-              </button>
-            ))}
+                  <div
+                    className="w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0"
+                    style={{ background: C.accentDim, color: C.accent }}
+                  >
+                    <Dumbbell size={19} />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="truncate"
+                      style={{ ...T.bodyStrong, color: C.fg }}
+                    >
+                      {template.name}
+                    </p>
+
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <span
+                        className="px-2 py-0.5 rounded-full"
+                        style={{
+                          ...T.caption,
+                          background: C.card2,
+                          border: `1px solid ${C.border}`,
+                          color: C.fg2,
+                        }}
+                      >
+                        {template.exercises.length} exercises
+                      </span>
+                      <span
+                        className="px-2 py-0.5 rounded-full"
+                        style={{
+                          ...T.caption,
+                          background: C.card2,
+                          border: `1px solid ${C.border}`,
+                          color: C.fg2,
+                        }}
+                      >
+                        {totalSets} sets
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: C.accent,
+                      color: "#0A0A0B",
+                      boxShadow: "0 6px 18px rgba(204,242,50,0.25)",
+                    }}
+                  >
+                    <Play size={15} fill="#0A0A0B" strokeWidth={0} />
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -961,21 +996,27 @@ export default function WorkoutScreen() {
             {totalSets - doneSets} remaining
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-2 mt-4">
-        <LiveStat label="Volume" value={`${volumeKg.toLocaleString()} kg`} />
+        <div className="grid grid-cols-3 gap-2.5 mt-4">
+        <StatTile
+          icon={<TrendingUp size={16} />}
+          value={`${volumeKg.toLocaleString()} kg`}
+          label="Volume"
+        />
 
-        <LiveStat
-          label="Best set"
+        <StatTile
+          icon={<Trophy size={16} />}
           value={
             strongestSet
               ? `${strongestSet.weight}×${strongestSet.reps}`
               : "—"
           }
+          label="Best set"
         />
 
-        <LiveStat
-          label="Est. 1RM"
+        <StatTile
+          icon={<Dumbbell size={16} />}
           value={estimatedOneRepMax > 0 ? `${estimatedOneRepMax} kg` : "—"}
+          label="Est. 1RM"
         />
       </div>
       </div>

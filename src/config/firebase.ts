@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { Capacitor } from "@capacitor/core";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDEm63pwqxbOPthMD9pzg9xADwMrtwLltc",
@@ -14,5 +15,16 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Firestore's default streaming transport (WebChannel) hangs inside the
+// native iOS WKWebView — requests never resolve, so every read spins
+// forever in the Capacitor app while working fine in desktop Safari.
+// Force long polling on native; keep auto-detection in regular browsers.
+export const db = initializeFirestore(
+  app,
+  Capacitor.isNativePlatform()
+    ? { experimentalForceLongPolling: true }
+    : { experimentalAutoDetectLongPolling: true }
+);
+
 export const storage = getStorage(app);

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Dumbbell, Timer, TrendingUp } from "lucide-react";
 
-import { Badge } from "@/shared/components";
+import { Badge, StatTile } from "@/shared/components";
 import { C, T } from "@/shared/ui";
 
 type Props = {
@@ -73,36 +73,4 @@ function formatVolume(kg: number) {
   if (kg >= 10000) return `${(kg / 1000).toFixed(1)}t`;
 
   return `${kg.toLocaleString()} kg`;
-}
-
-/** Reference-style stat tile: icon in a tinted squircle, value, quiet label. */
-function StatTile({
-  icon,
-  value,
-  label,
-}: {
-  icon: ReactNode;
-  value: string;
-  label: string;
-}) {
-  return (
-    <div
-      className="rounded-[16px] px-3 py-3 flex flex-col items-start gap-2"
-      style={{ background: C.card2, border: `1px solid ${C.border}` }}
-    >
-      <div
-        className="w-8 h-8 rounded-[10px] flex items-center justify-center"
-        style={{ background: C.accentDim, color: C.accent }}
-      >
-        {icon}
-      </div>
-
-      <div>
-        <p style={{ ...T.bodyStrong, color: C.fg }}>{value}</p>
-        <p className="mt-0.5" style={{ ...T.caption, color: C.fg3 }}>
-          {label}
-        </p>
-      </div>
-    </div>
-  );
 }
