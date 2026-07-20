@@ -1,5 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  initializeAuth,
+  indexedDBLocalPersistence,
+} from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { Capacitor } from "@capacitor/core";
@@ -14,7 +18,13 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+// In the native WKWebView, getAuth()'s default persistence/popup machinery
+// doesn't work — the sign-in REST call succeeds but the SDK never settles.
+// The documented Capacitor fix is explicit indexedDB persistence.
+export const auth = Capacitor.isNativePlatform()
+  ? initializeAuth(app, { persistence: indexedDBLocalPersistence })
+  : getAuth(app);
 
 // Firestore's default streaming transport (WebChannel) hangs inside the
 // native iOS WKWebView — requests never resolve, so every read spins
