@@ -35,8 +35,14 @@ export default function AiWorkoutSheet({ open, onClose, onGenerate }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-[24px] p-5 pb-8"
-        style={{ background: C.card, border: `1px solid ${C.border}` }}
+        className="w-full max-w-md rounded-t-[24px] p-5"
+        style={{
+          background: C.card,
+          border: `1px solid ${C.border}`,
+          maxHeight: "82vh",
+          overflowY: "auto",
+          paddingBottom: "max(24px, env(safe-area-inset-bottom, 24px))",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-1">
