@@ -238,13 +238,13 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
 
   return (
     <div className="px-5 pt-4 pb-8">
-      <button onClick={onBack} className="mb-5" style={{ color: C.accent }}>
+      <button onClick={onBack} className="mb-5" style={{ color: C.accentInk }}>
         ← Back
       </button>
 
       <p
         className="text-[11px] uppercase tracking-widest font-bold"
-        style={{ color: C.accent }}
+        style={{ color: C.accentInk }}
       >
         Workout Template
       </p>
@@ -565,7 +565,7 @@ function ExerciseDefinitionCard({
               {exercise.defaultSets} × {exercise.defaultReps}
             </span>
             <span>Rest {exercise.defaultRestSeconds}s</span>
-            <span style={{ color: C.accent }}>View demo ›</span>
+            <span style={{ color: C.accentInk }}>View demo ›</span>
           </div>
         </button>
 

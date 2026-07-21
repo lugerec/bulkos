@@ -125,7 +125,7 @@ export default function AddExerciseSheet({
                   {added && (
                     <span
                       className="text-[11px] font-semibold px-2 py-1 rounded-full"
-                      style={{ background: C.accentDim, color: C.accent }}
+                      style={{ background: C.accentDim, color: C.accentInk }}
                     >
                       Added
                     </span>

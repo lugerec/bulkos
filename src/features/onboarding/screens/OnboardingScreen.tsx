@@ -255,7 +255,7 @@ function IntroStep({
         <Dumbbell size={32} color={C.accent} />
       </div>
 
-      <p className="text-sm font-bold mb-2" style={{ color: C.accent }}>
+      <p className="text-sm font-bold mb-2" style={{ color: C.accentInk }}>
         Welcome
       </p>
 
@@ -322,7 +322,7 @@ function ChoiceStep({
 }) {
   return (
     <div>
-      <p className="text-sm font-bold mb-2" style={{ color: C.accent }}>
+      <p className="text-sm font-bold mb-2" style={{ color: C.accentInk }}>
         {eyebrow}
       </p>
 
@@ -397,7 +397,7 @@ function NumberStep({
 
   return (
     <div>
-      <p className="text-sm font-bold mb-2" style={{ color: C.accent }}>
+      <p className="text-sm font-bold mb-2" style={{ color: C.accentInk }}>
         {eyebrow}
       </p>
 
@@ -471,7 +471,7 @@ function SummaryStep({
 }) {
   return (
     <div>
-      <p className="text-sm font-bold mb-2" style={{ color: C.accent }}>
+      <p className="text-sm font-bold mb-2" style={{ color: C.accentInk }}>
         Plan ready
       </p>
 

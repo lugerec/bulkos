@@ -198,7 +198,7 @@ export default function WorkoutScreen() {
         <div className="mb-6">
           <p
             className="text-[11px] font-bold uppercase tracking-widest mb-1"
-            style={{ color: C.accent }}
+            style={{ color: C.accentInk }}
           >
             Train
           </p>
@@ -284,7 +284,7 @@ export default function WorkoutScreen() {
                 >
                   <div
                     className="w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0"
-                    style={{ background: C.accentDim, color: C.accent }}
+                    style={{ background: C.accentDim, color: C.accentInk }}
                   >
                     <Dumbbell size={19} />
                   </div>
@@ -789,7 +789,7 @@ export default function WorkoutScreen() {
         <div className="mb-4">
         <p
           className="text-[22px] font-bold"
-          style={{ color: C.accent }}
+          style={{ color: C.accentInk }}
         >
           {workoutRating.emoji} {workoutRating.text}
         </p>
@@ -815,7 +815,7 @@ export default function WorkoutScreen() {
               className="rounded-[14px] p-3 text-center"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
-              <p className="text-[17px] font-bold" style={{ color: C.accent }}>
+              <p className="text-[17px] font-bold" style={{ color: C.accentInk }}>
                 {val}
               </p>
               <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
@@ -860,7 +860,7 @@ export default function WorkoutScreen() {
               border: "1px solid rgba(204,242,50,0.2)",
             }}
           >
-            <p className="text-sm font-bold mb-3" style={{ color: C.accent }}>
+            <p className="text-sm font-bold mb-3" style={{ color: C.accentInk }}>
               🏆 {prList.length} New Personal Record
               {prList.length > 1 ? "s" : ""}
             </p>
@@ -890,7 +890,7 @@ export default function WorkoutScreen() {
           >
             <p
               className="text-sm font-bold mb-2"
-              style={{ color: C.accent }}
+              style={{ color: C.accentInk }}
             >
               💪 Strongest Lift Today
             </p>
@@ -1092,7 +1092,7 @@ export default function WorkoutScreen() {
             <div className="text-right">
               <p
                 className="text-[22px] font-bold font-mono leading-none"
-                style={{ color: C.accent }}
+                style={{ color: C.accentInk }}
               >
                 {fmt(restTimer)}
               </p>
@@ -1185,7 +1185,7 @@ export default function WorkoutScreen() {
                         className="px-2 py-0.5 rounded-full text-[11px] font-bold"
                         style={{
                           background: "rgba(204,242,50,0.15)",
-                          color: C.accent,
+                          color: C.accentInk,
                           border: "1px solid rgba(204,242,50,0.25)",
                         }}
                       >
@@ -1233,7 +1233,7 @@ export default function WorkoutScreen() {
                     return (
                       <p
                         className="text-[11px] mt-1 font-medium"
-                        style={{ color: C.accent }}
+                        style={{ color: C.accentInk }}
                       >
                         Target {label} reps
                       </p>
@@ -1262,7 +1262,7 @@ export default function WorkoutScreen() {
                         className="px-2 py-1 rounded-lg text-[11px] font-semibold"
                         style={{
                           background: "rgba(204,242,50,0.12)",
-                          color: C.accent,
+                          color: C.accentInk,
                           border: "1px solid rgba(204,242,50,0.25)",
                         }}
                       >
@@ -1289,7 +1289,7 @@ export default function WorkoutScreen() {
 
                       <span
                         className="flex items-center text-[11px] font-semibold"
-                        style={{ color: C.accent }}
+                        style={{ color: C.accentInk }}
                       >
                         {suggested.weight} × {suggested.reps}
                         <span
@@ -1315,7 +1315,7 @@ export default function WorkoutScreen() {
                 <span className="text-[11px]" style={{ color: C.fg3 }}>
                   {ex.sets.length} sets
                 </span>
-                <p className="text-[11px] mt-1 text-right" style={{ color: C.accent }}>
+                <p className="text-[11px] mt-1 text-right" style={{ color: C.accentInk }}>
                   {exerciseVolume.toLocaleString()} kg
                 </p>
               </div>

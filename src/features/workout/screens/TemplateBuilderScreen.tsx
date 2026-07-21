@@ -58,7 +58,7 @@ export default function TemplateBuilderScreen({
         <div>
           <p
             className="text-[11px] font-bold uppercase tracking-widest mb-1"
-            style={{ color: C.accent }}
+            style={{ color: C.accentInk }}
           >
             Workout
           </p>

@@ -854,7 +854,7 @@ function BottomNav({ active, onNavigate }: {
       <div
         className="flex justify-around items-center py-2 px-2 rounded-[26px] pointer-events-auto"
         style={{
-          background: "rgba(22,22,26,0.82)",
+          background: C.nav,
           border: `1px solid ${C.border}`,
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
@@ -876,12 +876,12 @@ function BottomNav({ active, onNavigate }: {
             >
               <Icon
                 size={21}
-                color={isActive ? C.accent : C.fg3}
+                color={isActive ? C.accentInk : C.fg3}
                 strokeWidth={isActive ? 2.2 : 1.6}
               />
               <span
                 className="text-[11px] font-semibold"
-                style={{ color: isActive ? C.accent : C.fg3 }}
+                style={{ color: isActive ? C.accentInk : C.fg3 }}
               >
                 {label}
               </span>

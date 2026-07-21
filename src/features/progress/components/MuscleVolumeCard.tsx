@@ -89,7 +89,7 @@ export default function MuscleVolumeCard({
                   <div className="text-right">
                     <span
                       className="text-[11px] font-bold block"
-                      style={{ color: C.accent }}
+                      style={{ color: C.accentInk }}
                     >
                       {item.volume.toLocaleString()} kg
                     </span>

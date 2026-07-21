@@ -23,7 +23,7 @@ export default function ExerciseDetailScreen({ onBack }: Props) {
         <button
           onClick={onBack}
           className="mb-5"
-          style={{ color: C.accent }}
+          style={{ color: C.accentInk }}
         >
           ← Back
         </button>
@@ -41,7 +41,7 @@ export default function ExerciseDetailScreen({ onBack }: Props) {
       <button
         onClick={onBack}
         className="flex items-center gap-2 mb-6"
-        style={{ color: C.accent }}
+        style={{ color: C.accentInk }}
       >
         <ArrowLeft size={18} />
         Back
@@ -49,7 +49,7 @@ export default function ExerciseDetailScreen({ onBack }: Props) {
 
       <p
         className="text-[11px] uppercase tracking-widest font-bold"
-        style={{ color: C.accent }}
+        style={{ color: C.accentInk }}
       >
         Exercise
       </p>

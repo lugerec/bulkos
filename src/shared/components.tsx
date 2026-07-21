@@ -138,9 +138,9 @@ export function MacroBar({
         </span>
 
         <span className="text-xs font-semibold" style={{ color: C.fg }}>
-          {current}
+          {Math.round(current)}
           <span style={{ color: C.fg3 }}>
-            /{goal}
+            /{Math.round(goal)}
             {unit}
           </span>
         </span>
@@ -234,7 +234,7 @@ export function SectionHeader({
       {action && (
         <button
           className="text-xs font-semibold"
-          style={{ color: C.accent }}
+          style={{ color: C.accentInk }}
           onClick={onAction}
         >
           {action}
@@ -290,7 +290,7 @@ export function StatTile({
     >
       <div
         className="w-8 h-8 rounded-[10px] flex items-center justify-center"
-        style={{ background: C.accentDim, color: C.accent }}
+        style={{ background: C.accentDim, color: C.accentInk }}
       >
         {icon}
       </div>

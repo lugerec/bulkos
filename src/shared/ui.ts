@@ -4,6 +4,10 @@ export const C = {
     card2: "var(--app-card2)",
     border: "var(--app-border)",
     accent: "#CCF232",
+    /** accent for text/icons on the app background — darkens in light mode */
+    accentInk: "var(--app-accent-ink)",
+    /** bottom-nav glass background — follows the theme */
+    nav: "var(--app-nav)",
     accentDim: "var(--app-accent-dim)",
     accentDim2: "var(--app-accent-dim2)",
     /** signature gradient for primary CTAs and hero accents */

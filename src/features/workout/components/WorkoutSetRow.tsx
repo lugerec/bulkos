@@ -18,7 +18,7 @@ type Props = {
 
 const EFFORTS: { value: SetEffort; label: string; color: string }[] = [
   { value: "easy", label: "Easy", color: C.blue },
-  { value: "moderate", label: "OK", color: C.accent },
+  { value: "moderate", label: "OK", color: C.accentInk },
   { value: "hard", label: "Hard", color: C.amber },
 ];
 

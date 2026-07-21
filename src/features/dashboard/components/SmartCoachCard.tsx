@@ -47,7 +47,7 @@ export default function SmartCoachCard({ recommendation, onStart }: Props) {
             style={
               recommendation.isDeloadWeek
                 ? { ...T.caption, fontWeight: 700, background: "rgba(251,191,36,0.14)", color: C.amber }
-                : { ...T.caption, fontWeight: 700, background: C.accentDim, color: C.accent }
+                : { ...T.caption, fontWeight: 700, background: C.accentDim, color: C.accentInk }
             }
           >
             {recommendation.isDeloadWeek

@@ -62,7 +62,7 @@ function QuickAction({
     >
       <div
         className="w-10 h-10 rounded-[12px] flex items-center justify-center"
-        style={{ background: C.accentDim, color: C.accent }}
+        style={{ background: C.accentDim, color: C.accentInk }}
       >
         {icon}
       </div>

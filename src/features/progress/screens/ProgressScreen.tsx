@@ -434,7 +434,7 @@ const averageWorkoutDuration =
 
                     <span
                       className="text-[11px] font-semibold"
-                      style={{ color: C.accent }}
+                      style={{ color: C.accentInk }}
                     >
                       {formatChange(change, unit)}
                     </span>

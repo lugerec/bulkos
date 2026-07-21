@@ -119,7 +119,7 @@ export default function SettingsScreen({
             label: "Workout Templates",
             icon: Dumbbell,
             screen: "template-builder" as Screen,
-            color: C.accent,
+            color: C.accentInk,
           },
           {
             label: "Analytics",

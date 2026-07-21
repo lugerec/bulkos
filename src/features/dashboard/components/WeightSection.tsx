@@ -34,7 +34,7 @@ export default function WeightSection({
 
         <div className="flex items-center gap-1 mt-2">
           <ArrowUpRight size={12} color={C.accent} />
-          <span className="text-[11px] font-semibold" style={{ color: C.accent }}>
+          <span className="text-[11px] font-semibold" style={{ color: C.accentInk }}>
             {weeklyWeightChange >= 0 ? "+" : ""}
             {weeklyWeightChange.toFixed(1)} kg this week
           </span>

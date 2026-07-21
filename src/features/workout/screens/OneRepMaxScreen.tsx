@@ -84,7 +84,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
                 <Calculator size={14} color={C.accent} />
                 <span
                   className="text-[11px] font-bold uppercase tracking-wider"
-                  style={{ color: C.accent }}
+                  style={{ color: C.accentInk }}
                 >
                   Estimated 1RM
                 </span>
@@ -148,7 +148,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
                 <span className="text-sm flex-1 text-center" style={{ color: C.fg2 }}>
                   {target.percent}%
                 </span>
-                <span className="text-sm font-bold flex-1 text-right" style={{ color: C.accent }}>
+                <span className="text-sm font-bold flex-1 text-right" style={{ color: C.accentInk }}>
                   {target.weight} {unitLabel}
                 </span>
               </div>

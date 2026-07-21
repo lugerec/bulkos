@@ -142,7 +142,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           <div>
             <p
               className="text-[11px] uppercase tracking-widest font-bold mb-1"
-              style={{ color: C.accent }}
+              style={{ color: C.accentInk }}
             >
               Exercise Detail
             </p>
@@ -323,7 +323,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
             <div className="flex justify-between mb-3">
                 <span style={{ color: C.fg3 }}>Recommended</span>
 
-                <strong style={{ color: C.accent }}>
+                <strong style={{ color: C.accentInk }}>
                 {suggestion.weight} × {suggestion.reps}
                 </strong>
             </div>
@@ -386,7 +386,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
 
                 <div
                 className="text-sm font-bold"
-                style={{ color: C.accent }}
+                style={{ color: C.accentInk }}
                 >
                 {set.estimatedOneRepMax} kg
                 </div>

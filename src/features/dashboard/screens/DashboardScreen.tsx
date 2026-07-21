@@ -326,7 +326,7 @@ export default function DashboardScreen({
             label: "Protein",
             remaining: Math.max(macros.proteinGoal - macros.protein, 0),
             unit: "g",
-            color: C.accent,
+            color: C.accentInk,
             pct: safePct(macros.protein, macros.proteinGoal),
           },
           {
@@ -404,7 +404,7 @@ export default function DashboardScreen({
               {
                 label: "Protein",
                 pct: safePct(macros.protein, macros.proteinGoal),
-                color: C.accent,
+                color: C.accentInk,
               },
               {
                 label: "Carbs",

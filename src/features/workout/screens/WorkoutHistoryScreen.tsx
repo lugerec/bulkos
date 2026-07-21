@@ -119,7 +119,7 @@ export default function WorkoutHistoryScreen({
                   </p>
                 </div>
 
-                <p className="text-xs font-bold" style={{ color: C.accent }}>
+                <p className="text-xs font-bold" style={{ color: C.accentInk }}>
                   {fmt(workout.durationSeconds)}
                 </p>
               </div>

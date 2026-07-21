@@ -36,7 +36,7 @@ export default function NutritionMealCard({
           <div>
             <span
               className="text-[11px] font-bold uppercase tracking-wider"
-              style={{ color: C.accent }}
+              style={{ color: C.accentInk }}
             >
               {meal.label}
             </span>
@@ -50,7 +50,7 @@ export default function NutritionMealCard({
             className="px-3 py-1.5 rounded-full text-xs font-bold"
             style={{
               background: C.accentDim,
-              color: C.accent,
+              color: C.accentInk,
               border: `1px solid rgba(204,242,50,0.2)`,
             }}
           >

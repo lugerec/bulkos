@@ -178,7 +178,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
             )}
 
             {saved && !dirty ? (
-              <p className="text-xs font-semibold" style={{ color: C.accent }}>
+              <p className="text-xs font-semibold" style={{ color: C.accentInk }}>
                 Saved — macro targets updated.
               </p>
             ) : (

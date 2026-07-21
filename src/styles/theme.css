@@ -14,6 +14,9 @@
   --app-fg3: #999AA4;
   --app-accent-dim: rgba(204, 242, 50, 0.16);
   --app-accent-dim2: rgba(204, 242, 50, 0.07);
+  /* Accent tuned for text/icons — neon reads fine on dark. */
+  --app-accent-ink: #CCF232;
+  --app-nav: rgba(22, 22, 26, 0.82);
 }
 
 [data-theme="light"] {
@@ -24,8 +27,11 @@
   --app-fg: #14151A;
   --app-fg2: #4A4C55;
   --app-fg3: #71747E;
-  --app-accent-dim: rgba(132, 168, 20, 0.16);
-  --app-accent-dim2: rgba(132, 168, 20, 0.08);
+  --app-accent-dim: rgba(101, 130, 12, 0.14);
+  --app-accent-dim2: rgba(101, 130, 12, 0.07);
+  /* Neon lime is unreadable on white — use a deep olive-lime for text/icons. */
+  --app-accent-ink: #5B7A0A;
+  --app-nav: rgba(255, 255, 255, 0.88);
 }
 
 :root {

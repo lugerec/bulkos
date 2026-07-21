@@ -213,7 +213,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
                   </p>
                 </div>
 
-                <p className="text-xs font-bold" style={{ color: C.accent }}>
+                <p className="text-xs font-bold" style={{ color: C.accentInk }}>
                   {entry.estimatedOneRepMax} kg est. 1RM
                 </p>
               </div>

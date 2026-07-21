@@ -42,7 +42,7 @@ export default function WorkoutSection({
       >
         <p
           className="text-[11px] font-bold uppercase tracking-widest mb-2"
-          style={{ color: C.accent }}
+          style={{ color: C.accentInk }}
         >
           Today&apos;s Workout
         </p>

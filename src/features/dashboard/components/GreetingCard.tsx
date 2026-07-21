@@ -8,7 +8,7 @@ type Props = {
 export default function GreetingCard({ name, date }: Props) {
   return (
     <div className="mb-6">
-      <p className="text-sm font-semibold mb-1" style={{ color: C.accent }}>
+      <p className="text-sm font-semibold mb-1" style={{ color: C.accentInk }}>
         Good morning
       </p>
 

@@ -23,7 +23,7 @@ export default function MuscleActivationList({ activation }: Props) {
               {muscle}
             </span>
 
-            <span className="text-xs font-bold" style={{ color: C.accent }}>
+            <span className="text-xs font-bold" style={{ color: C.accentInk }}>
               {value}%
             </span>
           </div>

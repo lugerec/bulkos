@@ -52,7 +52,7 @@ export default function NextTargetCard() {
         <div className="flex-1">
           <p
             className="text-[11px] font-bold uppercase tracking-widest mb-1"
-            style={{ color: C.accent }}
+            style={{ color: C.accentInk }}
           >
             Next Target
           </p>
