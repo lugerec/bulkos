@@ -1,5 +1,32 @@
 @custom-variant dark (&:is(.dark *));
 
+/* ————— App theme tokens (consumed by the `C` object in ui.ts) ————— */
+/* Dark is the default. [data-theme="light"] overrides below. */
+:root,
+[data-theme="dark"] {
+  --bg: #0A0A0B;
+  --card: #16161A;
+  --card2: #1F1F26;
+  --border: #2A2A31;
+  --fg: #F4F4F5;
+  --fg2: #B0B0BA;
+  --fg3: #999AA4;
+  --accent-dim: rgba(204, 242, 50, 0.16);
+  --accent-dim2: rgba(204, 242, 50, 0.07);
+}
+
+[data-theme="light"] {
+  --bg: #F4F5F7;
+  --card: #FFFFFF;
+  --card2: #EDEEF1;
+  --border: #DDDFE4;
+  --fg: #14151A;
+  --fg2: #4A4C55;
+  --fg3: #71747E;
+  --accent-dim: rgba(132, 168, 20, 0.16);
+  --accent-dim2: rgba(132, 168, 20, 0.08);
+}
+
 :root {
   --font-size: 16px;
   --background: #0A0A0B;

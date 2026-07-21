@@ -151,7 +151,7 @@ export default function ExerciseMedia({ media, name, primaryMuscle }: Props) {
             onClick={togglePlay}
             aria-label={playing ? "Pause animation" : "Play animation"}
             className="absolute bottom-3 right-3 w-10 h-10 rounded-full flex items-center justify-center"
-            style={{ background: C.accent, color: C.bg }}
+            style={{ background: C.accent, color: C.onAccent }}
           >
             {playing ? <Pause size={18} /> : <Play size={18} />}
           </button>

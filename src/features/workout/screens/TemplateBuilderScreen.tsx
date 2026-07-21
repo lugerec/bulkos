@@ -83,7 +83,7 @@ export default function TemplateBuilderScreen({
       <button
         onClick={handleCreate}
         className="w-full py-4 rounded-[20px] font-bold text-base flex items-center justify-center gap-2 mb-4 card-lit"
-        style={{ background: C.accent, color: C.bg }}
+        style={{ background: C.accent, color: C.onAccent }}
       >
         <Plus size={18} />
         New Template

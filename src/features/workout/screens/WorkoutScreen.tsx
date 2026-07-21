@@ -1009,7 +1009,7 @@ export default function WorkoutScreen() {
             className="w-full py-4 rounded-[20px] font-bold text-base mt-3 card-lit"
             style={{
               background: C.accent,
-              color: C.bg,
+              color: C.onAccent,
               boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
             }}
           >
@@ -1449,7 +1449,7 @@ export default function WorkoutScreen() {
             className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
             style={{
               background: C.accent,
-              color: C.bg,
+              color: C.onAccent,
               boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
             }}
           >
@@ -1462,7 +1462,7 @@ export default function WorkoutScreen() {
             className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
             style={{
               background: C.accent,
-              color: C.bg,
+              color: C.onAccent,
               opacity: saving ? 0.6 : 1,
               boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
             }}

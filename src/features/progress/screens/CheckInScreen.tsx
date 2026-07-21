@@ -147,7 +147,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
         className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
         style={{
           background: C.accent,
-          color: C.bg,
+          color: C.onAccent,
           opacity: loading || !weight ? 0.5 : 1,
         }}
       >

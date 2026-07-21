@@ -1,22 +1,22 @@
 export const C = {
-    bg: "#0A0A0B",
-    card: "#16161A",
-    card2: "#1F1F26",
-    border: "#2A2A31",
+    bg: "var(--bg)",
+    card: "var(--card)",
+    card2: "var(--card2)",
+    border: "var(--border)",
     accent: "#CCF232",
-    accentDim: "rgba(204,242,50,0.16)",
-    accentDim2: "rgba(204,242,50,0.07)",
+    accentDim: "var(--accent-dim)",
+    accentDim2: "var(--accent-dim2)",
     /** signature gradient for primary CTAs and hero accents */
     accentGradient: "linear-gradient(135deg, #D8FA4F 0%, #BFE829 100%)",
     accent2: "#BFE829",
-    fg: "#F4F4F5",
-    fg2: "#B0B0BA",
-    fg3: "#999AA4",
+    fg: "var(--fg)",
+    fg2: "var(--fg2)",
+    fg3: "var(--fg3)",
     red: "#F87171",
     amber: "#FBBF24",
     blue: "#60A5FA",
     purple: "#C084FC",
-    /** dark ink for text sitting on the lime accent */
+    /** dark ink for text sitting on the lime accent — same in both themes */
     onAccent: "#0A0A0B",
   } as const;
 

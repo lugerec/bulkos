@@ -188,7 +188,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
                 className="w-full py-2.5 rounded-[14px] text-xs font-bold"
                 style={{
                   background: C.accent,
-                  color: C.bg,
+                  color: C.onAccent,
                   opacity: saving || !goalWeightValid ? 0.6 : 1,
                 }}
               >

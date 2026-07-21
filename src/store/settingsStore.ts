@@ -1,8 +1,10 @@
 import { create } from "zustand";
 
 export type UnitSystem = "metric" | "imperial";
+export type ThemeMode = "dark" | "light";
 
 const STORAGE_KEY = "bulkos.settings.units";
+const THEME_KEY = "bulkos.settings.theme";
 
 function loadUnits(): UnitSystem {
   if (typeof localStorage === "undefined") return "metric";
@@ -15,17 +17,35 @@ function loadUnits(): UnitSystem {
   }
 }
 
+function loadTheme(): ThemeMode {
+  if (typeof localStorage === "undefined") return "dark";
+
+  try {
+    return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
+  } catch {
+    return "dark";
+  }
+}
+
+/** Reflect the theme onto <html data-theme> so CSS variables switch. */
+export function applyTheme(theme: ThemeMode): void {
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-theme", theme);
+}
+
 type SettingsState = {
   units: UnitSystem;
   setUnits: (units: UnitSystem) => void;
+  theme: ThemeMode;
+  setTheme: (theme: ThemeMode) => void;
+  toggleTheme: () => void;
 };
 
 /**
- * App-wide preferences. Units persist locally (they're a display choice, not
- * account data) so the app remembers them across launches without a network
- * round-trip.
+ * App-wide preferences. Persisted locally (display choices, not account
+ * data) so the app remembers them across launches without a network trip.
  */
-export const useSettingsStore = create<SettingsState>((set) => ({
+export const useSettingsStore = create<SettingsState>((set, get) => ({
   units: loadUnits(),
   setUnits: (units) => {
     try {
@@ -34,6 +54,20 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       // non-fatal — just won't persist
     }
     set({ units });
+  },
+
+  theme: loadTheme(),
+  setTheme: (theme) => {
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      // non-fatal
+    }
+    applyTheme(theme);
+    set({ theme });
+  },
+  toggleTheme: () => {
+    get().setTheme(get().theme === "dark" ? "light" : "dark");
   },
 }));
 

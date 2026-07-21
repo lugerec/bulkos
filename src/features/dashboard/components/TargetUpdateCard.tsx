@@ -92,7 +92,7 @@ export default function TargetUpdateCard({
         className="w-full py-2.5 rounded-[14px] text-xs font-bold"
         style={{
           background: C.blue,
-          color: C.bg,
+          color: C.onAccent,
           opacity: saving ? 0.6 : 1,
         }}
       >

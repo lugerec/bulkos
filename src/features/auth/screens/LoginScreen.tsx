@@ -113,7 +113,7 @@ export default function LoginScreen() {
             className="w-full py-4 rounded-2xl font-bold mt-2"
             style={{
               background: C.accent,
-              color: C.bg,
+              color: C.onAccent,
               opacity: loading ? 0.6 : 1,
             }}
           >

@@ -30,6 +30,8 @@ export default function SettingsScreen({
   const [notifications, setNotifications] = useState(true);
   const units = useSettingsStore((s) => s.units);
   const setUnits = useSettingsStore((s) => s.setUnits);
+  const theme = useSettingsStore((s) => s.theme);
+  const setTheme = useSettingsStore((s) => s.setTheme);
 
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
@@ -192,12 +194,10 @@ export default function SettingsScreen({
           <span className="text-sm" style={{ color: C.fg2 }}>
             Dark Mode
           </span>
-          <span
-            className="text-[11px] px-2.5 py-1 rounded-full"
-            style={{ background: C.accentDim, color: C.accent }}
-          >
-            Always on
-          </span>
+          <Toggle
+            value={theme === "dark"}
+            onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+          />
         </div>
 
         <div className="flex justify-between items-center px-4 py-3.5">

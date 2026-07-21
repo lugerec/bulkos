@@ -327,7 +327,7 @@ const averageWorkoutDuration =
           className="px-3 py-2 rounded-[14px] text-xs font-bold"
           style={{
             background: C.accent,
-            color: C.bg,
+            color: C.onAccent,
           }}
         >
           Check-in

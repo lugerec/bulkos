@@ -212,7 +212,7 @@ export default function OnboardingScreen() {
               className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2 card-lit"
               style={{
                 background: C.accent,
-                color: C.bg,
+                color: C.onAccent,
                 opacity: saving ? 0.6 : 1,
               }}
             >
@@ -223,7 +223,7 @@ export default function OnboardingScreen() {
             <button
               onClick={next}
               className="w-full py-4 rounded-[20px] font-bold flex items-center justify-center gap-2 card-lit"
-              style={{ background: C.accent, color: C.bg }}
+              style={{ background: C.accent, color: C.onAccent }}
             >
               Continue
               <ArrowRight size={18} />
@@ -434,7 +434,7 @@ function NumberStep({
           <button
             onClick={increase}
             className="w-14 h-14 rounded-full text-[32px] font-bold"
-            style={{ background: C.accent, color: C.bg }}
+            style={{ background: C.accent, color: C.onAccent }}
           >
             +
           </button>

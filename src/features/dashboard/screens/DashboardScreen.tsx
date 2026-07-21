@@ -588,7 +588,7 @@ export default function DashboardScreen({
         className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
         style={{
           background: C.accent,
-          color: C.bg,
+          color: C.onAccent,
           boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
         }}
       >
