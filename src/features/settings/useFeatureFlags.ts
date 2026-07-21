@@ -10,7 +10,9 @@ import {
  * default via getFeatureFlags. Use this to gate charts/analytics/etc.
  */
 export function useFeatureFlags(): FeatureFlags {
-  const profile = useAuthStore((s) => s.profile);
+  const userDoc = useAuthStore((s) => s.profile);
 
-  return getFeatureFlags(profile?.experienceLevel);
+  // The store holds the whole Firestore doc: { profile: {...}, nutrition, ... }
+  // so the level lives at profile.profile.experienceLevel.
+  return getFeatureFlags(userDoc?.profile?.experienceLevel);
 }
