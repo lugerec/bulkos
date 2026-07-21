@@ -27,8 +27,10 @@ const READ_TYPES: HealthDataType[] = [
   "exerciseTime",
 ];
 
-/** What we write to Health: body-weight logs + workout energy/minutes. */
-const WRITE_TYPES: HealthDataType[] = ["weight", "calories", "exerciseTime"];
+/** What we write to Health: body-weight logs + workout energy.
+ *  NOTE: Apple disallows *writing* exerciseTime (HKQuantityTypeIdentifier
+ *  AppleExerciseTime) — HealthKit derives it itself — so it's read-only. */
+const WRITE_TYPES: HealthDataType[] = ["weight", "calories"];
 
 const AUTH_OPTIONS: AuthorizationOptions = {
   read: READ_TYPES,
@@ -144,9 +146,11 @@ export async function writeWeightKg(
 }
 
 /**
- * Record a finished strength session to Health: exercise minutes over the
- * session span, plus active energy if we have an estimate. (The plugin can't
- * write true workout sessions, so this is the closest faithful mapping.)
+ * Record a finished strength session to Health as active energy over the
+ * session span. (Apple won't let apps write exercise minutes or true workout
+ * sessions via this plugin, so energy is the faithful, writable mapping.)
+ * If no calorie estimate is given, a rough strength-training estimate of
+ * ~5 kcal/min is used so the session isn't empty.
  */
 export async function writeStrengthWorkout(params: {
   start: Date;
@@ -159,25 +163,19 @@ export async function writeStrengthWorkout(params: {
     1,
     Math.round((params.end.getTime() - params.start.getTime()) / 60000)
   );
+  const calories =
+    params.calories != null && params.calories > 0
+      ? params.calories
+      : minutes * 5;
 
   try {
     await Health.saveSample({
-      dataType: "exerciseTime",
-      value: minutes,
-      unit: "minute",
+      dataType: "calories",
+      value: calories,
+      unit: "kilocalorie",
       startDate: params.start.toISOString(),
       endDate: params.end.toISOString(),
     });
-
-    if (params.calories != null && params.calories > 0) {
-      await Health.saveSample({
-        dataType: "calories",
-        value: params.calories,
-        unit: "kilocalorie",
-        startDate: params.start.toISOString(),
-        endDate: params.end.toISOString(),
-      });
-    }
   } catch {
     // best-effort
   }
