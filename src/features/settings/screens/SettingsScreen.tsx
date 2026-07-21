@@ -10,6 +10,7 @@ import {
 
 import { C, type Screen } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
+import HealthConnectCard from "@/features/settings/components/HealthConnectCard";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
@@ -114,6 +115,10 @@ export default function SettingsScreen({
           onSaved={refreshProfile}
         />
       )}
+
+      <SectionHeader title="Integrations" />
+
+      <HealthConnectCard />
 
       <SectionHeader title="Tools" />
 

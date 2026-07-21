@@ -71,7 +71,7 @@ export const useWorkoutTemplateStore = create<State>((set, get) => ({
   },
 
   clearSelected: () => {
-    set({ selected: null });
+    set({ selected: undefined });
   },
 
   async save(uid, template) {

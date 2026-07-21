@@ -21,6 +21,7 @@ import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useAppStore } from "@/store/appStore";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import { getLevelConfig } from "@/features/settings/experienceLevel";
+import { writeStrengthWorkout } from "@/services/healthService";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
@@ -767,6 +768,13 @@ export default function WorkoutScreen() {
       });
 
       await loadWorkouts(user.uid);
+
+      // Mirror the session to Apple Health (no-op off-device / if not granted).
+      const sessionEnd = new Date();
+      writeStrengthWorkout({
+        start: new Date(sessionEnd.getTime() - elapsed * 1000),
+        end: sessionEnd,
+      });
 
       setDone(true);
     } catch (err) {

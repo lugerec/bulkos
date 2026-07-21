@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+import { writeWeightKg } from "@/services/healthService";
 import { ArrowLeft, Camera } from "lucide-react";
 
 import { C } from "@/shared/ui";
@@ -89,9 +91,10 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
         armCm: toNumber(arms),
         legCm: toNumber(legs),
       });
-  
-      console.log("CHECK-IN SAVED");
-  
+
+      // Mirror weight to Apple Health (no-op off-device / if not granted).
+      writeWeightKg(parsedWeight);
+
       onBack();
     } catch (error) {
       console.error("CHECK-IN SAVE FAILED", error);
