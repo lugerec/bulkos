@@ -1,3 +1,4 @@
+import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
 import MuscleSetTargetCard from "../components/MuscleSetTargetCard";
@@ -126,6 +127,7 @@ export default function ProgressScreen({
 }) {
   const user = useAuthStore((s) => s.user);
   const userDoc = useAuthStore((s) => s.profile);
+  const flags = useFeatureFlags();
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
 
@@ -334,13 +336,15 @@ const averageWorkoutDuration =
         </button>
       </div>
 
-      <BodyweightChartCard
-        currentWeight={currentWeight}
-        weightChange={weightChange}
-        chartData={chartData}
-        chartMetric={chartMetric}
-        setChartMetric={setChartMetric}
-      />
+      {flags.charts && (
+        <BodyweightChartCard
+          currentWeight={currentWeight}
+          weightChange={weightChange}
+          chartData={chartData}
+          chartMetric={chartMetric}
+          setChartMetric={setChartMetric}
+        />
+      )}
 
       <SectionHeader title="This Week" />
 
@@ -371,13 +375,15 @@ const averageWorkoutDuration =
       </div>
 
       <WeeklyReportCard report={weeklyReport} />
-      <WeeklyWorkoutChart data={weeklyChartData} />
-      <MuscleVolumeCard data={weeklyMuscleVolume} />
+      {flags.charts && <WeeklyWorkoutChart data={weeklyChartData} />}
+      {flags.charts && <MuscleVolumeCard data={weeklyMuscleVolume} />}
       <MuscleRecoveryCard data={muscleRecovery} workouts={workouts} />
-      <MuscleSetTargetCard data={muscleSetTargets} />
-      <MuscleBalanceCard balances={muscleBalance} />
-      <StallingLiftsCard plateaus={plateaus} />
-      <StrengthStandardsCard standards={strengthStandards} />
+      {flags.analytics && <MuscleSetTargetCard data={muscleSetTargets} />}
+      {flags.analytics && <MuscleBalanceCard balances={muscleBalance} />}
+      {flags.analytics && <StallingLiftsCard plateaus={plateaus} />}
+      {flags.analytics && (
+        <StrengthStandardsCard standards={strengthStandards} />
+      )}
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <Stat label="Workouts" value={`${totalWorkouts}`} />

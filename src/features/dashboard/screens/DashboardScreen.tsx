@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 
 import { C, T, type Screen } from "@/shared/ui";
+import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import { ProgressRing, Badge, SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useDailyLogStore } from "@/store/dailyLogStore";
@@ -115,6 +116,7 @@ export default function DashboardScreen({
   if (!userDoc) return null;
 
   const userProfile = userDoc.profile;
+  const flags = useFeatureFlags();
   const nutrition = userDoc.nutrition;
 
   const sortedBodyEntries = [...bodyEntries].sort((a, b) =>
@@ -245,7 +247,7 @@ export default function DashboardScreen({
         />
       )}
 
-      {userProfile && (
+      {userProfile && flags.advancedDashboard && (
         <BulkPaceCard
           pace={getBulkPace(bodyEntries, userProfile.goal)}
           goal={userProfile.goal}
@@ -261,7 +263,7 @@ export default function DashboardScreen({
         />
       )}
 
-      {userProfile && (
+      {userProfile && flags.advancedDashboard && (
         <StreakCard
           streak={getWorkoutStreak(
             workouts.map((w) => w.date),
@@ -296,13 +298,15 @@ export default function DashboardScreen({
 
       <QuickActions onNavigate={onNavigate} />
 
-      <WeeklyProgressCard
-        workoutsThisWeek={workoutsThisWeek}
-        weeklyWorkoutGoal={weeklyWorkoutGoal}
-        weeklyProgress={weeklyProgress}
-        volumeThisWeek={volumeThisWeek}
-        trainingTimeThisWeek={formatDuration(trainingTimeThisWeek)}
-      />
+      {flags.advancedDashboard && (
+        <WeeklyProgressCard
+          workoutsThisWeek={workoutsThisWeek}
+          weeklyWorkoutGoal={weeklyWorkoutGoal}
+          weeklyProgress={weeklyProgress}
+          volumeThisWeek={volumeThisWeek}
+          trainingTimeThisWeek={formatDuration(trainingTimeThisWeek)}
+        />
+      )}
 
       <WeightSection
         currentWeight={currentWeight}

@@ -14,6 +14,7 @@ type Props = {
   onWeightChange: (value: number) => void;
   onRepsChange: (value: number) => void;
   onEffortChange: (value: SetEffort) => void;
+  showEffort?: boolean;
 };
 
 const EFFORTS: { value: SetEffort; label: string; color: string }[] = [
@@ -32,6 +33,7 @@ export default function WorkoutSetRow({
   onWeightChange,
   onRepsChange,
   onEffortChange,
+  showEffort = true,
 }: Props) {
   return (
     <div>
@@ -100,7 +102,7 @@ export default function WorkoutSetRow({
         </button>
       </div>
 
-      {completed && (
+      {completed && showEffort && (
         <div className="flex items-center gap-2 pl-10 pr-1 pb-2">
           <span className="text-[11px]" style={{ color: C.fg3 }}>
             Felt

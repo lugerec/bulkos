@@ -8,7 +8,8 @@ import {
 } from "firebase/auth";
 import { auth } from "../services/auth";
 import { createUserProfile } from "../services/userService";
-import { getUserProfile } from "../services/user";
+import { getUserProfile, saveUserProfile } from "../services/user";
+import type { ExperienceLevel } from "@/types/profile";
 
 type AuthState = {
   user: User | null;
@@ -22,6 +23,7 @@ type AuthState = {
   logout: () => Promise<void>;
   /** Re-fetch the user document (e.g. after targets were updated). */
   refreshProfile: () => Promise<void>;
+  updateExperienceLevel: (level: ExperienceLevel) => Promise<void>;
 };
 
 /** Reject a hanging network call after `ms` so the UI can show a real error. */
@@ -62,6 +64,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const profile = await getUserProfile(user.uid);
 
     set({ profile });
+  },
+
+  updateExperienceLevel: async (level) => {
+    const { user, profile } = get();
+    if (!user || !profile) return;
+
+    // Optimistic: update UI immediately, persist in the background.
+    const nextProfile = {
+      ...profile,
+      profile: { ...profile.profile, experienceLevel: level },
+    };
+    set({ profile: nextProfile });
+
+    try {
+      await saveUserProfile(user.uid, nextProfile.profile);
+    } catch {
+      // Non-fatal — local state already reflects the choice.
+    }
   },
 
   initAuth: () => {

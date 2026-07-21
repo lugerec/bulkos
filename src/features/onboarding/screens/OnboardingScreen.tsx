@@ -12,6 +12,7 @@ import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
 import type {
   ActivityLevel,
+  ExperienceLevel,
   Goal,
   Sex,
   TrainingFrequency,
@@ -20,7 +21,7 @@ import type {
 import { calculateMacroTargets } from "@/lib/nutrition";
 import { updateUserOnboarding } from "@/services/userService";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 9;
 
 export default function OnboardingScreen() {
   const user = useAuthStore((s) => s.user);
@@ -35,6 +36,8 @@ export default function OnboardingScreen() {
   const [goal, setGoal] = useState<Goal>("bulk");
   const [activity, setActivity] = useState<ActivityLevel>("high");
   const [trainingFrequency, setTrainingFrequency] = useState<TrainingFrequency>(5);
+  const [experienceLevel, setExperienceLevel] =
+    useState<ExperienceLevel>("intermediate");
   const [saving, setSaving] = useState(false);
 
   const profile: UserProfile = {
@@ -47,6 +50,7 @@ export default function OnboardingScreen() {
     goal,
     activity,
     trainingFrequency,
+    experienceLevel,
   };
 
   const targets = useMemo(() => calculateMacroTargets(profile), [profile]);
@@ -195,6 +199,22 @@ export default function OnboardingScreen() {
           )}
 
           {step === 7 && (
+            <ChoiceStep
+              eyebrow="Experience"
+              title="How experienced are you?"
+              subtitle="This tailors how much detail the app shows and how it programs your training. You can change it anytime in Settings."
+              value={experienceLevel}
+              onChange={(v) => setExperienceLevel(v as ExperienceLevel)}
+              options={[
+                { value: "beginner", title: "Beginner", description: "Just tell me what to train and how hard — no charts yet." },
+                { value: "intermediate", title: "Intermediate", description: "Show my progress and volume, hide the deep analytics." },
+                { value: "advanced", title: "Advanced", description: "Everything — effort strain, muscle balance, 1RM, the lot." },
+                { value: "custom", title: "Custom", description: "I'll pick which sections to show myself." },
+              ]}
+            />
+          )}
+
+          {step === 8 && (
             <SummaryStep
               trainingFrequency={trainingFrequency}
               setTrainingFrequency={setTrainingFrequency}

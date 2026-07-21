@@ -14,6 +14,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useSettingsStore } from "@/store/settingsStore";
+import { LEVEL_CONFIG, DEFAULT_LEVEL } from "@/features/settings/experienceLevel";
 import ProfileGoalsCard from "../components/ProfileGoalsCard";
 import {
   buildBodyMetricsCsv,
@@ -36,6 +37,8 @@ export default function SettingsScreen({
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const userDoc = useAuthStore((s) => s.profile);
+  const updateExperienceLevel = useAuthStore((s) => s.updateExperienceLevel);
+  const currentLevel = userDoc?.profile?.experienceLevel ?? DEFAULT_LEVEL;
   const refreshProfile = useAuthStore((s) => s.refreshProfile);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
@@ -166,6 +169,54 @@ export default function SettingsScreen({
             <ChevronRight size={14} color={C.fg3} />
           </button>
         ))}
+      </div>
+
+      <SectionHeader title="Experience level" />
+
+      <div
+        className="rounded-[20px] mb-4 overflow-hidden card-lit"
+        style={{ background: C.card, border: `1px solid ${C.border}` }}
+      >
+        {(["beginner", "intermediate", "advanced", "custom"] as const).map(
+          (level, i, arr) => {
+            const config = LEVEL_CONFIG[level];
+            const active = currentLevel === level;
+
+            return (
+              <button
+                key={level}
+                onClick={() => updateExperienceLevel(level)}
+                className="w-full flex items-start gap-3 px-4 py-3.5 text-left"
+                style={{
+                  borderBottom:
+                    i < arr.length - 1 ? `1px solid ${C.border}` : "none",
+                }}
+              >
+                <div
+                  className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5"
+                  style={{
+                    border: `2px solid ${active ? C.accent : C.border}`,
+                    background: active ? C.accent : "transparent",
+                  }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-sm font-semibold"
+                    style={{ color: C.fg }}
+                  >
+                    {config.label}
+                  </p>
+                  <p
+                    className="text-[11px] mt-0.5"
+                    style={{ color: C.fg3 }}
+                  >
+                    {config.blurb}
+                  </p>
+                </div>
+              </button>
+            );
+          }
+        )}
       </div>
 
       <SectionHeader title="Preferences" />
