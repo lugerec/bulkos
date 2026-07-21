@@ -61,6 +61,7 @@ export default function WorkoutScreen() {
   const templates = useWorkoutTemplateStore((s) => s.templates);
   const selectTemplate = useWorkoutTemplateStore((s) => s.selectTemplate);
   const selectGenerated = useWorkoutTemplateStore((s) => s.selectGenerated);
+  const clearSelected = useWorkoutTemplateStore((s) => s.clearSelected);
   const navigateTo = useAppStore((s) => s.navigate);
 
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
@@ -94,16 +95,19 @@ export default function WorkoutScreen() {
   // Always land on the template picker when this screen mounts. Tapping a
   // template opens a PREVIEW of the workout; the timer starts only when the
   // user explicitly taps "Start Workout".
-  const [previewing, setPreviewing] = useState(false);
+  // Opened from the dashboard's Smart Coach "Start"? Go straight to preview.
+  const [previewing, setPreviewing] = useState(() =>
+    useAppStore.getState().consumeWorkoutPreview()
+  );
 
   useEffect(() => {
     endSession();
-    setPreviewing(false);
     setElapsed(0);
     setDone(false);
     setIsResting(false);
     setRestTimer(0);
-    // Intentionally run only on mount.
+    // Intentionally run only on mount. `previewing` is initialised above from
+    // the pending-preview flag, so we don't reset it here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -990,7 +994,10 @@ export default function WorkoutScreen() {
             </h2>
             {!workoutStarted && (
               <button
-                onClick={() => setPreviewing(false)}
+                onClick={() => {
+                  clearSelected();
+                  setPreviewing(false);
+                }}
                 className="text-[11px] mt-1"
                 style={{ color: C.fg3, textDecoration: "underline" }}
               >

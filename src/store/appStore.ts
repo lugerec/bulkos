@@ -24,6 +24,13 @@ type AppState = {
   startSession: () => void;
   endSession: () => void;
 
+  /** Set by the dashboard's Smart Coach "Start" so the Workout screen opens
+   * straight into the preview of the already-selected template instead of
+   * the picker. Consumed (cleared) once on the Workout screen's mount. */
+  pendingWorkoutPreview: boolean;
+  requestWorkoutPreview: () => void;
+  consumeWorkoutPreview: () => boolean;
+
   selectedMeal: MealType;
   setSelectedMeal: (meal: MealType) => void;
 
@@ -63,6 +70,14 @@ export const useAppStore = create<AppState>((set) => ({
   selectedMeal: "breakfast",
 
   sessionActive: false,
+
+  pendingWorkoutPreview: false,
+  requestWorkoutPreview: () => set({ pendingWorkoutPreview: true }),
+  consumeWorkoutPreview: () => {
+    const pending = useAppStore.getState().pendingWorkoutPreview;
+    if (pending) set({ pendingWorkoutPreview: false });
+    return pending;
+  },
 
   navigate: (to) =>
     set((state) => ({

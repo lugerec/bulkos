@@ -18,6 +18,8 @@ type State = {
   selectTemplate: (id: string) => void;
   /** Select a coach-generated template without persisting it. */
   selectGenerated: (template: WorkoutTemplate) => void;
+  /** Clear the current selection (e.g. when leaving the workout screen). */
+  clearSelected: () => void;
   save: (uid: string, template: WorkoutTemplate) => Promise<void>;
   remove: (uid: string, templateId: string) => Promise<void>;
 };
@@ -66,6 +68,10 @@ export const useWorkoutTemplateStore = create<State>((set, get) => ({
 
   selectGenerated: (template) => {
     set({ selected: template });
+  },
+
+  clearSelected: () => {
+    set({ selected: null });
   },
 
   async save(uid, template) {

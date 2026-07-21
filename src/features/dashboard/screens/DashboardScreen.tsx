@@ -85,6 +85,7 @@ export default function DashboardScreen({
   const loadTemplates = useWorkoutTemplateStore((s) => s.load);
   const selectTemplate = useWorkoutTemplateStore((s) => s.selectTemplate);
   const selectGenerated = useWorkoutTemplateStore((s) => s.selectGenerated);
+  const requestWorkoutPreview = useAppStore((s) => s.requestWorkoutPreview);
 
   const bodyEntries = useBodyMetricsStore((s) => s.entries);
   const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
@@ -249,6 +250,9 @@ export default function DashboardScreen({
             } else {
               selectTemplate(recommendation.template.id);
             }
+            // Ask the Workout screen to open straight into the preview of
+            // this template rather than the picker.
+            requestWorkoutPreview();
           }
           onNavigate("workout");
         }}
