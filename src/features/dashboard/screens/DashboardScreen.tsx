@@ -33,6 +33,7 @@ import {
 
 import { C, T, type Screen } from "@/shared/ui";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
+import HealthActivityCard from "@/features/dashboard/components/HealthActivityCard";
 import { ProgressRing, Badge, SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useDailyLogStore } from "@/store/dailyLogStore";
@@ -235,6 +236,8 @@ export default function DashboardScreen({
         name={userProfile?.name || "Lukáš"}
         date={dateStr}
       />
+
+      <HealthActivityCard />
 
       {/* ── Action first: what to do today ── */}
       <SmartCoachCard
