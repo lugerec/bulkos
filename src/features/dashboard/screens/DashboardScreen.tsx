@@ -231,47 +231,11 @@ export default function DashboardScreen({
   return (
     <div className="px-5 pb-8 pt-3">
       <GreetingCard
-      name={userProfile?.name || "Lukáš"}
-      date={dateStr}
-    />
+        name={userProfile?.name || "Lukáš"}
+        date={dateStr}
+      />
 
-      <NextTargetCard />
-
-      {user && userProfile && latestBodyEntry && (
-        <TargetUpdateCard
-          uid={user.uid}
-          profile={userProfile}
-          currentNutrition={nutrition}
-          currentWeightKg={latestBodyEntry.weightKg}
-          onUpdated={refreshProfile}
-        />
-      )}
-
-      {userProfile && flags.advancedDashboard && (
-        <BulkPaceCard
-          pace={getBulkPace(bodyEntries, userProfile.goal)}
-          goal={userProfile.goal}
-        />
-      )}
-
-      {userProfile && (
-        <FrequencyCard
-          adherence={getFrequencyAdherence(
-            workouts.map((w) => w.date),
-            userProfile.trainingFrequency
-          )}
-        />
-      )}
-
-      {userProfile && flags.advancedDashboard && (
-        <StreakCard
-          streak={getWorkoutStreak(
-            workouts.map((w) => w.date),
-            userProfile.trainingFrequency
-          )}
-        />
-      )}
-
+      {/* ── Action first: what to do today ── */}
       <SmartCoachCard
         recommendation={recommendation}
         onStart={() => {
@@ -297,6 +261,45 @@ export default function DashboardScreen({
       />
 
       <QuickActions onNavigate={onNavigate} />
+
+      {/* ── Today's detail: next set + calorie nudge ── */}
+      <NextTargetCard />
+
+      {user && userProfile && latestBodyEntry && (
+        <TargetUpdateCard
+          uid={user.uid}
+          profile={userProfile}
+          currentNutrition={nutrition}
+          currentWeightKg={latestBodyEntry.weightKg}
+          onUpdated={refreshProfile}
+        />
+      )}
+
+      {/* ── Overview & stats (advanced levels only) ── */}
+      {userProfile && flags.advancedDashboard && (
+        <BulkPaceCard
+          pace={getBulkPace(bodyEntries, userProfile.goal)}
+          goal={userProfile.goal}
+        />
+      )}
+
+      {userProfile && flags.advancedDashboard && (
+        <FrequencyCard
+          adherence={getFrequencyAdherence(
+            workouts.map((w) => w.date),
+            userProfile.trainingFrequency
+          )}
+        />
+      )}
+
+      {userProfile && flags.advancedDashboard && (
+        <StreakCard
+          streak={getWorkoutStreak(
+            workouts.map((w) => w.date),
+            userProfile.trainingFrequency
+          )}
+        />
+      )}
 
       {flags.advancedDashboard && (
         <WeeklyProgressCard
