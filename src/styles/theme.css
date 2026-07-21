@@ -1,30 +1,31 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ————— App theme tokens (consumed by the `C` object in ui.ts) ————— */
-/* Dark is the default. [data-theme="light"] overrides below. */
+/* Namespaced (--app-*) so they don't collide with the shadcn :root vars
+   below (which also define --card/--border and were overriding these). */
 :root,
 [data-theme="dark"] {
-  --bg: #0A0A0B;
-  --card: #16161A;
-  --card2: #1F1F26;
-  --border: #2A2A31;
-  --fg: #F4F4F5;
-  --fg2: #B0B0BA;
-  --fg3: #999AA4;
-  --accent-dim: rgba(204, 242, 50, 0.16);
-  --accent-dim2: rgba(204, 242, 50, 0.07);
+  --app-bg: #0A0A0B;
+  --app-card: #16161A;
+  --app-card2: #1F1F26;
+  --app-border: #2A2A31;
+  --app-fg: #F4F4F5;
+  --app-fg2: #B0B0BA;
+  --app-fg3: #999AA4;
+  --app-accent-dim: rgba(204, 242, 50, 0.16);
+  --app-accent-dim2: rgba(204, 242, 50, 0.07);
 }
 
 [data-theme="light"] {
-  --bg: #F4F5F7;
-  --card: #FFFFFF;
-  --card2: #EDEEF1;
-  --border: #DDDFE4;
-  --fg: #14151A;
-  --fg2: #4A4C55;
-  --fg3: #71747E;
-  --accent-dim: rgba(132, 168, 20, 0.16);
-  --accent-dim2: rgba(132, 168, 20, 0.08);
+  --app-bg: #F4F5F7;
+  --app-card: #FFFFFF;
+  --app-card2: #EDEEF1;
+  --app-border: #DDDFE4;
+  --app-fg: #14151A;
+  --app-fg2: #4A4C55;
+  --app-fg3: #71747E;
+  --app-accent-dim: rgba(132, 168, 20, 0.16);
+  --app-accent-dim2: rgba(132, 168, 20, 0.08);
 }
 
 :root {
