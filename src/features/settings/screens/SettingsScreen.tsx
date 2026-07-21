@@ -14,7 +14,8 @@ import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useSettingsStore } from "@/store/settingsStore";
-import { LEVEL_CONFIG, DEFAULT_LEVEL } from "@/features/settings/experienceLevel";
+import { LEVEL_CONFIG, DEFAULT_LEVEL, getFeatureFlags } from "@/features/settings/experienceLevel";
+import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import ProfileGoalsCard from "../components/ProfileGoalsCard";
 import {
   buildBodyMetricsCsv,
@@ -38,7 +39,10 @@ export default function SettingsScreen({
   const user = useAuthStore((s) => s.user);
   const userDoc = useAuthStore((s) => s.profile);
   const updateExperienceLevel = useAuthStore((s) => s.updateExperienceLevel);
+  const updateCustomFlag = useAuthStore((s) => s.updateCustomFlag);
   const currentLevel = userDoc?.profile?.experienceLevel ?? DEFAULT_LEVEL;
+  // Live flags reflecting any custom overrides — drives the custom toggles.
+  const customFlags = useFeatureFlags();
   const refreshProfile = useAuthStore((s) => s.refreshProfile);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
@@ -174,6 +178,15 @@ export default function SettingsScreen({
       <SectionHeader title="Experience level" />
 
       <div
+        className="rounded-[14px] p-2 mb-2 text-[10px] font-mono"
+        style={{ background: C.card2, color: C.amber }}
+      >
+        debug: level={String(currentLevel)} · flags=
+        {JSON.stringify(getFeatureFlags(currentLevel))}
+      </div>
+
+
+      <div
         className="rounded-[20px] mb-4 overflow-hidden card-lit"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
@@ -218,6 +231,46 @@ export default function SettingsScreen({
           }
         )}
       </div>
+
+      {currentLevel === "custom" && (
+        <div
+          className="rounded-[20px] mb-4 overflow-hidden card-lit"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          {(
+            [
+              { key: "advancedDashboard", label: "Dashboard cards", hint: "Streak, weekly progress, bulk pace" },
+              { key: "charts", label: "Progress charts", hint: "Bodyweight, volume, weekly graphs" },
+              { key: "analytics", label: "Deep analytics", hint: "Muscle balance, 1RM, strength standards" },
+              { key: "effortRating", label: "Effort rating", hint: "Rate each set Easy/OK/Hard" },
+            ] as const
+          ).map((row, i, arr) => (
+            <div
+              key={row.key}
+              className="flex justify-between items-center px-4 py-3.5"
+              style={{
+                borderBottom:
+                  i < arr.length - 1 ? `1px solid ${C.border}` : "none",
+              }}
+            >
+              <div className="flex-1 min-w-0 pr-3">
+                <p className="text-sm" style={{ color: C.fg2 }}>
+                  {row.label}
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: C.fg3 }}>
+                  {row.hint}
+                </p>
+              </div>
+              <Toggle
+                value={customFlags[row.key]}
+                onChange={() =>
+                  updateCustomFlag(row.key, !customFlags[row.key])
+                }
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       <SectionHeader title="Preferences" />
 

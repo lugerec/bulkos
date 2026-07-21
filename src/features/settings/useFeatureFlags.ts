@@ -14,5 +14,21 @@ export function useFeatureFlags(): FeatureFlags {
 
   // The store holds the whole Firestore doc: { profile: {...}, nutrition, ... }
   // so the level lives at profile.profile.experienceLevel.
-  return getFeatureFlags(userDoc?.profile?.experienceLevel);
+  const level = userDoc?.profile?.experienceLevel;
+  const base = getFeatureFlags(level);
+
+  // In custom mode, apply the user's per-section overrides on top of the base.
+  if (level === "custom" && userDoc?.profile?.customFlags) {
+    const overrides = userDoc.profile.customFlags;
+
+    return {
+      charts: overrides.charts ?? base.charts,
+      analytics: overrides.analytics ?? base.analytics,
+      effortRating: overrides.effortRating ?? base.effortRating,
+      advancedDashboard:
+        overrides.advancedDashboard ?? base.advancedDashboard,
+    };
+  }
+
+  return base;
 }

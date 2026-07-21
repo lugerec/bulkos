@@ -26,6 +26,13 @@ export type UserProfile = {
   trainingFrequency: TrainingFrequency;
   /** Optional for back-compat with profiles created before this existed. */
   experienceLevel?: ExperienceLevel;
+  /** Per-section overrides, used when experienceLevel === "custom". */
+  customFlags?: {
+    charts?: boolean;
+    analytics?: boolean;
+    effortRating?: boolean;
+    advancedDashboard?: boolean;
+  };
 };
 
 export type MacroTargets = {

@@ -24,6 +24,10 @@ type AuthState = {
   /** Re-fetch the user document (e.g. after targets were updated). */
   refreshProfile: () => Promise<void>;
   updateExperienceLevel: (level: ExperienceLevel) => Promise<void>;
+  updateCustomFlag: (
+    key: "charts" | "analytics" | "effortRating" | "advancedDashboard",
+    value: boolean
+  ) => Promise<void>;
 };
 
 /** Reject a hanging network call after `ms` so the UI can show a real error. */
@@ -70,8 +74,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { user, profile } = get();
     if (!user || !profile) return;
 
-    // The store holds the whole doc: { profile: {...}, nutrition, ... }.
-    // Update the nested profile object, both locally and in Firestore.
     const nextInner = { ...profile.profile, experienceLevel: level };
     set({ profile: { ...profile, profile: nextInner } });
 
@@ -79,6 +81,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await saveUserProfileDoc(user.uid, { profile: nextInner });
     } catch {
       // Non-fatal — local state already reflects the choice.
+    }
+  },
+
+  updateCustomFlag: async (key, value) => {
+    const { user, profile } = get();
+    if (!user || !profile) return;
+
+    const nextInner = {
+      ...profile.profile,
+      customFlags: { ...profile.profile.customFlags, [key]: value },
+    };
+    set({ profile: { ...profile, profile: nextInner } });
+
+    try {
+      await saveUserProfileDoc(user.uid, { profile: nextInner });
+    } catch {
+      // Non-fatal
     }
   },
 
