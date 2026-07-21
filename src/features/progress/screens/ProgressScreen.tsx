@@ -336,6 +336,28 @@ const averageWorkoutDuration =
         </button>
       </div>
 
+      {!flags.charts && (
+        <button
+          onClick={() => onNavigate("settings")}
+          className="w-full rounded-[20px] p-4 mb-4 text-left card-lit"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          <p className="text-sm font-semibold" style={{ color: C.fg }}>
+            Charts &amp; analytics are hidden
+          </p>
+          <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
+            You're on a simpler view. Raise your experience level in Settings
+            to unlock progress charts, muscle balance and more.
+          </p>
+          <span
+            className="text-[11px] font-bold mt-2 inline-block"
+            style={{ color: C.accentInk }}
+          >
+            Change level ›
+          </span>
+        </button>
+      )}
+
       {flags.charts && (
         <BodyweightChartCard
           currentWeight={currentWeight}

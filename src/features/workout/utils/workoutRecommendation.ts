@@ -740,7 +740,9 @@ const GENERATION_PLAN: Record<
 export function generateWorkoutTemplate(
   split: Exclude<WorkoutSplit, "recovery">,
   workouts: readonly RecommendationWorkout[] = [],
-  now: Date = new Date()
+  now: Date = new Date(),
+  /** Scales suggested set counts by experience (beginner 0.8, advanced 1.1). */
+  setBias = 1
 ): WorkoutTemplate {
   const lookup = buildDefinitionLookup();
   const familiar = new Set<string>();
@@ -782,11 +784,17 @@ export function generateWorkoutTemplate(
       });
 
     for (const definition of candidates.slice(0, count)) {
+      // Scale sets by experience, keeping at least 1 and rounding to whole sets.
+      const setCount = Math.max(
+        1,
+        Math.round(definition.defaultSets * setBias)
+      );
+
       exercises.push({
         id: definition.id,
         exerciseId: definition.id,
         name: definition.name,
-        sets: Array.from({ length: definition.defaultSets }, () => ({
+        sets: Array.from({ length: setCount }, () => ({
           reps: definition.defaultReps,
           weight: 0,
           completed: false,

@@ -20,6 +20,7 @@ import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useAppStore } from "@/store/appStore";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
+import { getLevelConfig } from "@/features/settings/experienceLevel";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
@@ -85,6 +86,7 @@ export default function WorkoutScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const flags = useFeatureFlags();
+  const userLevel = useAuthStore((s) => s.profile)?.profile?.experienceLevel;
   const workoutStarted = useAppStore((s) => s.sessionActive);
   const startSession = useAppStore((s) => s.startSession);
   const endSession = useAppStore((s) => s.endSession);
@@ -246,7 +248,12 @@ export default function WorkoutScreen() {
           open={aiSheetOpen}
           onClose={() => setAiSheetOpen(false)}
           onGenerate={(split: AiSplit) => {
-            const template = generateWorkoutTemplate(split, workouts);
+            const template = generateWorkoutTemplate(
+              split,
+              workouts,
+              new Date(),
+              getLevelConfig(userLevel).training.setBias
+            );
 
             setAiSheetOpen(false);
 

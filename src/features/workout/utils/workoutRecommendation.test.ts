@@ -10,6 +10,7 @@ import {
   getMuscleSetTargetOverview,
   getRecentEffortStrain,
   getWorkoutRecommendation,
+  generateWorkoutTemplate,
   type RecommendationExercise,
   type RecommendationWorkout,
 } from "./workoutRecommendation";
@@ -710,5 +711,29 @@ describe("getRecentEffortStrain", () => {
 
     expect(strain.ratedSets).toBe(0);
     expect(strain.highStrain).toBe(false);
+  });
+});
+
+describe("generateWorkoutTemplate — experience set bias", () => {
+  it("produces fewer sets for beginners than advanced", () => {
+    const beginner = generateWorkoutTemplate("push", [], new Date(), 0.8);
+    const advanced = generateWorkoutTemplate("push", [], new Date(), 1.1);
+
+    const totalSets = (t: { exercises: { sets: unknown[] }[] }) =>
+      t.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+
+    expect(totalSets(beginner)).toBeLessThanOrEqual(totalSets(advanced));
+    // Every exercise keeps at least one set.
+    expect(beginner.exercises.every((ex) => ex.sets.length >= 1)).toBe(true);
+  });
+
+  it("defaults to unbiased set counts when no bias is given", () => {
+    const a = generateWorkoutTemplate("pull", []);
+    const b = generateWorkoutTemplate("pull", [], new Date(), 1);
+
+    const totalSets = (t: { exercises: { sets: unknown[] }[] }) =>
+      t.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+
+    expect(totalSets(a)).toBe(totalSets(b));
   });
 });

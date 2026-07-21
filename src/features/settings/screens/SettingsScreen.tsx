@@ -177,14 +177,6 @@ export default function SettingsScreen({
 
       <SectionHeader title="Experience level" />
 
-      <div
-        className="rounded-[14px] p-2 mb-2 text-[10px] font-mono"
-        style={{ background: C.card2, color: C.amber }}
-      >
-        debug: level={String(currentLevel)} · flags=
-        {JSON.stringify(getFeatureFlags(currentLevel))}
-      </div>
-
 
       <div
         className="rounded-[20px] mb-4 overflow-hidden card-lit"
