@@ -2,16 +2,18 @@
 //  BulkOSWatchApp.swift
 //  BulkOSWatch Watch App
 //
-//  Created by Harton on 22/07/2026.
-//
 
 import SwiftUI
 
 @main
 struct BulkOSWatch_Watch_AppApp: App {
+    @StateObject private var session = WorkoutSession()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environmentObject(session)
+                .tint(Theme.accent)
         }
     }
 }
