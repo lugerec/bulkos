@@ -19,6 +19,7 @@ import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useAppStore } from "@/store/appStore";
+import { useActiveWorkoutStore } from "@/store/activeWorkoutStore";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import { getLevelConfig } from "@/features/settings/experienceLevel";
 import { writeStrengthWorkout } from "@/services/healthService";
@@ -94,11 +95,20 @@ export default function WorkoutScreen() {
   const userLevel = useAuthStore((s) => s.profile)?.profile?.experienceLevel;
   const workoutStarted = useAppStore((s) => s.sessionActive);
   const startSession = useAppStore((s) => s.startSession);
+  const beginActiveWorkout = useActiveWorkoutStore((s) => s.begin);
+  const syncActiveWorkout = useActiveWorkoutStore((s) => s.sync);
+  const clearActiveWorkout = useActiveWorkoutStore((s) => s.clear);
 
   /** Start the session and push it to a paired Apple Watch (no-op if none). */
   const beginSession = () => {
     startSession();
+
     if (workout) {
+      beginActiveWorkout({
+        name: workout.name,
+        exercises,
+        templateId: workout.id,
+      });
       sendWorkoutToWatch(workout.name, exercises);
     }
   };
@@ -111,6 +121,19 @@ export default function WorkoutScreen() {
   const [previewing, setPreviewing] = useState(() =>
     useAppStore.getState().consumeWorkoutPreview()
   );
+
+  // Mirror live session state into the store so leaving the tab doesn't
+  // lose logged weights, ticked sets or the timer.
+  useEffect(() => {
+    if (!workoutStarted || done) return;
+
+    syncActiveWorkout({
+      exercises,
+      completed: Array.from(completed),
+      elapsed,
+      paused,
+    });
+  }, [workoutStarted, done, exercises, completed, elapsed, paused]);
 
   // Sets ticked off on the Apple Watch mirror straight into the session.
   useEffect(() => {
@@ -133,6 +156,19 @@ export default function WorkoutScreen() {
   }, []);
 
   useEffect(() => {
+    const live = useActiveWorkoutStore.getState();
+
+    // Coming back to a session that's still running? Restore it.
+    if (live.active) {
+      setExercises(live.exercises);
+      setCompleted(new Set(live.completed));
+      setElapsed(live.elapsed);
+      setPaused(live.paused);
+      setPreviewing(true);
+      startSession();
+      return;
+    }
+
     endSession();
     setElapsed(0);
     setPaused(false);
@@ -177,6 +213,8 @@ export default function WorkoutScreen() {
 
   useEffect(() => {
     if (!workout) return;
+    // A live session owns the exercise state — don't reset it from the template.
+    if (useActiveWorkoutStore.getState().active) return;
 
     setExercises(
       workout.exercises.map((exercise) => {
@@ -819,6 +857,8 @@ export default function WorkoutScreen() {
 
       await loadWorkouts(user.uid);
 
+      clearActiveWorkout();
+
       // Mirror the session to Apple Health (no-op off-device / if not granted).
       const sessionEnd = new Date();
       writeStrengthWorkout({
@@ -1099,6 +1139,7 @@ export default function WorkoutScreen() {
                   return;
                 }
                 // Discard the session and return to the picker.
+                clearActiveWorkout();
                 endSession();
                 clearSelected();
                 setPreviewing(false);

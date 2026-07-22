@@ -33,6 +33,7 @@ import {
 
 import { C, T, type Screen } from "@/shared/ui";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
+import { useActiveWorkoutStore } from "@/store/activeWorkoutStore";
 import HealthActivityCard from "@/features/dashboard/components/HealthActivityCard";
 import { ProgressRing, Badge, SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
@@ -119,6 +120,7 @@ export default function DashboardScreen({
 
   const userProfile = userDoc.profile;
   const flags = useFeatureFlags();
+  const activeWorkout = useActiveWorkoutStore();
   const nutrition = userDoc.nutrition;
 
   const sortedBodyEntries = [...bodyEntries].sort((a, b) =>
@@ -236,6 +238,43 @@ export default function DashboardScreen({
         name={userProfile?.name || "Lukáš"}
         date={dateStr}
       />
+
+      {activeWorkout.active && (
+        <button
+          onClick={() => onNavigate("workout")}
+          className="w-full rounded-[20px] p-4 mb-4 text-left flex items-center gap-3"
+          style={{
+            background: C.accent,
+            boxShadow: "0 10px 30px rgba(204,242,50,0.22)",
+          }}
+        >
+          <div
+            className="w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0"
+            style={{ background: "rgba(10,10,11,0.12)", color: "#0A0A0B" }}
+          >
+            <Dumbbell size={19} />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <p
+              style={{
+                ...T.eyebrow,
+                color: "rgba(10,10,11,0.62)",
+              }}
+            >
+              Workout in progress
+            </p>
+            <p
+              className="truncate"
+              style={{ ...T.bodyStrong, color: "#0A0A0B" }}
+            >
+              {activeWorkout.name}
+            </p>
+          </div>
+
+          <span style={{ ...T.bodyStrong, color: "#0A0A0B" }}>Resume ›</span>
+        </button>
+      )}
 
       <HealthActivityCard />
 
