@@ -21,9 +21,29 @@ final class WorkoutSession: ObservableObject {
 
     private var restTimer: Timer?
     private let defaultRest = 90
+    private var cancellables = Set<AnyCancellable>()
+
+    /// True while showing the built-in sample instead of a real session
+    /// pushed from the phone.
+    @Published private(set) var isSample = true
 
     init(workout: Workout = .sample) {
         self.workout = workout
+
+        // Adopt any workout the phone pushes over.
+        WatchBridge.shared.$receivedWorkout
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] incoming in
+                guard let self else { return }
+                self.workout = incoming
+                self.isSample = false
+                self.isActive = false
+                self.stopRest()
+            }
+            .store(in: &cancellables)
+
+        WatchBridge.shared.activate()
     }
 
     func start() {
@@ -44,6 +64,13 @@ final class WorkoutSession: ObservableObject {
             WKInterfaceDevice.current().play(.success)
             startRest()
         }
+
+        // Keep the phone in sync (no-op if it isn't paired/reachable).
+        WatchBridge.shared.sendSetUpdate(
+            exerciseIndex: exerciseIndex,
+            setIndex: setIndex,
+            completed: nowCompleted
+        )
     }
 
     // MARK: - Rest timer

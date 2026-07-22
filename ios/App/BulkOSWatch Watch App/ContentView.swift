@@ -38,7 +38,7 @@ struct PreviewView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                Text("TODAY")
+                Text(session.isSample ? "SAMPLE" : "TODAY")
                     .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(Theme.accent)
 
@@ -49,6 +49,12 @@ struct PreviewView: View {
                 Text("\(session.workout.exercises.count) exercises · \(session.workout.totalSets) sets")
                     .font(.system(size: 13))
                     .foregroundStyle(Theme.fg2)
+
+                if session.isSample {
+                    Text("Start a workout on your iPhone to send it here.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.fg3)
+                }
 
                 Button {
                     session.start()

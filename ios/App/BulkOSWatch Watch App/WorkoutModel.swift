@@ -10,19 +10,28 @@
 import Foundation
 
 /// A single set: target reps + weight, and whether it's been completed.
-struct WorkoutSet: Identifiable {
-    let id = UUID()
+struct WorkoutSet: Identifiable, Codable {
+    var id = UUID()
     var reps: Int
     var weight: Double
     var completed: Bool = false
+
+    /// `id` is generated locally and never travels over the wire.
+    private enum CodingKeys: String, CodingKey {
+        case reps, weight, completed
+    }
 }
 
 /// One exercise with its sets and an optional target rep range for display.
-struct WorkoutExercise: Identifiable {
-    let id = UUID()
+struct WorkoutExercise: Identifiable, Codable {
+    var id = UUID()
     var name: String
     var targetReps: String?
     var sets: [WorkoutSet]
+
+    private enum CodingKeys: String, CodingKey {
+        case name, targetReps, sets
+    }
 
     var completedSets: Int { sets.filter { $0.completed }.count }
     var totalSets: Int { sets.count }
@@ -30,10 +39,14 @@ struct WorkoutExercise: Identifiable {
 }
 
 /// A full session: a name and its exercises.
-struct Workout: Identifiable {
-    let id = UUID()
+struct Workout: Identifiable, Codable {
+    var id = UUID()
     var name: String
     var exercises: [WorkoutExercise]
+
+    private enum CodingKeys: String, CodingKey {
+        case name, exercises
+    }
 
     var totalSets: Int { exercises.reduce(0) { $0 + $1.totalSets } }
     var completedSets: Int { exercises.reduce(0) { $0 + $1.completedSets } }

@@ -22,6 +22,7 @@ import { useAppStore } from "@/store/appStore";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import { getLevelConfig } from "@/features/settings/experienceLevel";
 import { writeStrengthWorkout } from "@/services/healthService";
+import { sendWorkoutToWatch, onWatchSetUpdate } from "@/services/watchService";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
@@ -91,6 +92,14 @@ export default function WorkoutScreen() {
   const userLevel = useAuthStore((s) => s.profile)?.profile?.experienceLevel;
   const workoutStarted = useAppStore((s) => s.sessionActive);
   const startSession = useAppStore((s) => s.startSession);
+
+  /** Start the session and push it to a paired Apple Watch (no-op if none). */
+  const beginSession = () => {
+    startSession();
+    if (workout) {
+      sendWorkoutToWatch(workout.name, exercises);
+    }
+  };
   const endSession = useAppStore((s) => s.endSession);
 
   // Always land on the template picker when this screen mounts. Tapping a
@@ -100,6 +109,26 @@ export default function WorkoutScreen() {
   const [previewing, setPreviewing] = useState(() =>
     useAppStore.getState().consumeWorkoutPreview()
   );
+
+  // Sets ticked off on the Apple Watch mirror straight into the session.
+  useEffect(() => {
+    let cleanup: (() => void) | undefined;
+
+    onWatchSetUpdate(({ exerciseIndex, setIndex, completed: isDone }) => {
+      const key = `${exerciseIndex}-${setIndex}`;
+
+      setCompleted((prev) => {
+        const next = new Set(prev);
+        if (isDone) next.add(key);
+        else next.delete(key);
+        return next;
+      });
+    }).then((remove) => {
+      cleanup = remove;
+    });
+
+    return () => cleanup?.();
+  }, []);
 
   useEffect(() => {
     endSession();
@@ -1029,7 +1058,7 @@ export default function WorkoutScreen() {
 
         {!workoutStarted && (
           <button
-            onClick={startSession}
+            onClick={beginSession}
             className="w-full py-4 rounded-[20px] font-bold text-base mt-3 card-lit"
             style={{
               background: C.accent,
@@ -1470,7 +1499,7 @@ export default function WorkoutScreen() {
 
         {!workoutStarted ? (
           <button
-            onClick={startSession}
+            onClick={beginSession}
             className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
             style={{
               background: C.accent,
