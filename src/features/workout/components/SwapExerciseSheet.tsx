@@ -51,9 +51,11 @@ export default function SwapExerciseSheet({
         style={{
           background: C.card,
           border: `1px solid ${C.border}`,
-          maxHeight: "82vh",
-          overflowY: "auto",
-          paddingBottom: "max(24px, env(safe-area-inset-bottom, 24px))",
+          maxHeight: "85vh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          paddingBottom: "max(16px, env(safe-area-inset-bottom, 16px))",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -80,7 +82,8 @@ export default function SwapExerciseSheet({
             No other {current.primaryMuscle} exercises available.
           </p>
         ) : (
-          <div className="flex flex-col gap-2 max-h-[50vh] overflow-y-auto">
+          <div className="flex flex-col gap-2 overflow-y-auto"
+          style={{ flex: 1, minHeight: 0, WebkitOverflowScrolling: "touch" }}>
             {alternatives.map((alt) => (
               <button
                 key={alt.id}

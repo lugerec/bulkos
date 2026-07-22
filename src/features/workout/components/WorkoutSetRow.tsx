@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Check, Circle } from "lucide-react";
 
 import { C } from "@/shared/ui";
@@ -55,15 +56,19 @@ export default function WorkoutSetRow({
           className="flex-1 rounded-xl flex items-center justify-between px-2 py-1"
           style={{ background: C.card2, border: `1px solid ${C.border}` }}
         >
-          <button onClick={() => onWeightChange(Math.max(0, weight - 2.5))}>
+          <button onClick={() => onWeightChange(Math.max(0, round1(weight - WEIGHT_STEP)))}>
             <Minus size={14} color={C.fg3} />
           </button>
 
-          <span className="font-bold" style={{ color: C.fg }}>
-            {weight} kg
-          </span>
+          <EditableValue
+            value={weight}
+            suffix="kg"
+            step="0.5"
+            min={0}
+            onCommit={onWeightChange}
+          />
 
-          <button onClick={() => onWeightChange(weight + 2.5)}>
+          <button onClick={() => onWeightChange(round1(weight + WEIGHT_STEP))}>
             <Plus size={14} color={C.accent} />
           </button>
         </div>
@@ -76,9 +81,13 @@ export default function WorkoutSetRow({
             <Minus size={14} color={C.fg3} />
           </button>
 
-          <span className="font-bold" style={{ color: C.fg }}>
-            {reps}
-          </span>
+          <EditableValue
+            value={reps}
+            step="1"
+            min={1}
+            integer
+            onCommit={onRepsChange}
+          />
 
           <button onClick={() => onRepsChange(reps + 1)}>
             <Plus size={14} color={C.accent} />
@@ -128,5 +137,92 @@ export default function WorkoutSetRow({
         </div>
       )}
     </div>
+  );
+}
+
+/** Step for the +/- buttons — fine enough for micro-plates. */
+const WEIGHT_STEP = 1.25;
+
+function round1(n: number) {
+  return Math.round(n * 10) / 10;
+}
+
+/**
+ * A number that turns into an input when tapped, so values can be typed
+ * directly instead of only stepped with +/-.
+ */
+function EditableValue({
+  value,
+  suffix,
+  step,
+  min,
+  integer,
+  onCommit,
+}: {
+  value: number;
+  suffix?: string;
+  step: string;
+  min: number;
+  integer?: boolean;
+  onCommit: (value: number) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(value));
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editing]);
+
+  const commit = () => {
+    const parsed = Number(draft.replace(",", "."));
+
+    if (!Number.isNaN(parsed)) {
+      const clamped = Math.max(min, parsed);
+      onCommit(integer ? Math.round(clamped) : round1(clamped));
+    }
+
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") setEditing(false);
+        }}
+        type="number"
+        inputMode="decimal"
+        step={step}
+        className="w-14 text-center font-bold rounded-lg outline-none"
+        style={{
+          background: C.bg,
+          color: C.fg,
+          border: `1px solid ${C.accent}`,
+        }}
+      />
+    );
+  }
+
+  return (
+    <button
+      onClick={() => {
+        setDraft(String(value));
+        setEditing(true);
+      }}
+      className="font-bold px-1"
+      style={{ color: C.fg }}
+    >
+      {value}
+      {suffix ? ` ${suffix}` : ""}
+    </button>
   );
 }

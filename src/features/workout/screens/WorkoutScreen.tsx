@@ -10,7 +10,7 @@ import EmptyState from "@/shared/EmptyState";
 import ExerciseThumb from "@/features/workout/components/ExerciseThumb";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote, TrendingUp, Trophy, Play, Sparkles, Pencil } from "lucide-react";
+import { CheckCircle2, Dumbbell, Timer, X, Repeat, StickyNote, TrendingUp, Trophy, Play, Sparkles, Pencil, Pause, Square } from "lucide-react";
 
 import { C, T } from "@/shared/ui";
 import { StatTile } from "@/shared/components";
@@ -85,6 +85,8 @@ export default function WorkoutScreen() {
   const [restTimer, setRestTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [confirmStop, setConfirmStop] = useState(false);
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -133,6 +135,8 @@ export default function WorkoutScreen() {
   useEffect(() => {
     endSession();
     setElapsed(0);
+    setPaused(false);
+    setConfirmStop(false);
     setDone(false);
     setIsResting(false);
     setRestTimer(0);
@@ -203,14 +207,14 @@ export default function WorkoutScreen() {
   }, [workout]);
 
   useEffect(() => {
-    if (!workoutStarted || done) return;
-  
+    if (!workoutStarted || done || paused) return;
+
     const t = setInterval(() => {
       setElapsed((e) => e + 1);
     }, 1000);
-  
+
     return () => clearInterval(t);
-  }, [workoutStarted, done]);
+  }, [workoutStarted, done, paused]);
 
   useEffect(() => {
     if (!isResting) return;
@@ -384,6 +388,23 @@ export default function WorkoutScreen() {
       </div>
     );
   }
+
+  /** Drop an exercise from the session and re-index completed-set keys. */
+  const removeExercise = (exIdx: number) => {
+    setExercises((prev) => prev.filter((_, i) => i !== exIdx));
+
+    setCompleted((prev) => {
+      const next = new Set<string>();
+
+      prev.forEach((key) => {
+        const [ex, set] = key.split("-").map(Number);
+        if (ex === exIdx) return;
+        next.add(`${ex > exIdx ? ex - 1 : ex}-${set}`);
+      });
+
+      return next;
+    });
+  };
 
   const toggleSet = (exIdx: number, setIdx: number) => {
     const key = `${exIdx}-${setIdx}`;
@@ -1056,6 +1077,49 @@ export default function WorkoutScreen() {
           </div>
         </div>
 
+        {workoutStarted && !done && (
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => setPaused((p) => !p)}
+              className="flex-1 py-2.5 rounded-[14px] text-sm font-bold flex items-center justify-center gap-1.5"
+              style={{
+                background: paused ? C.accent : C.card,
+                color: paused ? C.onAccent : C.fg,
+                border: `1px solid ${paused ? C.accent : C.border}`,
+              }}
+            >
+              {paused ? <Play size={14} /> : <Pause size={14} />}
+              {paused ? "Resume" : "Pause"}
+            </button>
+
+            <button
+              onClick={() => {
+                if (!confirmStop) {
+                  setConfirmStop(true);
+                  return;
+                }
+                // Discard the session and return to the picker.
+                endSession();
+                clearSelected();
+                setPreviewing(false);
+                setCompleted(new Set());
+                setElapsed(0);
+                setPaused(false);
+                setConfirmStop(false);
+              }}
+              className="flex-1 py-2.5 rounded-[14px] text-sm font-bold flex items-center justify-center gap-1.5"
+              style={{
+                background: confirmStop ? C.red : C.card,
+                color: confirmStop ? "#0A0A0B" : C.fg2,
+                border: `1px solid ${confirmStop ? C.red : C.border}`,
+              }}
+            >
+              <Square size={13} />
+              {confirmStop ? "Discard?" : "Stop"}
+            </button>
+          </div>
+        )}
+
         {!workoutStarted && (
           <button
             onClick={beginSession}
@@ -1268,6 +1332,18 @@ export default function WorkoutScreen() {
                     >
                       <StickyNote size={12} />
                     </button>
+
+                    {exercises.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeExercise(exIdx)}
+                        aria-label="Remove exercise"
+                        className="flex items-center justify-center w-6 h-6 rounded-full"
+                        style={{ background: C.card2, color: C.fg3 }}
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
                   </div>
 
                   {(() => {
