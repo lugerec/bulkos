@@ -11,6 +11,7 @@ import {
 import { C, type Screen } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
 import HealthConnectCard from "@/features/settings/components/HealthConnectCard";
+import WatchStatusCard from "@/features/settings/components/WatchStatusCard";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
@@ -119,6 +120,8 @@ export default function SettingsScreen({
       <SectionHeader title="Integrations" />
 
       <HealthConnectCard />
+
+      <WatchStatusCard />
 
       <SectionHeader title="Tools" />
 

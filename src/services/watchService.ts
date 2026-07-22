@@ -35,13 +35,28 @@ function isSupported(): boolean {
 
 /** Is a watch paired with the BulkOS watch app installed? */
 export async function isWatchReady(): Promise<boolean> {
-  if (!isSupported()) return false;
+  const status = await getWatchStatus();
+  return Boolean(status?.paired && status.appInstalled);
+}
+
+export type WatchStatus = {
+  supported: boolean;
+  paired: boolean;
+  appInstalled: boolean;
+};
+
+/**
+ * Full pairing status, or null when the native plugin isn't present in this
+ * build (which is itself a useful diagnostic: the phone app needs a rebuild).
+ */
+export async function getWatchStatus(): Promise<WatchStatus | null> {
+  if (!isSupported()) return null;
 
   try {
-    const { paired, appInstalled } = await WatchBridge.isPaired();
-    return Boolean(paired && appInstalled);
+    return await WatchBridge.isPaired();
   } catch {
-    return false;
+    // Plugin missing/unregistered in this binary.
+    return null;
   }
 }
 
