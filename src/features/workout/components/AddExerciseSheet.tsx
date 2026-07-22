@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { C } from "@/shared/ui";
-import { exerciseDefinitions } from "@/data/exercises";
+import ExercisePicker from "@/features/workout/components/ExercisePicker";
 
 type Props = {
   open: boolean;
@@ -23,21 +22,6 @@ export default function AddExerciseSheet({
   onClose,
   onSelect,
 }: Props) {
-  const [query, setQuery] = useState("");
-
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = q
-      ? exerciseDefinitions.filter(
-          (d) =>
-            d.name.toLowerCase().includes(q) ||
-            d.primaryMuscle.toLowerCase().includes(q)
-        )
-      : exerciseDefinitions;
-
-    return [...list].sort((a, b) => a.name.localeCompare(b.name));
-  }, [query]);
-
   if (!open) return null;
 
   return (
@@ -73,71 +57,10 @@ export default function AddExerciseSheet({
           </button>
         </div>
 
-        <div
-          className="flex items-center gap-2 rounded-[14px] px-3 py-2 mb-4"
-          style={{ background: C.card2, border: `1px solid ${C.border}` }}
-        >
-          <Search size={16} color={C.fg3} />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search exercises…"
-            className="flex-1 bg-transparent outline-none text-sm"
-            style={{ color: C.fg }}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2 overflow-y-auto"
-          style={{ flex: 1, minHeight: 0, WebkitOverflowScrolling: "touch" }}>
-          {results.length === 0 ? (
-            <p
-              className="text-sm py-6 text-center"
-              style={{ color: C.fg3 }}
-            >
-              No exercises match “{query}”.
-            </p>
-          ) : (
-            results.map((exercise) => {
-              const added = existingIds.includes(exercise.id);
-
-              return (
-                <button
-                  key={exercise.id}
-                  onClick={() => onSelect(exercise.id)}
-                  className="rounded-[14px] p-3 text-left flex items-center justify-between gap-3"
-                  style={{
-                    background: C.card2,
-                    border: `1px solid ${C.border}`,
-                  }}
-                >
-                  <div className="min-w-0">
-                    <p
-                      className="text-sm font-bold truncate"
-                      style={{ color: C.fg }}
-                    >
-                      {exercise.name}
-                    </p>
-                    <p
-                      className="text-[11px] mt-0.5 capitalize"
-                      style={{ color: C.fg3 }}
-                    >
-                      {exercise.primaryMuscle} · {exercise.equipment}
-                    </p>
-                  </div>
-
-                  {added && (
-                    <span
-                      className="text-[11px] font-semibold px-2 py-1 rounded-full"
-                      style={{ background: C.accentDim, color: C.accentInk }}
-                    >
-                      Added
-                    </span>
-                  )}
-                </button>
-              );
-            })
-          )}
-        </div>
+        <ExercisePicker
+          existingIds={existingIds}
+          onSelect={onSelect}
+        />
       </div>
     </div>
   );

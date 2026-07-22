@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { exerciseDefinitions } from "@/data/exercises";
+import ExercisePicker from "@/features/workout/components/ExercisePicker";
 import type { ExerciseDefinition } from "@/types/workout";
 
 type Props = {
@@ -37,8 +38,6 @@ export default function SwapExerciseSheet({
   onSelect,
 }: Props) {
   if (!current) return null;
-
-  const alternatives = getAlternatives(current);
 
   return (
     <div
@@ -77,41 +76,12 @@ export default function SwapExerciseSheet({
           Same muscle ({current.primaryMuscle}) — sets are kept, weights reset.
         </p>
 
-        {alternatives.length === 0 ? (
-          <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>
-            No other {current.primaryMuscle} exercises available.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-2 overflow-y-auto"
-          style={{ flex: 1, minHeight: 0, WebkitOverflowScrolling: "touch" }}>
-            {alternatives.map((alt) => (
-              <button
-                key={alt.id}
-                onClick={() => onSelect(alt.id)}
-                className="rounded-[14px] p-3 text-left flex items-center justify-between gap-3"
-                style={{
-                  background: C.card2,
-                  border: `1px solid ${C.border}`,
-                }}
-              >
-                <div className="min-w-0">
-                  <p
-                    className="text-sm font-bold truncate"
-                    style={{ color: C.fg }}
-                  >
-                    {alt.name}
-                  </p>
-                  <p
-                    className="text-[11px] mt-0.5 capitalize"
-                    style={{ color: C.fg3 }}
-                  >
-                    {alt.equipment} · {alt.category}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
+        <ExercisePicker
+          existingIds={[current.id]}
+          onSelect={onSelect}
+          addedLabel="Current"
+          initialMuscle={current.primaryMuscle}
+        />
       </div>
     </div>
   );
