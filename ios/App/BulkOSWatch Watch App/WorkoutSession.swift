@@ -6,6 +6,7 @@
 //  rest timer. Marked @MainActor so UI updates are safe.
 //
 
+import Combine
 import Foundation
 import SwiftUI
 import WatchKit
