@@ -56,7 +56,7 @@ export default function ExercisePicker({
     <div className="flex flex-col flex-1 min-h-0">
       {/* Search */}
       <div
-        className="flex items-center gap-2 rounded-[14px] px-3 py-2 mb-3"
+        className="flex items-center gap-2 rounded-[14px] px-3 py-2 mb-3 flex-shrink-0"
         style={{ background: C.card2, border: `1px solid ${C.border}` }}
       >
         <Search size={16} color={C.fg3} />
@@ -74,7 +74,7 @@ export default function ExercisePicker({
 
       {/* Muscle chips */}
       <div
-        className="flex gap-1.5 overflow-x-auto mb-3 pb-1"
+        className="flex gap-1.5 overflow-x-auto mb-3 pb-1 flex-shrink-0"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         {MUSCLE_FILTERS.map((filter) => {
@@ -84,9 +84,10 @@ export default function ExercisePicker({
             <button
               key={filter.value}
               onClick={() => setMuscle(filter.value)}
-              className="px-3 py-1.5 rounded-full flex-shrink-0"
+              className="px-3 py-1.5 rounded-full flex-shrink-0 whitespace-nowrap"
               style={{
                 ...T.caption,
+                lineHeight: 1.4,
                 fontWeight: 700,
                 background: active ? C.accent : C.card2,
                 color: active ? "#0A0A0B" : C.fg2,

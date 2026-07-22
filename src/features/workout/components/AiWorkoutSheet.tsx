@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Sparkles, X } from "lucide-react";
 
 import { C, T } from "@/shared/ui";
@@ -28,9 +29,9 @@ export default function AiWorkoutSheet({ open, onClose, onGenerate }: Props) {
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center"
+      className="fixed inset-0 z-[100] flex items-end justify-center"
       style={{ background: "rgba(0,0,0,0.6)" }}
       onClick={onClose}
     >
@@ -43,7 +44,7 @@ export default function AiWorkoutSheet({ open, onClose, onGenerate }: Props) {
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
-          paddingBottom: "max(16px, env(safe-area-inset-bottom, 16px))",
+          paddingBottom: "max(20px, env(safe-area-inset-bottom, 20px))",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -115,6 +116,7 @@ export default function AiWorkoutSheet({ open, onClose, onGenerate }: Props) {
           Generate workout
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
