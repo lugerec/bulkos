@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
-		3082F1983010397D00992A13 /* BulkOSWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 3082F1973010397D00992A13 /* BulkOSWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3082F1D43010AECA00992A13 /* WatchBridgePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3082F1D33010AEC900992A13 /* WatchBridgePlugin.swift */; };
+		3082F1D63010B6EE00992A13 /* BulkOSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3082F1D53010B6EE00992A13 /* BulkOSViewController.swift */; };
+		3082F1D83010B92700992A13 /* BulkOSWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 3082F1973010397D00992A13 /* BulkOSWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
@@ -19,13 +21,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3082F1993010397D00992A13 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3082F1963010397D00992A13;
-			remoteInfo = "BulkOSWatch Watch App";
-		};
 		3082F1A73010398000992A13 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
@@ -40,16 +35,30 @@
 			remoteGlobalIDString = 3082F1963010397D00992A13;
 			remoteInfo = "BulkOSWatch Watch App";
 		};
+		3082F1D93010B92700992A13 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3082F1963010397D00992A13;
+			remoteInfo = "BulkOSWatch Watch App";
+		};
+		3082F1DC3010BAB000992A13 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3082F1963010397D00992A13;
+			remoteInfo = "BulkOSWatch Watch App";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		3082F1BA3010398000992A13 /* Embed Watch Content */ = {
+		3082F1DB3010B92700992A13 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				3082F1983010397D00992A13 /* BulkOSWatch Watch App.app in Embed Watch Content */,
+				3082F1D83010B92700992A13 /* BulkOSWatch Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -59,10 +68,11 @@
 /* Begin PBXFileReference section */
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		30737E55300FB25F00AE34FA /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
-		3082F1923010397D00992A13 /* BulkOSWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BulkOSWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3082F1973010397D00992A13 /* BulkOSWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BulkOSWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3082F1A63010398000992A13 /* BulkOSWatch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BulkOSWatch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3082F1B03010398000992A13 /* BulkOSWatch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BulkOSWatch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3082F1D33010AEC900992A13 /* WatchBridgePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchBridgePlugin.swift; sourceTree = "<group>"; };
+		3082F1D53010B6EE00992A13 /* BulkOSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkOSViewController.swift; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -113,6 +123,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3082F1D73010B92700992A13 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
@@ -121,6 +138,7 @@
 				3082F19B3010397D00992A13 /* BulkOSWatch Watch App */,
 				3082F1A93010398000992A13 /* BulkOSWatch Watch AppTests */,
 				3082F1B33010398000992A13 /* BulkOSWatch Watch AppUITests */,
+				3082F1D73010B92700992A13 /* Frameworks */,
 				504EC3051FED79650016851F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -129,7 +147,6 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
-				3082F1923010397D00992A13 /* BulkOSWatch.app */,
 				3082F1973010397D00992A13 /* BulkOSWatch Watch App.app */,
 				3082F1A63010398000992A13 /* BulkOSWatch Watch AppTests.xctest */,
 				3082F1B03010398000992A13 /* BulkOSWatch Watch AppUITests.xctest */,
@@ -140,6 +157,8 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
+				3082F1D53010B6EE00992A13 /* BulkOSViewController.swift */,
+				3082F1D33010AEC900992A13 /* WatchBridgePlugin.swift */,
 				30737E55300FB25F00AE34FA /* App.entitlements */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
@@ -156,25 +175,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3082F1913010397D00992A13 /* BulkOSWatch */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3082F1C23010398000992A13 /* Build configuration list for PBXNativeTarget "BulkOSWatch" */;
-			buildPhases = (
-				3082F1903010397D00992A13 /* Resources */,
-				3082F1BA3010398000992A13 /* Embed Watch Content */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3082F19A3010397D00992A13 /* PBXTargetDependency */,
-			);
-			name = BulkOSWatch;
-			packageProductDependencies = (
-			);
-			productName = BulkOSWatch;
-			productReference = 3082F1923010397D00992A13 /* BulkOSWatch.app */;
-			productType = "com.apple.product-type.application.watchapp2-container";
-		};
 		3082F1963010397D00992A13 /* BulkOSWatch Watch App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3082F1C13010398000992A13 /* Build configuration list for PBXNativeTarget "BulkOSWatch Watch App" */;
@@ -250,10 +250,13 @@
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
+				3082F1DB3010B92700992A13 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				3082F1DA3010B92700992A13 /* PBXTargetDependency */,
+				3082F1DD3010BAB000992A13 /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -273,9 +276,6 @@
 				LastSwiftUpdateCheck = 2660;
 				LastUpgradeCheck = 2660;
 				TargetAttributes = {
-					3082F1913010397D00992A13 = {
-						CreatedOnToolsVersion = 26.6;
-					};
 					3082F1963010397D00992A13 = {
 						CreatedOnToolsVersion = 26.6;
 					};
@@ -311,7 +311,6 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
-				3082F1913010397D00992A13 /* BulkOSWatch */,
 				3082F1963010397D00992A13 /* BulkOSWatch Watch App */,
 				3082F1A53010398000992A13 /* BulkOSWatch Watch AppTests */,
 				3082F1AF3010398000992A13 /* BulkOSWatch Watch AppUITests */,
@@ -320,13 +319,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		3082F1903010397D00992A13 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3082F1953010397D00992A13 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -390,17 +382,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				3082F1D63010B6EE00992A13 /* BulkOSViewController.swift in Sources */,
+				3082F1D43010AECA00992A13 /* WatchBridgePlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3082F19A3010397D00992A13 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3082F1963010397D00992A13 /* BulkOSWatch Watch App */;
-			targetProxy = 3082F1993010397D00992A13 /* PBXContainerItemProxy */;
-		};
 		3082F1A83010398000992A13 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3082F1963010397D00992A13 /* BulkOSWatch Watch App */;
@@ -410,6 +399,16 @@
 			isa = PBXTargetDependency;
 			target = 3082F1963010397D00992A13 /* BulkOSWatch Watch App */;
 			targetProxy = 3082F1B13010398000992A13 /* PBXContainerItemProxy */;
+		};
+		3082F1DA3010B92700992A13 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3082F1963010397D00992A13 /* BulkOSWatch Watch App */;
+			targetProxy = 3082F1D93010B92700992A13 /* PBXContainerItemProxy */;
+		};
+		3082F1DD3010BAB000992A13 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3082F1963010397D00992A13 /* BulkOSWatch Watch App */;
+			targetProxy = 3082F1DC3010BAB000992A13 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -433,54 +432,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		3082F1B83010398000992A13 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 358L234F3N;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				INFOPLIST_KEY_CFBundleDisplayName = BulkOSWatch;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = modano.BulkOSWatch;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		3082F1B93010398000992A13 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 358L234F3N;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				INFOPLIST_KEY_CFBundleDisplayName = BulkOSWatch;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = modano.BulkOSWatch;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 		3082F1BB3010398000992A13 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -497,7 +448,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = BulkOSWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lugerec.bulkos;
+				INFOPLIST_KEY_WKWatchOnly = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -506,7 +458,8 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = modano.BulkOSWatch.watchkitapp;
+				NEW_SETTING = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lugerec.bulkos.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -518,7 +471,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.6;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -538,7 +491,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = BulkOSWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lugerec.bulkos;
+				INFOPLIST_KEY_WKWatchOnly = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -546,7 +500,8 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = modano.BulkOSWatch.watchkitapp;
+				NEW_SETTING = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lugerec.bulkos.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -557,7 +512,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.6;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -588,7 +543,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BulkOSWatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BulkOSWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -617,7 +572,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BulkOSWatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BulkOSWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -647,7 +602,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_TARGET_NAME = "BulkOSWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -675,7 +630,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_TARGET_NAME = "BulkOSWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -809,7 +764,7 @@
 				DEVELOPMENT_TEAM = 358L234F3N;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -834,7 +789,7 @@
 				DEVELOPMENT_TEAM = 358L234F3N;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -856,15 +811,6 @@
 			buildConfigurations = (
 				3082F1BB3010398000992A13 /* Debug */,
 				3082F1BC3010398000992A13 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3082F1C23010398000992A13 /* Build configuration list for PBXNativeTarget "BulkOSWatch" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3082F1B83010398000992A13 /* Debug */,
-				3082F1B93010398000992A13 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
