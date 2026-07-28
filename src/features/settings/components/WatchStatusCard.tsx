@@ -3,7 +3,7 @@ import { Watch } from "lucide-react";
 
 import { C, T } from "@/shared/ui";
 import { Capacitor } from "@capacitor/core";
-import { getWatchStatus, type WatchStatus } from "@/services/watchService";
+import { getWatchStatus, sendWorkoutToWatch, type WatchStatus } from "@/services/watchService";
 
 type State =
   | { kind: "hidden" }
@@ -17,6 +17,7 @@ type State =
  * no watch is paired, or when the watch app isn't installed.
  */
 export default function WatchStatusCard() {
+  const [testState, setTestState] = useState<"idle" | "sending" | "sent">("idle");
   const [state, setState] = useState<State>(
     Capacitor.getPlatform() === "ios" ? { kind: "checking" } : { kind: "hidden" }
   );
@@ -97,6 +98,49 @@ export default function WatchStatusCard() {
           </span>
         )}
       </div>
+
+      {ok && (
+        <button
+          onClick={async () => {
+            setTestState("sending");
+            await sendWorkoutToWatch("Test Workout", [
+              {
+                id: "test-1",
+                name: "Bench Press",
+                targetReps: "6-8",
+                sets: [
+                  { reps: 8, weight: 60 },
+                  { reps: 8, weight: 60 },
+                  { reps: 6, weight: 65 },
+                ],
+              },
+              {
+                id: "test-2",
+                name: "Squat",
+                targetReps: "5",
+                sets: [
+                  { reps: 5, weight: 100 },
+                  { reps: 5, weight: 100 },
+                ],
+              },
+            ]);
+            setTestState("sent");
+            setTimeout(() => setTestState("idle"), 2500);
+          }}
+          className="w-full mt-3 py-2.5 rounded-[14px] text-sm font-semibold"
+          style={{
+            background: C.card2,
+            border: `1px solid ${C.border}`,
+            color: C.fg,
+          }}
+        >
+          {testState === "sending"
+            ? "Sending…"
+            : testState === "sent"
+            ? "Sent — check your watch"
+            : "Send test workout to watch"}
+        </button>
+      )}
     </div>
   );
 }

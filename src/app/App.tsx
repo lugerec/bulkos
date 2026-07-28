@@ -42,6 +42,7 @@ import {
 } from "../features/workout/utils/workoutRecommendation";
 import type { Goal } from "../types/profile";
 import { useAppStore } from "../store/appStore";
+import { useActiveWorkoutStore } from "../store/activeWorkoutStore";
 
 import "../config/firebase";
 
@@ -952,6 +953,7 @@ export default function App() {
   if (!profile?.onboardingCompleted) return <OnboardingScreen />;
 
   const showNav = mainScreens.includes(screen);
+  const activeWorkout = useActiveWorkoutStore();
 
   // On a real phone (or inside the native Capacitor shell) the app fills the
   // actual screen; the decorative phone frame + fake notch/status bar are a
@@ -1054,6 +1056,35 @@ export default function App() {
           )}
           {screen === "settings" && <SettingsScreen onNavigate={navigate} />}
         </div>
+
+        {/* Resume-workout FAB — floats above the nav on any screen except the
+            workout itself, whenever a session is live. */}
+        {activeWorkout.active && screen !== "workout" && (
+          <button
+            onClick={() => navigate("workout")}
+            aria-label="Resume workout"
+            className="absolute flex items-center gap-2 px-4 py-3 rounded-full"
+            style={{
+              bottom: showNav
+                ? "calc(90px + env(safe-area-inset-bottom, 0px))"
+                : "calc(20px + env(safe-area-inset-bottom, 0px))",
+              right: 16,
+              background: C.accent,
+              color: "#0A0A0B",
+              boxShadow: "0 8px 28px rgba(204,242,50,0.4)",
+              zIndex: 40,
+            }}
+          >
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{
+                background: "#0A0A0B",
+                animation: "pulse 1.5s ease-in-out infinite",
+              }}
+            />
+            <span className="text-sm font-bold">Resume</span>
+          </button>
+        )}
 
         {/* Bottom navigation */}
         {showNav && <BottomNav active={screen} onNavigate={navigate} />}

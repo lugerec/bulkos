@@ -34,6 +34,7 @@ struct RootView: View {
 /// Pre-start preview: workout name, set count, big Start button.
 struct PreviewView: View {
     @EnvironmentObject var session: WorkoutSession
+    @ObservedObject private var bridge = WatchBridge.shared
 
     var body: some View {
         ScrollView {
@@ -54,6 +55,16 @@ struct PreviewView: View {
                     Text("Start a workout on your iPhone to send it here.")
                         .font(.system(size: 11))
                         .foregroundStyle(Theme.fg3)
+
+                    HStack(spacing: 5) {
+                        Circle()
+                            .fill(bridge.isReachable ? Theme.accent : Theme.fg3)
+                            .frame(width: 7, height: 7)
+                        Text(bridge.isReachable ? "iPhone connected" : "iPhone not reachable")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Theme.fg3)
+                    }
+                    .padding(.top, 2)
                 }
 
                 Button {
