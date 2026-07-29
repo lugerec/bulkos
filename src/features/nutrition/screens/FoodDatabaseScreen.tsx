@@ -31,7 +31,20 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
   const [manualOpen, setManualOpen] = useState(false);
   const [manualCode, setManualCode] = useState("");
 
+  // Custom product form, shown when a barcode isn't on Open Food Facts.
+  const [lastBarcode, setLastBarcode] = useState("");
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customForm, setCustomForm] = useState({
+    name: "",
+    calories: "",
+    protein: "",
+    carbs: "",
+    fat: "",
+  });
+  const saveFood = useFoodStore((state) => state.saveFood);
+
   async function lookupBarcode(barcode: string) {
+    setLastBarcode(barcode);
     setScanState("looking");
     const item = await lookupOffBarcode(barcode);
 
@@ -40,6 +53,45 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
       setSelectedFood(item);
     } else {
       setScanState("notfound");
+    }
+  }
+
+  function openCustomForm() {
+    setScanState("idle");
+    setCustomForm({ name: "", calories: "", protein: "", carbs: "", fat: "" });
+    setCustomOpen(true);
+  }
+
+  async function saveCustomProduct() {
+    const name = customForm.name.trim();
+    const calories = Number(customForm.calories);
+
+    if (!name || !Number.isFinite(calories) || calories < 0) return;
+
+    const num = (value: string) => {
+      const n = Number(value);
+      return Number.isFinite(n) && n >= 0 ? Math.round(n * 10) / 10 : 0;
+    };
+
+    const item: FoodItem = {
+      id: lastBarcode ? `off-${lastBarcode}` : `custom-${Date.now()}`,
+      name,
+      category: "other",
+      calories: Math.round(calories),
+      protein: num(customForm.protein),
+      carbs: num(customForm.carbs),
+      fat: num(customForm.fat),
+      serving: 100,
+      unit: "g",
+      verified: false,
+    };
+
+    try {
+      await saveFood(item);
+      setCustomOpen(false);
+      setSelectedFood(item);
+    } catch {
+      // saveFood surfaces sign-in errors; leave the form open to retry.
     }
   }
 
@@ -228,16 +280,101 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
           <p className="text-sm" style={{ color: C.fg2 }}>
-            Barcode not found on Open Food Facts.
+            Not on Open Food Facts.
           </p>
 
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={openCustomForm}
+              className="text-xs font-bold px-3 py-1.5 rounded-lg"
+              style={{ background: C.accent, color: "#0A0A0B" }}
+            >
+              Add manually
+            </button>
+
+            <button
+              onClick={() => setScanState("idle")}
+              aria-label="Dismiss"
+              className="w-6 h-6 flex items-center justify-center"
+              style={{ color: C.fg3 }}
+            >
+              <X size={15} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {customOpen && (
+        <div
+          className="rounded-[16px] p-4 mb-4"
+          style={{ background: C.card, border: `1px solid ${C.accent}` }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-bold" style={{ color: C.fg }}>
+              New product{lastBarcode ? ` · ${lastBarcode}` : ""}
+            </p>
+
+            <button
+              onClick={() => setCustomOpen(false)}
+              aria-label="Close"
+              className="w-6 h-6 flex items-center justify-center"
+              style={{ color: C.fg3 }}
+            >
+              <X size={15} />
+            </button>
+          </div>
+
+          <input
+            value={customForm.name}
+            onChange={(event) =>
+              setCustomForm((form) => ({ ...form, name: event.target.value }))
+            }
+            autoFocus
+            placeholder="Product name"
+            className="w-full bg-transparent outline-none text-sm px-3 py-2.5 rounded-[10px] mb-3"
+            style={{ color: C.fg, border: `1px solid ${C.border}` }}
+          />
+
+          <p className="text-[11px] mb-2" style={{ color: C.fg3 }}>
+            Per 100 g
+          </p>
+
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            <CustomField
+              label="kcal"
+              value={customForm.calories}
+              onChange={(v) =>
+                setCustomForm((form) => ({ ...form, calories: v }))
+              }
+            />
+            <CustomField
+              label="P"
+              value={customForm.protein}
+              onChange={(v) =>
+                setCustomForm((form) => ({ ...form, protein: v }))
+              }
+            />
+            <CustomField
+              label="C"
+              value={customForm.carbs}
+              onChange={(v) =>
+                setCustomForm((form) => ({ ...form, carbs: v }))
+              }
+            />
+            <CustomField
+              label="F"
+              value={customForm.fat}
+              onChange={(v) => setCustomForm((form) => ({ ...form, fat: v }))}
+            />
+          </div>
+
           <button
-            onClick={() => setScanState("idle")}
-            aria-label="Dismiss"
-            className="w-6 h-6 flex items-center justify-center flex-shrink-0"
-            style={{ color: C.fg3 }}
+            onClick={saveCustomProduct}
+            disabled={!customForm.name.trim() || !customForm.calories.trim()}
+            className="w-full py-3 rounded-[14px] font-bold text-sm disabled:opacity-50"
+            style={{ background: C.accent, color: "#0A0A0B" }}
           >
-            <X size={15} />
+            Save & log
           </button>
         </div>
       )}
@@ -393,6 +530,38 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function CustomField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div
+      className="rounded-xl px-2.5 py-2"
+      style={{ background: C.card2, border: `1px solid ${C.border}` }}
+    >
+      <span className="text-[10px] font-bold" style={{ color: C.fg3 }}>
+        {label}
+      </span>
+
+      <input
+        value={value}
+        onChange={(event) =>
+          onChange(event.target.value.replace(/[^0-9.]/g, ""))
+        }
+        inputMode="decimal"
+        placeholder="0"
+        className="w-full bg-transparent outline-none text-sm mt-0.5"
+        style={{ color: C.fg }}
+      />
     </div>
   );
 }

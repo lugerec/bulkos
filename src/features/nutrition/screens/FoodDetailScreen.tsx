@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, Minus, Plus } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Minus, Plus, Bookmark, Check } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import type { FoodItem } from "@/types/food";
 import { useAuthStore } from "@/store/authStore";
 import { useAppStore } from "@/store/appStore";
+import { useFoodStore } from "@/store/foodStore";
 import { addFoodToMeal } from "@/services/logService";
 import { toDateKey } from "@/lib/date";
 
@@ -34,6 +35,30 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
   const [grams, setGrams] = useState(100);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const saveFood = useFoodStore((state) => state.saveFood);
+  const alreadySaved = useFoodStore((state) => state.hasFood(food.id));
+  const [savedToDb, setSavedToDb] = useState(false);
+  const [savingToDb, setSavingToDb] = useState(false);
+
+  const inMyFoods = alreadySaved || savedToDb;
+
+  const handleSaveToMyFoods = async () => {
+    if (!user || savingToDb || inMyFoods) return;
+
+    try {
+      setSavingToDb(true);
+      setError(null);
+      await saveFood(food);
+      setSavedToDb(true);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to save food"
+      );
+    } finally {
+      setSavingToDb(false);
+    }
+  };
 
   const baseServing = food.serving > 0 ? food.serving : 100;
   const multiplier = grams / baseServing;
@@ -299,6 +324,31 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
           </p>
         </div>
       )}
+
+      <button
+        type="button"
+        onClick={handleSaveToMyFoods}
+        disabled={!user || savingToDb || inMyFoods}
+        className="w-full py-3.5 rounded-[20px] font-bold text-sm mb-3 flex items-center justify-center gap-2"
+        style={{
+          background: C.card,
+          border: `1px solid ${inMyFoods ? C.accent : C.border}`,
+          color: inMyFoods ? C.accent : C.fg,
+          opacity: !user ? 0.6 : 1,
+        }}
+      >
+        {inMyFoods ? (
+          <>
+            <Check size={16} />
+            In your foods
+          </>
+        ) : (
+          <>
+            <Bookmark size={16} />
+            {savingToDb ? "Saving..." : "Save to my foods"}
+          </>
+        )}
+      </button>
 
       <button
         type="button"

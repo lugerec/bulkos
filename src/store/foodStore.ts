@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import type { FoodItem } from "../types/food";
-import { getFoods } from "../services/foodService";
+import { getFoods, getUserFoods, saveUserFood } from "../services/foodService";
+import { mergeFoods } from "@/lib/mergeFoods";
+import { useAuthStore } from "./authStore";
 
 type FoodState = {
   foods: FoodItem[];
@@ -8,9 +10,17 @@ type FoodState = {
   error: string | null;
 
   loadFoods: () => Promise<void>;
+  /** Persist a food to the signed-in user's own database and merge it in. */
+  saveFood: (food: FoodItem) => Promise<void>;
+  /** True once a food with this id is in the local list. */
+  hasFood: (id: string) => boolean;
 };
 
-export const useFoodStore = create<FoodState>((set) => ({
+function currentUid(): string | null {
+  return useAuthStore.getState().user?.uid ?? null;
+}
+
+export const useFoodStore = create<FoodState>((set, get) => ({
   foods: [],
   loading: false,
   error: null,
@@ -19,12 +29,14 @@ export const useFoodStore = create<FoodState>((set) => ({
     try {
       set({ loading: true, error: null });
 
-      const foods = await getFoods();
+      const uid = currentUid();
 
-      set({
-        foods,
-        loading: false,
-      });
+      const [shared, userFoods] = await Promise.all([
+        getFoods(),
+        uid ? getUserFoods(uid) : Promise.resolve<FoodItem[]>([]),
+      ]);
+
+      set({ foods: mergeFoods(shared, userFoods), loading: false });
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Failed to load foods",
@@ -32,4 +44,16 @@ export const useFoodStore = create<FoodState>((set) => ({
       });
     }
   },
+
+  saveFood: async (food) => {
+    const uid = currentUid();
+    if (!uid) throw new Error("Not signed in");
+
+    await saveUserFood(uid, food);
+
+    // Merge into the local list so it is searchable immediately, even offline.
+    set({ foods: mergeFoods(get().foods, [food]) });
+  },
+
+  hasFood: (id) => get().foods.some((food) => food.id === id),
 }));
