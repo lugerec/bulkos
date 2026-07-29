@@ -85,8 +85,9 @@ export default function WorkoutScreen() {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [restTimer, setRestTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const [paused, setPaused] = useState(false);
+  // Timer display ticker — the source of truth is the wall-clock timing in
+  // useActiveWorkoutStore, so elapsed stays correct across navigation/background.
+  const [, forceTick] = useState(0);
   const [confirmStop, setConfirmStop] = useState(false);
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -97,7 +98,11 @@ export default function WorkoutScreen() {
   const startSession = useAppStore((s) => s.startSession);
   const beginActiveWorkout = useActiveWorkoutStore((s) => s.begin);
   const syncActiveWorkout = useActiveWorkoutStore((s) => s.sync);
+  const pauseActiveWorkout = useActiveWorkoutStore((s) => s.pause);
+  const resumeActiveWorkout = useActiveWorkoutStore((s) => s.resume);
+  const paused = useActiveWorkoutStore((s) => s.paused);
   const clearActiveWorkout = useActiveWorkoutStore((s) => s.clear);
+  const elapsed = useActiveWorkoutStore.getState().elapsedSeconds();
 
   /** Start the session and push it to a paired Apple Watch (no-op if none). */
   const beginSession = () => {
@@ -130,10 +135,8 @@ export default function WorkoutScreen() {
     syncActiveWorkout({
       exercises,
       completed: Array.from(completed),
-      elapsed,
-      paused,
     });
-  }, [workoutStarted, done, exercises, completed, elapsed, paused]);
+  }, [workoutStarted, done, exercises, completed]);
 
   // Sets ticked off on the Apple Watch mirror straight into the session.
   useEffect(() => {
@@ -162,16 +165,12 @@ export default function WorkoutScreen() {
     if (live.active) {
       setExercises(live.exercises);
       setCompleted(new Set(live.completed));
-      setElapsed(live.elapsed);
-      setPaused(live.paused);
       setPreviewing(true);
       startSession();
       return;
     }
 
     endSession();
-    setElapsed(0);
-    setPaused(false);
     setConfirmStop(false);
     setDone(false);
     setIsResting(false);
@@ -238,7 +237,6 @@ export default function WorkoutScreen() {
     );
 
     setCompleted(new Set());
-    setElapsed(0);
     setDone(false);
     setPrs({});
     setComparison(null);
@@ -248,7 +246,7 @@ export default function WorkoutScreen() {
     if (!workoutStarted || done || paused) return;
 
     const t = setInterval(() => {
-      setElapsed((e) => e + 1);
+      forceTick((n) => n + 1);
     }, 1000);
 
     return () => clearInterval(t);
@@ -1060,8 +1058,14 @@ export default function WorkoutScreen() {
           onClick={() => {
             setDone(false);
             setCompleted(new Set());
-            setElapsed(0);
             setPrs({});
+            if (workout) {
+              beginActiveWorkout({
+                name: workout.name,
+                exercises,
+                templateId: workout.id,
+              });
+            }
           }}
           className="w-full py-4 rounded-[20px] font-semibold card-lit"
           style={{
@@ -1120,7 +1124,7 @@ export default function WorkoutScreen() {
         {workoutStarted && !done && (
           <div className="flex gap-2 mt-3">
             <button
-              onClick={() => setPaused((p) => !p)}
+              onClick={() => (paused ? resumeActiveWorkout() : pauseActiveWorkout())}
               className="flex-1 py-2.5 rounded-[14px] text-sm font-bold flex items-center justify-center gap-1.5"
               style={{
                 background: paused ? C.accent : C.card,
@@ -1144,8 +1148,6 @@ export default function WorkoutScreen() {
                 clearSelected();
                 setPreviewing(false);
                 setCompleted(new Set());
-                setElapsed(0);
-                setPaused(false);
                 setConfirmStop(false);
               }}
               className="flex-1 py-2.5 rounded-[14px] text-sm font-bold flex items-center justify-center gap-1.5"
