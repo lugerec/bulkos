@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   orderBy,
@@ -54,4 +55,35 @@ export async function saveUserFood(
   const { id, ...data } = food;
 
   await setDoc(doc(db, "users", uid, "customFoods", id), data);
+}
+
+/** A user's favorite foods under users/{uid}/favoriteFoods for quick-add. */
+export async function getFavoriteFoods(uid: string): Promise<FoodItem[]> {
+  const q = query(
+    collection(db, "users", uid, "favoriteFoods"),
+    orderBy("name")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...(doc.data() as Omit<FoodItem, "id">),
+  }));
+}
+
+export async function addFavoriteFood(
+  uid: string,
+  food: FoodItem
+): Promise<void> {
+  const { id, ...data } = food;
+
+  await setDoc(doc(db, "users", uid, "favoriteFoods", id), data);
+}
+
+export async function removeFavoriteFood(
+  uid: string,
+  foodId: string
+): Promise<void> {
+  await deleteDoc(doc(db, "users", uid, "favoriteFoods", foodId));
 }

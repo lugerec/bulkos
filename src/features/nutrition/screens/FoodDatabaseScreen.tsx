@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Globe, Search, CheckCircle2, ScanLine, X } from "lucide-react";
+import { ArrowLeft, Globe, Search, CheckCircle2, ScanLine, X, Star, Plus, Clock } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useFoodStore } from "@/store/foodStore";
+import { useAppStore } from "@/store/appStore";
+import { useAuthStore } from "@/store/authStore";
+import { useDailyLogStore } from "@/store/dailyLogStore";
 import {
   searchOpenFoodFacts,
   lookupOffBarcode,
@@ -11,11 +14,30 @@ import {
   scanBarcode,
   isBarcodeScanSupported,
 } from "@/services/barcodeScanner";
-import type { FoodItem } from "@/types/food";
+import {
+  addFoodToMeal,
+  logPortion,
+  getRecentLoggedFoods,
+} from "@/services/logService";
+import { toDateKey } from "@/lib/date";
+import type { FoodItem, RecentFood } from "@/types/food";
 import FoodDetailScreen from "./FoodDetailScreen";
 
 const ONLINE_SEARCH_MIN_CHARS = 3;
 const ONLINE_SEARCH_DEBOUNCE_MS = 500;
+
+const MEAL_LABELS = {
+  breakfast: "Breakfast",
+  snack: "Morning Snack",
+  lunch: "Lunch",
+  preWorkout: "Pre-Workout",
+  postWorkout: "Post-Workout",
+  dinner: "Dinner",
+} as const;
+
+function getTodayKey() {
+  return toDateKey(new Date());
+}
 
 export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) {
   const { foods, loadFoods, loading } = useFoodStore();
@@ -42,6 +64,66 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
     fat: "",
   });
   const saveFood = useFoodStore((state) => state.saveFood);
+  const favorites = useFoodStore((state) => state.favorites);
+  const loadFavorites = useFoodStore((state) => state.loadFavorites);
+
+  const selectedMeal = useAppStore((state) => state.selectedMeal);
+  const uid = useAuthStore((state) => state.user?.uid);
+  const loadDailyLog = useDailyLogStore((state) => state.loadDailyLog);
+
+  const [recents, setRecents] = useState<RecentFood[]>([]);
+  // Key of the row that just got quick-added, for a brief "Added" flash.
+  const [addedKey, setAddedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
+
+  useEffect(() => {
+    if (!uid) return;
+
+    let cancelled = false;
+    getRecentLoggedFoods(uid).then((items) => {
+      if (!cancelled) setRecents(items);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [uid]);
+
+  function flashAdded(key: string) {
+    setAddedKey(key);
+    setTimeout(() => {
+      setAddedKey((current) => (current === key ? null : current));
+    }, 1400);
+  }
+
+  async function quickAddFavorite(food: FoodItem) {
+    if (!uid) return;
+
+    const grams = food.serving > 0 ? food.serving : 100;
+
+    await addFoodToMeal({
+      uid,
+      date: getTodayKey(),
+      meal: selectedMeal,
+      food,
+      grams,
+    });
+
+    await loadDailyLog(uid, getTodayKey());
+    flashAdded(`fav-${food.id}`);
+  }
+
+  async function quickAddRecent(recent: RecentFood, index: number) {
+    if (!uid) return;
+
+    await logPortion(uid, getTodayKey(), selectedMeal, recent);
+
+    await loadDailyLog(uid, getTodayKey());
+    flashAdded(`recent-${recent.foodId || recent.name}-${index}`);
+  }
 
   async function lookupBarcode(barcode: string) {
     setLastBarcode(barcode);
@@ -379,6 +461,68 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
         </div>
       )}
 
+      {!search.trim() && (favorites.length > 0 || recents.length > 0) && (
+        <div className="mb-5">
+          <p className="text-[11px] mb-3" style={{ color: C.fg3 }}>
+            Quick-add to {MEAL_LABELS[selectedMeal]}
+          </p>
+
+          {favorites.length > 0 && (
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Star size={13} color={C.accent} fill={C.accent} />
+                <p className="text-xs font-bold" style={{ color: C.fg2 }}>
+                  Favorites
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {favorites.map((food) => (
+                  <QuickRow
+                    key={food.id}
+                    title={food.name}
+                    subtitle={`${Math.round(food.calories)} kcal · ${
+                      food.serving > 0 ? food.serving : 100
+                    }${food.unit}`}
+                    added={addedKey === `fav-${food.id}`}
+                    onOpen={() => setSelectedFood(food)}
+                    onQuickAdd={() => quickAddFavorite(food)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {recents.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Clock size={13} color={C.fg3} />
+                <p className="text-xs font-bold" style={{ color: C.fg2 }}>
+                  Recent
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {recents.map((recent, index) => (
+                  <QuickRow
+                    key={`${recent.foodId || recent.name}-${index}`}
+                    title={recent.name}
+                    subtitle={`${Math.round(recent.calories)} kcal · ${
+                      recent.grams
+                    }g`}
+                    added={
+                      addedKey ===
+                      `recent-${recent.foodId || recent.name}-${index}`
+                    }
+                    onQuickAdd={() => quickAddRecent(recent, index)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {loading && (
         <div className="flex flex-col gap-2">
           <div className="skeleton" style={{ height: 64 }} />
@@ -530,6 +674,60 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function QuickRow({
+  title,
+  subtitle,
+  added,
+  onOpen,
+  onQuickAdd,
+}: {
+  title: string;
+  subtitle: string;
+  added: boolean;
+  onOpen?: () => void;
+  onQuickAdd: () => void;
+}) {
+  const Info = (
+    <div className="min-w-0 text-left">
+      <p className="text-sm font-bold truncate" style={{ color: C.fg }}>
+        {title}
+      </p>
+      <p className="text-xs" style={{ color: C.fg3 }}>
+        {subtitle}
+      </p>
+    </div>
+  );
+
+  return (
+    <div
+      className="flex items-center justify-between gap-3 pl-4 pr-2 py-2.5 rounded-[14px]"
+      style={{ background: C.card, border: `1px solid ${C.border}` }}
+    >
+      {onOpen ? (
+        <button onClick={onOpen} className="min-w-0 flex-1">
+          {Info}
+        </button>
+      ) : (
+        <div className="min-w-0 flex-1">{Info}</div>
+      )}
+
+      <button
+        onClick={onQuickAdd}
+        disabled={added}
+        aria-label={`Add ${title}`}
+        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{
+          background: added ? C.card2 : C.accent,
+          color: added ? C.accent : "#0A0A0B",
+          border: added ? `1px solid ${C.accent}` : "none",
+        }}
+      >
+        {added ? <CheckCircle2 size={17} /> : <Plus size={18} />}
+      </button>
     </div>
   );
 }

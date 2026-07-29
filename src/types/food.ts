@@ -38,3 +38,13 @@ export type LoggedFood = {
     | "dinner";
   createdAt: Date;
 };
+/** A previously logged portion, surfaced for one-tap re-logging. */
+export type RecentFood = {
+  foodId: string;
+  name: string;
+  grams: number;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};

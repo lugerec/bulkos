@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, Minus, Plus, Bookmark, Check } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Minus, Plus, Bookmark, Check, Star } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import type { FoodItem } from "@/types/food";
@@ -40,6 +40,18 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
   const alreadySaved = useFoodStore((state) => state.hasFood(food.id));
   const [savedToDb, setSavedToDb] = useState(false);
   const [savingToDb, setSavingToDb] = useState(false);
+
+  const toggleFavorite = useFoodStore((state) => state.toggleFavorite);
+  const isFavorite = useFoodStore((state) => state.isFavorite(food.id));
+
+  const handleToggleFavorite = async () => {
+    if (!user) return;
+    try {
+      await toggleFavorite(food);
+    } catch {
+      // Optimistic; store already reverted nothing critical.
+    }
+  };
 
   const inMyFoods = alreadySaved || savedToDb;
 
@@ -106,18 +118,40 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
 
   return (
     <div className="px-5 pb-8 pt-4">
-      <button
-        type="button"
-        onClick={onBack}
-        className="w-10 h-10 rounded-full flex items-center justify-center mb-5"
-        style={{
-          background: C.card,
-          border: `1px solid ${C.border}`,
-        }}
-        aria-label="Go back"
-      >
-        <ArrowLeft size={18} color={C.fg} />
-      </button>
+      <div className="flex items-center justify-between mb-5">
+        <button
+          type="button"
+          onClick={onBack}
+          className="w-10 h-10 rounded-full flex items-center justify-center"
+          style={{
+            background: C.card,
+            border: `1px solid ${C.border}`,
+          }}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={18} color={C.fg} />
+        </button>
+
+        <button
+          type="button"
+          onClick={handleToggleFavorite}
+          disabled={!user}
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          aria-pressed={isFavorite}
+          className="w-10 h-10 rounded-full flex items-center justify-center"
+          style={{
+            background: C.card,
+            border: `1px solid ${isFavorite ? C.accent : C.border}`,
+            opacity: !user ? 0.6 : 1,
+          }}
+        >
+          <Star
+            size={18}
+            color={isFavorite ? C.accent : C.fg3}
+            fill={isFavorite ? C.accent : "none"}
+          />
+        </button>
+      </div>
 
       <div
         className="rounded-[20px] p-5 mb-4 card-lit"

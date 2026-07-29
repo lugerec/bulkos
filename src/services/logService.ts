@@ -10,7 +10,8 @@ import {
   import { db } from "@/services/db";
   import { toDateKey } from "@/lib/date";
   import type { MealType } from "@/store/appStore";
-  import type { FoodItem, LoggedFood } from "@/types/food";
+  import type { FoodItem, LoggedFood, RecentFood } from "@/types/food";
+  import { dedupeRecentFoods } from "@/lib/recentFoods";
   
   type AddFoodToMealInput = {
     uid: string;
@@ -154,5 +155,59 @@ export async function getDailyMacros(
       fat: sum.fat + (food.fat ?? 0),
     }),
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+}
+
+/**
+ * Distinct recent portions across the last `days`, most recent first — the
+ * source for one-tap quick-add. Reuses the daily meal reads and collapses
+ * duplicates by food.
+ */
+export async function getRecentLoggedFoods(
+  uid: string,
+  days = 7,
+  limit = 8
+): Promise<RecentFood[]> {
+  const dates = Array.from({ length: days }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - index);
+    return toDateKey(date);
+  });
+
+  const perDay = await Promise.all(
+    dates.map(async (date) => {
+      const meals = await Promise.all(
+        ALL_MEAL_TYPES.map((meal) => getMealFoods(uid, date, meal))
+      );
+      return meals.flat();
+    })
+  );
+
+  return dedupeRecentFoods(perDay.flat(), limit);
+}
+
+/**
+ * Log an already-scaled portion directly (used by quick-add, where the grams
+ * and macros are known up front rather than derived from a per-serving food).
+ */
+export async function logPortion(
+  uid: string,
+  date: string,
+  meal: MealType,
+  portion: RecentFood
+): Promise<void> {
+  await addDoc(
+    collection(db, "users", uid, "dailyLogs", date, "meals", meal, "items"),
+    {
+      foodId: portion.foodId,
+      name: portion.name,
+      grams: portion.grams,
+      calories: portion.calories,
+      protein: portion.protein,
+      carbs: portion.carbs,
+      fat: portion.fat,
+      mealType: meal,
+      createdAt: serverTimestamp(),
+    }
   );
 }
