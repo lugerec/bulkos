@@ -21,6 +21,7 @@ type OffSearchResponse = {
 };
 
 const SEARCH_URL = "https://world.openfoodfacts.org/cgi/search.pl";
+const PRODUCT_URL = "https://world.openfoodfacts.org/api/v2/product";
 const PAGE_SIZE = 15;
 
 function round1(value: number): number {
@@ -99,5 +100,43 @@ export async function searchOpenFoodFacts(
       .slice(0, 8);
   } catch {
     return [];
+  }
+}
+
+type OffProductResponse = {
+  status?: number;
+  product?: OffProduct;
+};
+
+/**
+ * Look up a single Open Food Facts product by barcode (EAN/UPC), mapped to a
+ * FoodItem. Returns null when the product is unknown, incomplete, or the
+ * request fails — the caller decides how to surface "not found".
+ */
+export async function lookupOffBarcode(
+  barcode: string
+): Promise<FoodItem | null> {
+  const code = barcode.trim();
+  if (!code) return null;
+
+  const params = new URLSearchParams({
+    fields: "code,product_name,brands,nutriments",
+  });
+
+  try {
+    const response = await fetch(
+      `${PRODUCT_URL}/${encodeURIComponent(code)}.json?${params.toString()}`
+    );
+
+    if (!response.ok) return null;
+
+    const data: OffProductResponse = await response.json();
+
+    // OFF returns status 0 with no product for unknown barcodes.
+    if (data.status !== 1 || !data.product) return null;
+
+    return mapOffProductToFoodItem(data.product);
+  } catch {
+    return null;
   }
 }

@@ -1,9 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Globe, Search, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Globe, Search, CheckCircle2, ScanLine, X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useFoodStore } from "@/store/foodStore";
-import { searchOpenFoodFacts } from "@/services/openFoodFactsService";
+import {
+  searchOpenFoodFacts,
+  lookupOffBarcode,
+} from "@/services/openFoodFactsService";
+import {
+  scanBarcode,
+  isBarcodeScanSupported,
+} from "@/services/barcodeScanner";
 import type { FoodItem } from "@/types/food";
 import FoodDetailScreen from "./FoodDetailScreen";
 
@@ -16,6 +23,54 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [onlineResults, setOnlineResults] = useState<FoodItem[]>([]);
   const [onlineLoading, setOnlineLoading] = useState(false);
+
+  // Barcode: "scanning" (camera open) → "looking" (OFF lookup) → "notfound".
+  const [scanState, setScanState] = useState<
+    "idle" | "scanning" | "looking" | "notfound"
+  >("idle");
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualCode, setManualCode] = useState("");
+
+  async function lookupBarcode(barcode: string) {
+    setScanState("looking");
+    const item = await lookupOffBarcode(barcode);
+
+    if (item) {
+      setScanState("idle");
+      setSelectedFood(item);
+    } else {
+      setScanState("notfound");
+    }
+  }
+
+  async function handleScanClick() {
+    setScanState("idle");
+
+    // No camera (web/dev): fall back to typing the number in.
+    if (!isBarcodeScanSupported()) {
+      setManualOpen(true);
+      return;
+    }
+
+    setScanState("scanning");
+    const result = await scanBarcode();
+
+    if (result.status === "ok") {
+      await lookupBarcode(result.barcode);
+    } else {
+      // cancelled / denied / error — just return to the list quietly.
+      setScanState("idle");
+    }
+  }
+
+  async function submitManualCode() {
+    const code = manualCode.trim();
+    if (!code) return;
+
+    setManualOpen(false);
+    setManualCode("");
+    await lookupBarcode(code);
+  }
 
   useEffect(() => {
     loadFoods();
@@ -89,20 +144,103 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
         Search your foods and Open Food Facts
       </p>
 
-      <div
-        className="flex items-center gap-3 px-4 py-3 rounded-[14px] mb-5"
-        style={{ background: C.card, border: `1px solid ${C.border}` }}
-      >
-        <Search size={16} color={C.fg3} />
+      <div className="flex items-center gap-2 mb-3">
+        <div
+          className="flex items-center gap-3 px-4 py-3 rounded-[14px] flex-1"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          <Search size={16} color={C.fg3} />
 
-        <input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search food..."
-          className="flex-1 bg-transparent outline-none text-sm"
-          style={{ color: C.fg }}
-        />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search food..."
+            className="flex-1 bg-transparent outline-none text-sm"
+            style={{ color: C.fg }}
+          />
+        </div>
+
+        <button
+          onClick={handleScanClick}
+          disabled={scanState === "scanning" || scanState === "looking"}
+          aria-label="Scan barcode"
+          className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center flex-shrink-0 disabled:opacity-60"
+          style={{ background: C.accent, color: "#0A0A0B" }}
+        >
+          <ScanLine size={19} />
+        </button>
       </div>
+
+      {manualOpen && (
+        <div
+          className="flex items-center gap-2 px-4 py-2.5 rounded-[14px] mb-3"
+          style={{ background: C.card, border: `1px solid ${C.accent}` }}
+        >
+          <ScanLine size={16} color={C.fg3} />
+
+          <input
+            value={manualCode}
+            onChange={(event) =>
+              setManualCode(event.target.value.replace(/[^0-9]/g, ""))
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter") submitManualCode();
+            }}
+            inputMode="numeric"
+            autoFocus
+            placeholder="Enter barcode number…"
+            className="flex-1 bg-transparent outline-none text-sm"
+            style={{ color: C.fg }}
+          />
+
+          <button
+            onClick={submitManualCode}
+            disabled={!manualCode.trim()}
+            className="text-xs font-bold px-3 py-1.5 rounded-lg disabled:opacity-50"
+            style={{ background: C.accent, color: "#0A0A0B" }}
+          >
+            Look up
+          </button>
+
+          <button
+            onClick={() => {
+              setManualOpen(false);
+              setManualCode("");
+            }}
+            aria-label="Close"
+            className="w-6 h-6 flex items-center justify-center flex-shrink-0"
+            style={{ color: C.fg3 }}
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
+
+      {(scanState === "scanning" || scanState === "looking") && (
+        <p className="text-sm mb-3" style={{ color: C.fg3 }}>
+          {scanState === "scanning" ? "Opening scanner…" : "Looking up barcode…"}
+        </p>
+      )}
+
+      {scanState === "notfound" && (
+        <div
+          className="flex items-center justify-between gap-3 px-4 py-3 rounded-[14px] mb-3"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          <p className="text-sm" style={{ color: C.fg2 }}>
+            Barcode not found on Open Food Facts.
+          </p>
+
+          <button
+            onClick={() => setScanState("idle")}
+            aria-label="Dismiss"
+            className="w-6 h-6 flex items-center justify-center flex-shrink-0"
+            style={{ color: C.fg3 }}
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
 
       {loading && (
         <div className="flex flex-col gap-2">
