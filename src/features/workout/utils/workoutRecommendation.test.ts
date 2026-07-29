@@ -736,4 +736,10 @@ describe("generateWorkoutTemplate — experience set bias", () => {
 
     expect(totalSets(a)).toBe(totalSets(b));
   });
+
+  it("generates a full hypertrophy session, not a token few exercises", () => {
+    expect(generateWorkoutTemplate("push", []).exercises).toHaveLength(8);
+    expect(generateWorkoutTemplate("pull", []).exercises).toHaveLength(7);
+    expect(generateWorkoutTemplate("legs", []).exercises).toHaveLength(8);
+  });
 });

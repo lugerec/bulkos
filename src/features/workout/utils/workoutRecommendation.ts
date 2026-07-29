@@ -699,35 +699,35 @@ const GENERATION_PLAN: Record<
   ReadonlyArray<{ muscle: MuscleGroup; count: number }>
 > = {
   push: [
-    { muscle: "chest", count: 2 },
-    { muscle: "shoulders", count: 2 },
-    { muscle: "triceps", count: 1 },
+    { muscle: "chest", count: 3 },
+    { muscle: "shoulders", count: 3 },
+    { muscle: "triceps", count: 2 },
   ],
   pull: [
-    { muscle: "back", count: 3 },
-    { muscle: "biceps", count: 2 },
+    { muscle: "back", count: 4 },
+    { muscle: "biceps", count: 3 },
   ],
   legs: [
-    { muscle: "legs", count: 3 },
-    { muscle: "glutes", count: 1 },
-    { muscle: "calves", count: 1 },
+    { muscle: "legs", count: 4 },
+    { muscle: "glutes", count: 2 },
+    { muscle: "calves", count: 2 },
   ],
   upper: [
     { muscle: "chest", count: 2 },
     { muscle: "back", count: 2 },
-    { muscle: "shoulders", count: 1 },
+    { muscle: "shoulders", count: 2 },
     { muscle: "biceps", count: 1 },
     { muscle: "triceps", count: 1 },
   ],
   lower: [
-    { muscle: "legs", count: 3 },
-    { muscle: "glutes", count: 1 },
-    { muscle: "calves", count: 1 },
+    { muscle: "legs", count: 4 },
+    { muscle: "glutes", count: 2 },
+    { muscle: "calves", count: 2 },
   ],
   fullBody: [
     { muscle: "legs", count: 2 },
-    { muscle: "chest", count: 1 },
-    { muscle: "back", count: 1 },
+    { muscle: "chest", count: 2 },
+    { muscle: "back", count: 2 },
     { muscle: "shoulders", count: 1 },
   ],
 };
