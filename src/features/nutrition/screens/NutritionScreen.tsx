@@ -33,6 +33,7 @@ export default function NutritionScreen({
   onNavigate: (s: Screen) => void;
 }) {
   const user = useAuthStore((s) => s.user);
+  const nutrition = useAuthStore((s) => s.profile)?.nutrition;
 
   const { foods, loadFoods, loading } = useFoodStore();
   const setSelectedMeal = useAppStore((s) => s.setSelectedMeal);
@@ -57,11 +58,13 @@ export default function NutritionScreen({
     onNavigate("food-db");
   };
 
+  // Mirror the dashboard: use the profile's computed macro targets, falling
+  // back to the same defaults so an unconfigured profile still renders.
   const goals = {
-    cal: 3100,
-    p: 220,
-    c: 310,
-    f: 85,
+    cal: nutrition?.calories ?? 3100,
+    p: nutrition?.protein ?? 220,
+    c: nutrition?.carbs ?? 310,
+    f: nutrition?.fat ?? 85,
   };
 
   return (
