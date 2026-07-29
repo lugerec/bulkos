@@ -14,7 +14,9 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/overhead-press/thumbnail.webp",
+      start: "/exercises/overhead-press/start.png",
+      finish: "/exercises/overhead-press/finish.png",
+      thumbnail: "/exercises/overhead-press/start.png",
     },
     progression: {
       minReps: 6,
@@ -58,7 +60,9 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/db-shoulder-press/thumbnail.webp",
+      start: "/exercises/db-shoulder-press/start.png",
+      finish: "/exercises/db-shoulder-press/finish.png",
+      thumbnail: "/exercises/db-shoulder-press/start.png",
     },
     progression: {
       minReps: 8,
@@ -100,7 +104,9 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/machine-shoulder-press/thumbnail.webp",
+      start: "/exercises/machine-shoulder-press/start.png",
+      finish: "/exercises/machine-shoulder-press/finish.png",
+      thumbnail: "/exercises/machine-shoulder-press/start.png",
     },
     progression: {
       minReps: 8,
@@ -142,7 +148,8 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/lateral-raise/thumbnail.webp",
+      start: "/exercises/lateral-raise/start.jpg",
+      thumbnail: "/exercises/lateral-raise/start.jpg",
     },
     progression: {
       minReps: 12,
@@ -183,7 +190,8 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/cable-lateral-raise/thumbnail.webp",
+      start: "/exercises/cable-lateral-raise/start.jpg",
+      thumbnail: "/exercises/cable-lateral-raise/start.jpg",
     },
     progression: {
       minReps: 12,
@@ -225,7 +233,9 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/rear-delt-fly/thumbnail.webp",
+      start: "/exercises/rear-delt-fly/start.png",
+      finish: "/exercises/rear-delt-fly/finish.png",
+      thumbnail: "/exercises/rear-delt-fly/start.png",
     },
     progression: {
       minReps: 12,
@@ -267,7 +277,8 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/face-pull/thumbnail.webp",
+      start: "/exercises/face-pull/start.webp",
+      thumbnail: "/exercises/face-pull/start.webp",
     },
     progression: {
       minReps: 12,

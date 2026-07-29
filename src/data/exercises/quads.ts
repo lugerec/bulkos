@@ -14,7 +14,9 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 6,
     media: {
-      thumbnail: "/exercises/squat/thumbnail.webp",
+      start: "/exercises/squat/start.jpg",
+      finish: "/exercises/squat/finish.jpg",
+      thumbnail: "/exercises/squat/start.jpg",
     },
     progression: {
       minReps: 5,
@@ -58,7 +60,8 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 6,
     media: {
-      thumbnail: "/exercises/front-squat/thumbnail.webp",
+      start: "/exercises/front-squat/start.webp",
+      thumbnail: "/exercises/front-squat/start.webp",
     },
     progression: {
       minReps: 5,
@@ -102,7 +105,8 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/leg-press/thumbnail.webp",
+      start: "/exercises/leg-press/start.webp",
+      thumbnail: "/exercises/leg-press/start.webp",
     },
     progression: {
       minReps: 8,
@@ -144,7 +148,9 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/hack-squat/thumbnail.webp",
+      start: "/exercises/hack-squat/start.png",
+      finish: "/exercises/hack-squat/finish.png",
+      thumbnail: "/exercises/hack-squat/start.png",
     },
     progression: {
       minReps: 8,
@@ -186,7 +192,8 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/bulgarian-split-squat/thumbnail.webp",
+      start: "/exercises/bulgarian-split-squat/start.png",
+      thumbnail: "/exercises/bulgarian-split-squat/start.png",
     },
     progression: {
       minReps: 8,
@@ -227,7 +234,9 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/leg-extension/thumbnail.webp",
+      start: "/exercises/leg-extension/start.webp",
+      finish: "/exercises/leg-extension/finish.png",
+      thumbnail: "/exercises/leg-extension/start.webp",
     },
     progression: {
       minReps: 12,
@@ -268,7 +277,9 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 20,
     media: {
-      thumbnail: "/exercises/walking-lunge/thumbnail.webp",
+      start: "/exercises/walking-lunge/start.png",
+      finish: "/exercises/walking-lunge/finish.png",
+      thumbnail: "/exercises/walking-lunge/start.png",
     },
     progression: {
       minReps: 16,
@@ -309,7 +320,8 @@ export const quadsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/step-up/thumbnail.webp",
+      start: "/exercises/step-up/start.png",
+      thumbnail: "/exercises/step-up/start.png",
     },
     progression: {
       minReps: 8,

@@ -13,7 +13,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 1,
     defaultReps: 30,
     media: {
-      thumbnail: "/exercises/walking/thumbnail.webp",
+      start: "/exercises/walking/start.png",
+      finish: "/exercises/walking/finish.png",
+      thumbnail: "/exercises/walking/start.png",
     },
     activation: {
       cardio: 100,
@@ -35,7 +37,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 1,
     defaultReps: 30,
     media: {
-      thumbnail: "/exercises/treadmill-walk/thumbnail.webp",
+      start: "/exercises/treadmill-walk/start.png",
+      finish: "/exercises/treadmill-walk/finish.png",
+      thumbnail: "/exercises/treadmill-walk/start.png",
     },
     activation: {
       cardio: 100,
@@ -57,7 +61,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 1,
     defaultReps: 20,
     media: {
-      thumbnail: "/exercises/running/thumbnail.webp",
+      start: "/exercises/running/start.png",
+      finish: "/exercises/running/finish.png",
+      thumbnail: "/exercises/running/start.png",
     },
     activation: {
       cardio: 100,
@@ -79,7 +85,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 1,
     defaultReps: 30,
     media: {
-      thumbnail: "/exercises/cycling/thumbnail.webp",
+      start: "/exercises/cycling/start.png",
+      finish: "/exercises/cycling/finish.png",
+      thumbnail: "/exercises/cycling/start.png",
     },
     activation: {
       cardio: 100,
@@ -100,7 +108,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 1,
     defaultReps: 20,
     media: {
-      thumbnail: "/exercises/rowing/thumbnail.webp",
+      start: "/exercises/rowing/start.png",
+      finish: "/exercises/rowing/finish.png",
+      thumbnail: "/exercises/rowing/start.png",
     },
     activation: {
       cardio: 100,
@@ -122,7 +132,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 1,
     defaultReps: 20,
     media: {
-      thumbnail: "/exercises/stairmaster/thumbnail.webp",
+      start: "/exercises/stairmaster/start.png",
+      finish: "/exercises/stairmaster/finish.png",
+      thumbnail: "/exercises/stairmaster/start.png",
     },
     activation: {
       cardio: 100,
@@ -145,7 +157,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 1,
     defaultReps: 25,
     media: {
-      thumbnail: "/exercises/elliptical/thumbnail.webp",
+      start: "/exercises/elliptical/start.png",
+      finish: "/exercises/elliptical/finish.png",
+      thumbnail: "/exercises/elliptical/start.png",
     },
     activation: {
       cardio: 100,
@@ -166,7 +180,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 5,
     defaultReps: 1,
     media: {
-      thumbnail: "/exercises/jump-rope/thumbnail.webp",
+      start: "/exercises/jump-rope/start.png",
+      finish: "/exercises/jump-rope/finish.png",
+      thumbnail: "/exercises/jump-rope/start.png",
     },
     activation: {
       cardio: 100,
@@ -188,7 +204,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/burpees/thumbnail.webp",
+      start: "/exercises/burpees/start.png",
+      finish: "/exercises/burpees/finish.png",
+      thumbnail: "/exercises/burpees/start.png",
     },
     activation: {
       cardio: 100,
@@ -209,7 +227,9 @@ export const cardioExercises: ExerciseDefinition[] = [
     defaultSets: 8,
     defaultReps: 1,
     media: {
-      thumbnail: "/exercises/assault-bike/thumbnail.webp",
+      start: "/exercises/assault-bike/start.png",
+      finish: "/exercises/assault-bike/finish.png",
+      thumbnail: "/exercises/assault-bike/start.png",
     },
     activation: {
       cardio: 100,

@@ -13,7 +13,8 @@ export const tricepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/triceps-pushdown/thumbnail.webp",
+      start: "/exercises/triceps-pushdown/start.jpg",
+      thumbnail: "/exercises/triceps-pushdown/start.jpg",
     },
     progression: {
       minReps: 10,
@@ -55,7 +56,8 @@ export const tricepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/overhead-triceps-extension/thumbnail.webp",
+      gif: "/exercises/overhead-triceps-extension/start.gif",
+      thumbnail: "/exercises/overhead-triceps-extension/start.gif",
     },
     progression: {
       minReps: 10,
@@ -97,7 +99,9 @@ export const tricepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/skull-crusher/thumbnail.webp",
+      start: "/exercises/skull-crusher/start.png",
+      finish: "/exercises/skull-crusher/finish.png",
+      thumbnail: "/exercises/skull-crusher/start.png",
     },
     progression: {
       minReps: 8,
@@ -139,7 +143,8 @@ export const tricepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/dip/thumbnail.webp",
+      start: "/exercises/dip/start.png",
+      thumbnail: "/exercises/dip/start.png",
     },
     progression: {
       minReps: 8,
@@ -182,7 +187,9 @@ export const tricepsExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/close-grip-bench-press/thumbnail.webp",
+      start: "/exercises/close-grip-bench-press/start.png",
+      finish: "/exercises/close-grip-bench-press/finish.png",
+      thumbnail: "/exercises/close-grip-bench-press/start.png",
     },
     progression: {
       minReps: 6,
@@ -224,7 +231,9 @@ export const tricepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/single-arm-pushdown/thumbnail.webp",
+      start: "/exercises/single-arm-pushdown/start.png",
+      finish: "/exercises/single-arm-pushdown/finish.png",
+      thumbnail: "/exercises/single-arm-pushdown/start.png",
     },
     progression: {
       minReps: 12,

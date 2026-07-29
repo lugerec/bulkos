@@ -17,7 +17,9 @@ export const absExercises: ExerciseDefinition[] = [
     defaultReps: 15,
   
     media: {
-      thumbnail: "/exercises/cable-crunch/thumbnail.webp",
+      start: "/exercises/cable-crunch/start.png",
+      finish: "/exercises/cable-crunch/finish.png",
+      thumbnail: "/exercises/cable-crunch/start.png",
     },
   
     progression: {

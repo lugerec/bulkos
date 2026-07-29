@@ -14,7 +14,8 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/pull-up/thumbnail.webp",
+      start: "/exercises/pull-up/start.png",
+      thumbnail: "/exercises/pull-up/start.png",
     },
     progression: {
       minReps: 6,
@@ -58,7 +59,8 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/lat-pulldown/thumbnail.webp",
+      start: "/exercises/lat-pulldown/start.png",
+      thumbnail: "/exercises/lat-pulldown/start.png",
     },
     progression: {
       minReps: 8,
@@ -101,7 +103,9 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/barbell-row/thumbnail.webp",
+      start: "/exercises/barbell-row/start.png",
+      finish: "/exercises/barbell-row/finish.png",
+      thumbnail: "/exercises/barbell-row/start.png",
     },
     progression: {
       minReps: 6,
@@ -145,7 +149,8 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/db-row/thumbnail.webp",
+      start: "/exercises/db-row/start.png",
+      thumbnail: "/exercises/db-row/start.png",
     },
     progression: {
       minReps: 8,
@@ -187,7 +192,9 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/seated-cable-row/thumbnail.webp",
+      start: "/exercises/seated-cable-row/start.png",
+      finish: "/exercises/seated-cable-row/finish.png",
+      thumbnail: "/exercises/seated-cable-row/start.png",
     },
     progression: {
       minReps: 8,
@@ -229,7 +236,9 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/chest-supported-row/thumbnail.webp",
+      start: "/exercises/chest-supported-row/start.png",
+      finish: "/exercises/chest-supported-row/finish.png",
+      thumbnail: "/exercises/chest-supported-row/start.png",
     },
     progression: {
       minReps: 8,
@@ -272,7 +281,8 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/straight-arm-pulldown/thumbnail.webp",
+      start: "/exercises/straight-arm-pulldown/start.png",
+      thumbnail: "/exercises/straight-arm-pulldown/start.png",
     },
     progression: {
       minReps: 12,
@@ -315,7 +325,9 @@ export const backExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 5,
     media: {
-      thumbnail: "/exercises/deadlift/thumbnail.webp",
+      start: "/exercises/deadlift/start.png",
+      finish: "/exercises/deadlift/finish.png",
+      thumbnail: "/exercises/deadlift/start.png",
     },
     progression: {
       minReps: 3,

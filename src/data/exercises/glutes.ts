@@ -14,7 +14,8 @@ export const glutesExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/hip-thrust/thumbnail.webp",
+      start: "/exercises/hip-thrust/start.webp",
+      thumbnail: "/exercises/hip-thrust/start.webp",
     },
     progression: {
       minReps: 6,
@@ -57,7 +58,9 @@ export const glutesExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/glute-bridge/thumbnail.webp",
+      start: "/exercises/glute-bridge/start.png",
+      finish: "/exercises/glute-bridge/finish.png",
+      thumbnail: "/exercises/glute-bridge/start.png",
     },
     progression: {
       minReps: 12,
@@ -99,7 +102,9 @@ export const glutesExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/cable-kickback/thumbnail.webp",
+      start: "/exercises/cable-kickback/start.png",
+      finish: "/exercises/cable-kickback/finish.png",
+      thumbnail: "/exercises/cable-kickback/start.png",
     },
     progression: {
       minReps: 12,
@@ -141,7 +146,9 @@ export const glutesExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/smith-hip-thrust/thumbnail.webp",
+      start: "/exercises/smith-hip-thrust/start.png",
+      finish: "/exercises/smith-hip-thrust/finish.png",
+      thumbnail: "/exercises/smith-hip-thrust/start.png",
     },
     progression: {
       minReps: 8,
@@ -183,7 +190,9 @@ export const glutesExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/abductor-machine/thumbnail.webp",
+      start: "/exercises/abductor-machine/start.png",
+      finish: "/exercises/abductor-machine/finish.png",
+      thumbnail: "/exercises/abductor-machine/start.png",
     },
     progression: {
       minReps: 12,
@@ -223,7 +232,9 @@ export const glutesExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 20,
     media: {
-      thumbnail: "/exercises/frog-pump/thumbnail.webp",
+      start: "/exercises/frog-pump/start.png",
+      finish: "/exercises/frog-pump/finish.png",
+      thumbnail: "/exercises/frog-pump/start.png",
     },
     progression: {
       minReps: 15,
@@ -265,7 +276,9 @@ export const glutesExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/reverse-hyper/thumbnail.webp",
+      start: "/exercises/reverse-hyper/start.png",
+      finish: "/exercises/reverse-hyper/finish.png",
+      thumbnail: "/exercises/reverse-hyper/start.png",
     },
     progression: {
       minReps: 12,

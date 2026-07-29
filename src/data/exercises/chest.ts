@@ -14,7 +14,9 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/bench-press/thumbnail.webp",
+      start: "/exercises/bench-press/start.png",
+      finish: "/exercises/bench-press/finish.png",
+      thumbnail: "/exercises/bench-press/start.png",
     },
     progression: {
       minReps: 6,
@@ -61,7 +63,9 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/incline-bench-press/thumbnail.webp",
+      start: "/exercises/incline-bench-press/start.png",
+      finish: "/exercises/incline-bench-press/finish.png",
+      thumbnail: "/exercises/incline-bench-press/start.png",
     },
     progression: {
       minReps: 6,
@@ -106,7 +110,9 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/incline-db-press/thumbnail.webp",
+      start: "/exercises/incline-db-press/start.png",
+      finish: "/exercises/incline-db-press/finish.png",
+      thumbnail: "/exercises/incline-db-press/start.png",
     },
     progression: {
       minReps: 8,
@@ -151,7 +157,9 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/db-bench-press/thumbnail.webp",
+      start: "/exercises/db-bench-press/start.png",
+      finish: "/exercises/db-bench-press/finish.png",
+      thumbnail: "/exercises/db-bench-press/start.png",
     },
     progression: {
       minReps: 8,
@@ -194,7 +202,9 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/machine-chest-press/thumbnail.webp",
+      start: "/exercises/machine-chest-press/start.png",
+      finish: "/exercises/machine-chest-press/finish.webp",
+      thumbnail: "/exercises/machine-chest-press/start.png",
     },
     progression: {
       minReps: 8,
@@ -238,7 +248,9 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/cable-fly/thumbnail.webp",
+      start: "/exercises/cable-fly/start.png",
+      finish: "/exercises/cable-fly/finish.png",
+      thumbnail: "/exercises/cable-fly/start.png",
     },
     progression: {
       minReps: 12,
@@ -281,7 +293,9 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/pec-deck/thumbnail.webp",
+      start: "/exercises/pec-deck/start.png",
+      finish: "/exercises/pec-deck/finish.png",
+      thumbnail: "/exercises/pec-deck/start.png",
     },
     progression: {
       minReps: 12,
@@ -324,7 +338,8 @@ export const chestExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/push-up/thumbnail.webp",
+      start: "/exercises/push-up/start.png",
+      thumbnail: "/exercises/push-up/start.png",
     },
     progression: {
       minReps: 10,

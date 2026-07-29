@@ -14,7 +14,9 @@ export const bicepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/barbell-curl/thumbnail.webp",
+      start: "/exercises/barbell-curl/start.png",
+      finish: "/exercises/barbell-curl/finish.png",
+      thumbnail: "/exercises/barbell-curl/start.png",
     },
     progression: {
       minReps: 8,
@@ -58,7 +60,9 @@ export const bicepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/db-curl/thumbnail.webp",
+      start: "/exercises/db-curl/start.png",
+      finish: "/exercises/db-curl/finish.png",
+      thumbnail: "/exercises/db-curl/start.png",
     },
     progression: {
       minReps: 10,
@@ -101,7 +105,8 @@ export const bicepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/hammer-curl/thumbnail.webp",
+      start: "/exercises/hammer-curl/start.png",
+      thumbnail: "/exercises/hammer-curl/start.png",
     },
     progression: {
       minReps: 10,
@@ -142,7 +147,9 @@ export const bicepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 10,
     media: {
-      thumbnail: "/exercises/preacher-curl/thumbnail.webp",
+      start: "/exercises/preacher-curl/start.png",
+      finish: "/exercises/preacher-curl/finish.png",
+      thumbnail: "/exercises/preacher-curl/start.png",
     },
     progression: {
       minReps: 8,
@@ -183,7 +190,9 @@ export const bicepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/incline-db-curl/thumbnail.webp",
+      start: "/exercises/incline-db-curl/start.png",
+      finish: "/exercises/incline-db-curl/finish.png",
+      thumbnail: "/exercises/incline-db-curl/start.png",
     },
     progression: {
       minReps: 10,
@@ -225,7 +234,9 @@ export const bicepsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/cable-curl/thumbnail.webp",
+      start: "/exercises/cable-curl/start.png",
+      finish: "/exercises/cable-curl/finish.png",
+      thumbnail: "/exercises/cable-curl/start.png",
     },
     progression: {
       minReps: 10,

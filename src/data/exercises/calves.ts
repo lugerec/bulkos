@@ -13,7 +13,9 @@ export const calvesExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/standing-calf-raise/thumbnail.webp",
+      start: "/exercises/standing-calf-raise/start.png",
+      finish: "/exercises/standing-calf-raise/finish.png",
+      thumbnail: "/exercises/standing-calf-raise/start.png",
     },
     progression: {
       minReps: 10,
@@ -54,7 +56,9 @@ export const calvesExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/seated-calf-raise/thumbnail.webp",
+      start: "/exercises/seated-calf-raise/start.png",
+      finish: "/exercises/seated-calf-raise/finish.png",
+      thumbnail: "/exercises/seated-calf-raise/start.png",
     },
     progression: {
       minReps: 12,
@@ -95,7 +99,9 @@ export const calvesExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/single-leg-calf-raise/thumbnail.webp",
+      start: "/exercises/single-leg-calf-raise/start.png",
+      finish: "/exercises/single-leg-calf-raise/finish.png",
+      thumbnail: "/exercises/single-leg-calf-raise/start.png",
     },
     progression: {
       minReps: 12,
@@ -135,7 +141,9 @@ export const calvesExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/smith-calf-raise/thumbnail.webp",
+      start: "/exercises/smith-calf-raise/start.png",
+      finish: "/exercises/smith-calf-raise/finish.png",
+      thumbnail: "/exercises/smith-calf-raise/start.png",
     },
     progression: {
       minReps: 10,
@@ -175,7 +183,9 @@ export const calvesExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/donkey-calf-raise/thumbnail.webp",
+      start: "/exercises/donkey-calf-raise/start.png",
+      finish: "/exercises/donkey-calf-raise/finish.png",
+      thumbnail: "/exercises/donkey-calf-raise/start.png",
     },
     progression: {
       minReps: 12,
@@ -215,7 +225,9 @@ export const calvesExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 15,
     media: {
-      thumbnail: "/exercises/leg-press-calf-raise/thumbnail.webp",
+      start: "/exercises/leg-press-calf-raise/start.png",
+      finish: "/exercises/leg-press-calf-raise/finish.png",
+      thumbnail: "/exercises/leg-press-calf-raise/start.png",
     },
     progression: {
       minReps: 12,

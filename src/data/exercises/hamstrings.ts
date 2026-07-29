@@ -14,7 +14,8 @@ export const hamstringsExercises: ExerciseDefinition[] = [
     defaultSets: 4,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/romanian-deadlift/thumbnail.webp",
+      start: "/exercises/romanian-deadlift/start.webp",
+      thumbnail: "/exercises/romanian-deadlift/start.webp",
     },
     progression: {
       minReps: 6,
@@ -57,7 +58,9 @@ export const hamstringsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/lying-leg-curl/thumbnail.webp",
+      start: "/exercises/lying-leg-curl/start.png",
+      finish: "/exercises/lying-leg-curl/finish.png",
+      thumbnail: "/exercises/lying-leg-curl/start.png",
     },
     progression: {
       minReps: 10,
@@ -97,7 +100,9 @@ export const hamstringsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/seated-leg-curl/thumbnail.webp",
+      start: "/exercises/seated-leg-curl/start.png",
+      finish: "/exercises/seated-leg-curl/finish.png",
+      thumbnail: "/exercises/seated-leg-curl/start.png",
     },
     progression: {
       minReps: 10,
@@ -137,7 +142,9 @@ export const hamstringsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 12,
     media: {
-      thumbnail: "/exercises/single-leg-curl/thumbnail.webp",
+      start: "/exercises/single-leg-curl/start.png",
+      finish: "/exercises/single-leg-curl/finish.png",
+      thumbnail: "/exercises/single-leg-curl/start.png",
     },
     progression: {
       minReps: 10,
@@ -177,7 +184,9 @@ export const hamstringsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/good-morning/thumbnail.webp",
+      start: "/exercises/good-morning/start.png",
+      finish: "/exercises/good-morning/finish.png",
+      thumbnail: "/exercises/good-morning/start.png",
     },
     progression: {
       minReps: 6,
@@ -221,7 +230,9 @@ export const hamstringsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 8,
     media: {
-      thumbnail: "/exercises/glute-ham-raise/thumbnail.webp",
+      start: "/exercises/glute-ham-raise/start.png",
+      finish: "/exercises/glute-ham-raise/finish.png",
+      thumbnail: "/exercises/glute-ham-raise/start.png",
     },
     progression: {
       minReps: 6,
@@ -262,7 +273,8 @@ export const hamstringsExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 6,
     media: {
-      thumbnail: "/exercises/nordic-curl/thumbnail.webp",
+      start: "/exercises/nordic-curl/start.png",
+      thumbnail: "/exercises/nordic-curl/start.png",
     },
     progression: {
       minReps: 5,
