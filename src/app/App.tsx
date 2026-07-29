@@ -56,7 +56,6 @@ import {
 } from "../shared/components";
 
 import { C, type Screen } from "../shared/ui";
-import { mealData } from "../data/meal";
 
 import { useState, useEffect } from "react";
 

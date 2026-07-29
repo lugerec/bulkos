@@ -44,10 +44,20 @@ export const useFoodStore = create<FoodState>((set, get) => ({
 
       const uid = currentUid();
 
-      const [shared, userFoods] = await Promise.all([
-        getFoods(),
-        uid ? getUserFoods(uid) : Promise.resolve<FoodItem[]>([]),
-      ]);
+      // The shared database is the primary source; the user's own foods are a
+      // best-effort overlay. A failure reading the (newer) customFoods
+      // collection — e.g. Firestore rules not yet covering it — must not blank
+      // the whole list, so it's isolated here.
+      const shared = await getFoods();
+
+      let userFoods: FoodItem[] = [];
+      if (uid) {
+        try {
+          userFoods = await getUserFoods(uid);
+        } catch {
+          userFoods = [];
+        }
+      }
 
       set({ foods: mergeFoods(shared, userFoods), loading: false });
     } catch (error) {

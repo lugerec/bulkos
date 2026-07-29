@@ -83,9 +83,14 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
     if (!uid) return;
 
     let cancelled = false;
-    getRecentLoggedFoods(uid).then((items) => {
-      if (!cancelled) setRecents(items);
-    });
+    getRecentLoggedFoods(uid)
+      .then((items) => {
+        if (!cancelled) setRecents(items);
+      })
+      .catch((error) => {
+        console.error("Failed to load recent foods", error);
+        if (!cancelled) setRecents([]);
+      });
 
     return () => {
       cancelled = true;
