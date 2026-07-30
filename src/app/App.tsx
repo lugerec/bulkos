@@ -918,6 +918,7 @@ export default function App() {
   const goBack = useAppStore((s) => s.goBack);
 
   const profile = useAuthStore((s) => s.profile);
+  const activeWorkout = useActiveWorkoutStore();
 
   if (loading)
     return (
@@ -952,7 +953,6 @@ export default function App() {
   if (!profile?.onboardingCompleted) return <OnboardingScreen />;
 
   const showNav = mainScreens.includes(screen);
-  const activeWorkout = useActiveWorkoutStore();
 
   // On a real phone (or inside the native Capacitor shell) the app fills the
   // actual screen; the decorative phone frame + fake notch/status bar are a
