@@ -125,6 +125,8 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           background: C.bg,
           borderTop: `1px solid ${C.border}`,
           maxHeight: "82vh",
+          overscrollBehavior: "contain",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         <div className="flex justify-center mb-4">
