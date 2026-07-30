@@ -23,7 +23,7 @@ import { useActiveWorkoutStore } from "@/store/activeWorkoutStore";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import { getLevelConfig } from "@/features/settings/experienceLevel";
 import { writeStrengthWorkout } from "@/services/healthService";
-import { sendWorkoutToWatch, onWatchSetUpdate } from "@/services/watchService";
+import { sendWorkoutToWatch, onWatchSetUpdate, sendSetUpdateToWatch } from "@/services/watchService";
 import { saveWorkout } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
@@ -444,6 +444,10 @@ export default function WorkoutScreen() {
 
   const toggleSet = (exIdx: number, setIdx: number) => {
     const key = `${exIdx}-${setIdx}`;
+
+    // Mirror this toggle to the watch. Only here (the user-tap path) — the
+    // watch->phone listener never re-sends, so the two can't ping-pong.
+    sendSetUpdateToWatch(exIdx, setIdx, !completed.has(key));
 
     setCompleted((prev) => {
       const next = new Set(prev);

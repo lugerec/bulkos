@@ -16,6 +16,11 @@ type SetUpdateEvent = {
 
 type WatchBridgePlugin = {
   sendWorkout(options: { workout: string }): Promise<{ delivered: boolean }>;
+  sendSetUpdate(options: {
+    exerciseIndex: number;
+    setIndex: number;
+    completed: boolean;
+  }): Promise<void>;
   isPaired(): Promise<{
     supported: boolean;
     paired: boolean;
@@ -87,6 +92,25 @@ export async function sendWorkoutToWatch(
     await WatchBridge.sendWorkout({ workout: JSON.stringify(payload) });
   } catch {
     // best-effort — never block the workout on the watch link
+  }
+}
+
+/**
+ * Mirror a set the user toggled on the phone to the watch, so both stay in
+ * sync. Only call this for user-initiated toggles — never when applying an
+ * update that came FROM the watch, or the two will ping-pong.
+ */
+export async function sendSetUpdateToWatch(
+  exerciseIndex: number,
+  setIndex: number,
+  completed: boolean
+): Promise<void> {
+  if (!isSupported()) return;
+
+  try {
+    await WatchBridge.sendSetUpdate({ exerciseIndex, setIndex, completed });
+  } catch {
+    // best-effort — never block on the watch link
   }
 }
 

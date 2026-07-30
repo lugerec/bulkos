@@ -22,6 +22,9 @@ final class WatchBridge: NSObject, ObservableObject {
     /// True once the phone is reachable at least once — used for UI hints.
     @Published private(set) var isReachable = false
 
+    /// Set updates pushed from the phone: (exerciseIndex, setIndex, completed).
+    let setUpdates = PassthroughSubject<(Int, Int, Bool), Never>()
+
     private override init() {
         super.init()
     }
@@ -70,6 +73,15 @@ final class WatchBridge: NSObject, ObservableObject {
             Task { @MainActor in
                 self.receivedWorkout = workout
             }
+
+        case "setUpdate":
+            guard
+                let exerciseIndex = payload["exerciseIndex"] as? Int,
+                let setIndex = payload["setIndex"] as? Int,
+                let completed = payload["completed"] as? Bool
+            else { return }
+
+            self.setUpdates.send((exerciseIndex, setIndex, completed))
 
         default:
             break

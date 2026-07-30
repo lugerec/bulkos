@@ -21,6 +21,7 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
     public let jsName = "WatchBridge"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "sendWorkout", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendSetUpdate", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "isPaired", returnType: CAPPluginReturnPromise),
     ]
 
@@ -49,6 +50,25 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
 
         let delivered = link.sendWorkout(json: json)
         call.resolve(["delivered": delivered])
+    }
+
+    /// Mirror a set the user toggled on the phone over to the watch.
+    @objc func sendSetUpdate(_ call: CAPPluginCall) {
+        guard
+            let exerciseIndex = call.getInt("exerciseIndex"),
+            let setIndex = call.getInt("setIndex")
+        else {
+            call.reject("Missing 'exerciseIndex'/'setIndex'")
+            return
+        }
+
+        let completed = call.getBool("completed") ?? false
+        link.sendSetUpdate(
+            exerciseIndex: exerciseIndex,
+            setIndex: setIndex,
+            completed: completed
+        )
+        call.resolve()
     }
 
     @objc func isPaired(_ call: CAPPluginCall) {
@@ -99,6 +119,27 @@ final class PhoneWatchLink: NSObject {
         }
 
         return true
+    }
+
+    /// Send a single set toggle to the watch (message when reachable, queued
+    /// user-info otherwise so it still lands when the watch wakes).
+    func sendSetUpdate(exerciseIndex: Int, setIndex: Int, completed: Bool) {
+        guard WCSession.isSupported() else { return }
+        let session = WCSession.default
+        guard session.activationState == .activated else { return }
+
+        let payload: [String: Any] = [
+            "type": "setUpdate",
+            "exerciseIndex": exerciseIndex,
+            "setIndex": setIndex,
+            "completed": completed,
+        ]
+
+        if session.isReachable {
+            session.sendMessage(payload, replyHandler: nil, errorHandler: nil)
+        } else {
+            session.transferUserInfo(payload)
+        }
     }
 
     private func handle(payload: [String: Any]) {

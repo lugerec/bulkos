@@ -43,6 +43,18 @@ final class WorkoutSession: ObservableObject {
             }
             .store(in: &cancellables)
 
+        // Mirror sets the user toggles on the phone.
+        WatchBridge.shared.setUpdates
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] exerciseIndex, setIndex, completed in
+                self?.applyRemoteSetUpdate(
+                    exerciseIndex: exerciseIndex,
+                    setIndex: setIndex,
+                    completed: completed
+                )
+            }
+            .store(in: &cancellables)
+
         WatchBridge.shared.activate()
     }
 
@@ -71,6 +83,17 @@ final class WorkoutSession: ObservableObject {
             setIndex: setIndex,
             completed: nowCompleted
         )
+    }
+
+    /// Apply a set change that originated on the phone. Unlike `toggleSet`, it
+    /// sets the exact state, never echoes back (avoids a sync loop), and does
+    /// not fire the rest timer or haptic — those belong to the phone side.
+    func applyRemoteSetUpdate(exerciseIndex: Int, setIndex: Int, completed: Bool) {
+        guard workout.exercises.indices.contains(exerciseIndex),
+              workout.exercises[exerciseIndex].sets.indices.contains(setIndex)
+        else { return }
+
+        workout.exercises[exerciseIndex].sets[setIndex].completed = completed
     }
 
     // MARK: - Rest timer

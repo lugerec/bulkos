@@ -12,8 +12,14 @@ struct RestTimerView: View {
     @EnvironmentObject var session: WorkoutSession
 
     var body: some View {
-        VStack {
-            Spacer()
+        ZStack(alignment: .bottom) {
+            // Dim + swallow taps so set rows behind the timer can't be
+            // toggled by accident while resting (e.g. reaching for Skip).
+            Rectangle()
+                .fill(.black.opacity(0.32))
+                .ignoresSafeArea()
+                .contentShape(Rectangle())
+                .onTapGesture { }
 
             VStack(spacing: 8) {
                 Text("REST")
@@ -36,6 +42,7 @@ struct RestTimerView: View {
             .frame(maxWidth: .infinity)
             .background(Theme.accent, in: RoundedRectangle(cornerRadius: 18))
             .padding(.horizontal, 4)
+            .padding(.bottom, 4)
         }
     }
 
