@@ -185,7 +185,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
   async function handleScanClick() {
     setScanState("idle");
 
-    // No camera (web/dev): fall back to typing the number in.
+    // No camera (web/dev) — go straight to manual entry.
     if (!isBarcodeScanSupported()) {
       setManualOpen(true);
       return;
@@ -196,8 +196,12 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
 
     if (result.status === "ok") {
       await lookupBarcode(result.barcode);
+    } else if (result.status === "unsupported" || result.status === "error") {
+      // Scanner plugin missing (e.g. SPM build) or failed — let them type it.
+      setScanState("idle");
+      setManualOpen(true);
     } else {
-      // cancelled / denied / error — just return to the list quietly.
+      // cancelled / denied — just return to the list quietly.
       setScanState("idle");
     }
   }

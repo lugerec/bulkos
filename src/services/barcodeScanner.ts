@@ -26,11 +26,19 @@ export function isBarcodeScanSupported(): boolean {
 export async function scanBarcode(): Promise<ScanResult> {
   if (!isBarcodeScanSupported()) return { status: "unsupported" };
 
+  // The plugin is optional (and unavailable under SPM builds). Import it
+  // lazily and behind @vite-ignore so a missing package doesn't break the
+  // web build; if it can't load, callers fall back to manual barcode entry.
+  let BarcodeScanner: typeof import("@capacitor-mlkit/barcode-scanning").BarcodeScanner;
   try {
-    const { BarcodeScanner } = await import(
-      "@capacitor-mlkit/barcode-scanning"
-    );
+    ({ BarcodeScanner } = await import(
+      /* @vite-ignore */ "@capacitor-mlkit/barcode-scanning"
+    ));
+  } catch {
+    return { status: "unsupported" };
+  }
 
+  try {
     const permission = await BarcodeScanner.requestPermissions();
     if (permission.camera !== "granted" && permission.camera !== "limited") {
       return { status: "denied" };

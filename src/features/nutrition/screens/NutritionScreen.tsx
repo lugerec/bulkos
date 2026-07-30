@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useFoodStore } from "@/store/foodStore";
 import { useAppStore, type MealType } from "@/store/appStore";
@@ -23,8 +24,22 @@ const meals: { id: MealType; label: string; time: string }[] = [
   { id: "dinner", label: "Dinner", time: "8:00 PM" },
 ];
 
-function getTodayKey() {
-  return toDateKey(new Date());
+/** Date `offset` days before today (offset <= 0), at local midnight. */
+function dateFromOffset(offset: number) {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + offset);
+  return d;
+}
+
+function dayLabel(offset: number, date: Date) {
+  if (offset === 0) return "Today";
+  if (offset === -1) return "Yesterday";
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 export default function NutritionScreen({
@@ -44,14 +59,19 @@ export default function NutritionScreen({
   const totals = useDailyTotalsStore((s) => s.totals);
   const mealTotals = useDailyTotalsStore((s) => s.mealTotals);
 
+  // 0 = today, -1 = yesterday… (never positive; no future days).
+  const [dateOffset, setDateOffset] = useState(0);
+  const selectedDate = dateFromOffset(dateOffset);
+  const selectedKey = toDateKey(selectedDate);
+
   useEffect(() => {
     loadFoods();
   }, [loadFoods]);
 
   useEffect(() => {
     if (!user) return;
-    loadDailyLog(user.uid, getTodayKey());
-  }, [user, loadDailyLog]);
+    loadDailyLog(user.uid, selectedKey);
+  }, [user, loadDailyLog, selectedKey]);
 
   const openFoodDatabase = (meal: MealType) => {
     setSelectedMeal(meal);
@@ -70,17 +90,37 @@ export default function NutritionScreen({
   return (
     <div className="pb-8">
       <div className="px-5 pt-4 pb-5">
-        <h2 className="text-[22px] font-bold mb-0.5" style={{ color: C.fg }}>
+        <h2 className="text-[22px] font-bold mb-2" style={{ color: C.fg }}>
           Nutrition
         </h2>
 
-        <p className="text-sm" style={{ color: C.fg3 }}>
-          {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
-            month: "short",
-            day: "numeric",
-          })}
-        </p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setDateOffset((o) => o - 1)}
+            aria-label="Previous day"
+            className="w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
+          >
+            <ChevronLeft size={16} />
+          </button>
+
+          <span
+            className="text-sm font-semibold min-w-[130px] text-center"
+            style={{ color: C.fg2 }}
+          >
+            {dayLabel(dateOffset, selectedDate)}
+          </span>
+
+          <button
+            onClick={() => setDateOffset((o) => Math.min(0, o + 1))}
+            disabled={dateOffset === 0}
+            aria-label="Next day"
+            className="w-8 h-8 rounded-full flex items-center justify-center disabled:opacity-40"
+            style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
       </div>
 
       <div
