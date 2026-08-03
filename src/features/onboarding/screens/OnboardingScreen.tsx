@@ -19,12 +19,12 @@ import type {
   UserProfile,
 } from "@/types/profile";
 import { calculateMacroTargets } from "@/lib/nutrition";
-import { updateUserOnboarding } from "@/services/userService";
 
 const TOTAL_STEPS = 9;
 
 export default function OnboardingScreen() {
   const user = useAuthStore((s) => s.user);
+  const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
 
   const [step, setStep] = useState(0);
   const [name, setName] = useState("Lukáš");
@@ -65,8 +65,9 @@ export default function OnboardingScreen() {
     if (!user) return;
 
     setSaving(true);
-    await updateUserOnboarding(user.uid, profile, targets);
-    window.location.reload();
+    // Optimistic: moves past onboarding immediately and persists in the
+    // background, so a slow/failed Firestore write can't hang the screen.
+    await completeOnboarding(profile, targets);
   };
 
   return (

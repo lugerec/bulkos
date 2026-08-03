@@ -7,9 +7,9 @@ import {
   type User,
 } from "firebase/auth";
 import { auth } from "../services/auth";
-import { createUserProfile } from "../services/userService";
+import { createUserProfile, updateUserOnboarding } from "../services/userService";
 import { getUserProfile, saveUserProfileDoc } from "../services/user";
-import type { ExperienceLevel } from "@/types/profile";
+import type { ExperienceLevel, MacroTargets, UserProfile } from "@/types/profile";
 
 type AuthState = {
   user: User | null;
@@ -23,6 +23,11 @@ type AuthState = {
   logout: () => Promise<void>;
   /** Re-fetch the user document (e.g. after targets were updated). */
   refreshProfile: () => Promise<void>;
+  /** Persist onboarding and move past it immediately (optimistic). */
+  completeOnboarding: (
+    profile: UserProfile,
+    nutrition: MacroTargets
+  ) => Promise<void>;
   updateExperienceLevel: (level: ExperienceLevel) => Promise<void>;
   updateCustomFlag: (
     key: "charts" | "analytics" | "effortRating" | "advancedDashboard",
@@ -68,6 +73,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const profile = await getUserProfile(user.uid);
 
     set({ profile });
+  },
+
+  completeOnboarding: async (profileData, nutrition) => {
+    const { user, profile } = get();
+    if (!user) return;
+
+    // Optimistically mark onboarding done so the app leaves the flow at once,
+    // even if the Firestore write is slow or the connection is flaky. Same
+    // resilient pattern as updateExperienceLevel below.
+    set({
+      profile: {
+        ...(profile ?? {}),
+        profile: profileData,
+        nutrition,
+        onboardingCompleted: true,
+      },
+    });
+
+    try {
+      await updateUserOnboarding(user.uid, profileData, nutrition);
+    } catch {
+      // Non-fatal — local state already reflects completion and Firestore
+      // will retry the queued write when possible.
+    }
   },
 
   updateExperienceLevel: async (level) => {
