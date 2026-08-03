@@ -9,6 +9,7 @@ import {
   removeFavoriteFood,
 } from "../services/foodService";
 import { mergeFoods } from "@/lib/mergeFoods";
+import { STARTER_FOODS } from "@/data/starterFoods";
 import { useAuthStore } from "./authStore";
 
 type FoodState = {
@@ -39,33 +40,34 @@ export const useFoodStore = create<FoodState>((set, get) => ({
   error: null,
 
   loadFoods: async () => {
+    set({ loading: true, error: null });
+
+    const uid = currentUid();
+
+    // Every source is best-effort layered on top of the built-in starter set,
+    // so the database is never empty — even offline or if Firestore reads fail.
+    let shared: FoodItem[] = [];
     try {
-      set({ loading: true, error: null });
-
-      const uid = currentUid();
-
-      // The shared database is the primary source; the user's own foods are a
-      // best-effort overlay. A failure reading the (newer) customFoods
-      // collection — e.g. Firestore rules not yet covering it — must not blank
-      // the whole list, so it's isolated here.
-      const shared = await getFoods();
-
-      let userFoods: FoodItem[] = [];
-      if (uid) {
-        try {
-          userFoods = await getUserFoods(uid);
-        } catch {
-          userFoods = [];
-        }
-      }
-
-      set({ foods: mergeFoods(shared, userFoods), loading: false });
+      shared = await getFoods();
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Failed to load foods",
-        loading: false,
       });
     }
+
+    let userFoods: FoodItem[] = [];
+    if (uid) {
+      try {
+        userFoods = await getUserFoods(uid);
+      } catch {
+        userFoods = [];
+      }
+    }
+
+    set({
+      foods: mergeFoods(mergeFoods(STARTER_FOODS, shared), userFoods),
+      loading: false,
+    });
   },
 
   loadFavorites: async () => {
