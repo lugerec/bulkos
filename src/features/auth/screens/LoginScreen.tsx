@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Dumbbell } from "lucide-react";
 import { C } from "../../../shared/ui";
 import { useAuthStore } from "../../../store/authStore";
 
@@ -33,18 +32,13 @@ export default function LoginScreen() {
         style={{ background: C.bg, border: `1px solid ${C.border}` }}
       >
         <div className="flex flex-col items-center text-center mb-8">
-          <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: C.accentDim }}
-          >
-            <Dumbbell size={30} color={C.accent} />
-          </div>
+          <img
+            src="/BulkOS-logo.svg"
+            alt="BulkOS"
+            className="h-11 mb-4"
+          />
 
-          <h1 className="text-[32px] font-extrabold" style={{ color: C.fg }}>
-            BulkOS
-          </h1>
-
-          <p className="text-sm mt-2" style={{ color: C.fg2 }}>
+          <p className="text-sm" style={{ color: C.fg2 }}>
             Lean bulk operating system
           </p>
         </div>
