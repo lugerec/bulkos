@@ -18,6 +18,8 @@ export type FoodItem = {
   serving: number;
   unit: "g" | "ml" | "piece";
   verified: boolean;
+  /** Package serving size (in `unit`), used to prefill the portion input. */
+  defaultServing?: number;
 };
 
 export type LoggedFood = {

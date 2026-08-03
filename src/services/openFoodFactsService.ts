@@ -8,6 +8,7 @@ export type OffProduct = {
   code?: string;
   product_name?: string;
   brands?: string;
+  serving_quantity?: number | string;
   nutriments?: {
     "energy-kcal_100g"?: number;
     proteins_100g?: number;
@@ -43,6 +44,15 @@ export function mapOffProductToFoodItem(
 
   const brand = product.brands?.split(",")[0]?.trim();
 
+  // OFF serving_quantity is the package serving in the base unit (g/ml). Use
+  // it to prefill the portion so the user doesn't retype it. Omit the field
+  // entirely when unknown — Firestore rejects undefined on save.
+  const servingQty = Number(product.serving_quantity);
+  const defaultServing =
+    Number.isFinite(servingQty) && servingQty > 0
+      ? Math.round(servingQty)
+      : null;
+
   return {
     id: `off-${code}`,
     name: brand && !name.includes(brand) ? `${name} (${brand})` : name,
@@ -54,6 +64,7 @@ export function mapOffProductToFoodItem(
     serving: 100,
     unit: "g",
     verified: false,
+    ...(defaultServing ? { defaultServing } : {}),
   };
 }
 
@@ -71,7 +82,7 @@ export async function searchOpenFoodFacts(
     action: "process",
     json: "1",
     page_size: String(PAGE_SIZE),
-    fields: "code,product_name,brands,nutriments",
+    fields: "code,product_name,brands,nutriments,serving_quantity",
   });
 
   try {
@@ -120,7 +131,7 @@ export async function lookupOffBarcode(
   if (!code) return null;
 
   const params = new URLSearchParams({
-    fields: "code,product_name,brands,nutriments",
+    fields: "code,product_name,brands,nutriments,serving_quantity",
   });
 
   try {

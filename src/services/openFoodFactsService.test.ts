@@ -137,3 +137,28 @@ describe("lookupOffBarcode", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
+
+describe("mapOffProductToFoodItem serving size", () => {
+  const base = {
+    code: "1",
+    product_name: "Bar",
+    nutriments: { "energy-kcal_100g": 400, proteins_100g: 20 },
+  };
+
+  it("prefills defaultServing from serving_quantity", () => {
+    const item = mapOffProductToFoodItem({ ...base, serving_quantity: 30 });
+    expect(item?.defaultServing).toBe(30);
+  });
+
+  it("parses a string serving_quantity", () => {
+    const item = mapOffProductToFoodItem({ ...base, serving_quantity: "45" });
+    expect(item?.defaultServing).toBe(45);
+  });
+
+  it("omits defaultServing when serving_quantity is missing or invalid", () => {
+    expect(mapOffProductToFoodItem(base)).not.toHaveProperty("defaultServing");
+    expect(
+      mapOffProductToFoodItem({ ...base, serving_quantity: 0 })
+    ).not.toHaveProperty("defaultServing");
+  });
+});

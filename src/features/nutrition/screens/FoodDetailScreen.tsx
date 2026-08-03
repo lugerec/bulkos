@@ -32,7 +32,9 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
   const selectedMeal = useAppStore((state) => state.selectedMeal);
   const navigate = useAppStore((state) => state.navigate);
 
-  const [grams, setGrams] = useState(100);
+  const [grams, setGrams] = useState(
+    food.defaultServing && food.defaultServing > 0 ? food.defaultServing : 100
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
