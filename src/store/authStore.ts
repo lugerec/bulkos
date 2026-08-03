@@ -59,6 +59,34 @@ async function getProfileWithTimeout(uid: string, ms = 6000) {
   ]);
 }
 
+const PROFILE_CACHE_KEY = "bulkos:profile";
+
+/**
+ * Persist the last-known profile locally so a slow or failed Firestore read on
+ * launch doesn't drop us back into onboarding. Survives app restarts in the
+ * Capacitor webview.
+ */
+function saveCachedProfile(uid: string, profile: unknown) {
+  try {
+    if (typeof localStorage === "undefined" || !profile) return;
+    localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ uid, profile }));
+  } catch {
+    // Ignore storage failures — the cache is a best-effort convenience.
+  }
+}
+
+function loadCachedProfile(uid: string): unknown | null {
+  try {
+    if (typeof localStorage === "undefined") return null;
+    const raw = localStorage.getItem(PROFILE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { uid?: string; profile?: unknown };
+    return parsed?.uid === uid ? (parsed.profile ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   profile: null,
@@ -82,14 +110,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // Optimistically mark onboarding done so the app leaves the flow at once,
     // even if the Firestore write is slow or the connection is flaky. Same
     // resilient pattern as updateExperienceLevel below.
-    set({
-      profile: {
-        ...(profile ?? {}),
-        profile: profileData,
-        nutrition,
-        onboardingCompleted: true,
-      },
-    });
+    const nextProfile = {
+      ...((profile as Record<string, unknown>) ?? {}),
+      profile: profileData,
+      nutrition,
+      onboardingCompleted: true,
+    };
+    set({ profile: nextProfile });
+    saveCachedProfile(user.uid, nextProfile);
 
     try {
       await updateUserOnboarding(user.uid, profileData, nutrition);
@@ -156,6 +184,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       try {
         const profile = await getProfileWithTimeout(user.uid);
 
+        saveCachedProfile(user.uid, profile);
+
         set({
           user,
           profile,
@@ -163,9 +193,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           error: null,
         });
       } catch {
-        // Profile fetch failed or timed out — still let the user into the
-        // app; screens handle a missing profile gracefully.
-        set({ user, profile: null, loading: false, error: null });
+        // Profile fetch failed or timed out — fall back to the last-known
+        // cached profile so a flaky read doesn't re-trigger onboarding. Only
+        // null if we've genuinely never loaded it.
+        set({
+          user,
+          profile: loadCachedProfile(user.uid),
+          loading: false,
+          error: null,
+        });
       }
     });
 
