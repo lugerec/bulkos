@@ -19,7 +19,6 @@ import {
   logPortion,
   getRecentLoggedFoods,
 } from "@/services/logService";
-import { toDateKey } from "@/lib/date";
 import type { FoodItem, RecentFood } from "@/types/food";
 import FoodDetailScreen from "./FoodDetailScreen";
 
@@ -34,10 +33,6 @@ const MEAL_LABELS = {
   postWorkout: "Post-Workout",
   dinner: "Dinner",
 } as const;
-
-function getTodayKey() {
-  return toDateKey(new Date());
-}
 
 export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) {
   const { foods, loadFoods, loading } = useFoodStore();
@@ -68,6 +63,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
   const loadFavorites = useFoodStore((state) => state.loadFavorites);
 
   const selectedMeal = useAppStore((state) => state.selectedMeal);
+  const selectedDateKey = useAppStore((state) => state.selectedDateKey);
   const uid = useAuthStore((state) => state.user?.uid);
   const loadDailyLog = useDailyLogStore((state) => state.loadDailyLog);
 
@@ -111,22 +107,22 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
 
     await addFoodToMeal({
       uid,
-      date: getTodayKey(),
+      date: selectedDateKey,
       meal: selectedMeal,
       food,
       grams,
     });
 
-    await loadDailyLog(uid, getTodayKey());
+    await loadDailyLog(uid, selectedDateKey);
     flashAdded(`fav-${food.id}`);
   }
 
   async function quickAddRecent(recent: RecentFood, index: number) {
     if (!uid) return;
 
-    await logPortion(uid, getTodayKey(), selectedMeal, recent);
+    await logPortion(uid, selectedDateKey, selectedMeal, recent);
 
-    await loadDailyLog(uid, getTodayKey());
+    await loadDailyLog(uid, selectedDateKey);
     flashAdded(`recent-${recent.foodId || recent.name}-${index}`);
   }
 

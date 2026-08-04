@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useFoodStore } from "@/store/foodStore";
@@ -13,7 +13,7 @@ import {
   SectionHeader,
 } from "@/shared/components";
 import NutritionMealCard from "@/features/nutrition/components/NutritionMealCard";
-import { toDateKey } from "@/lib/date";
+import { getTodayKey, keyToDate, addDaysToKey } from "@/lib/date";
 
 const meals: { id: MealType; label: string; time: string }[] = [
   { id: "breakfast", label: "Breakfast", time: "7:30 AM" },
@@ -24,18 +24,11 @@ const meals: { id: MealType; label: string; time: string }[] = [
   { id: "dinner", label: "Dinner", time: "8:00 PM" },
 ];
 
-/** Date `offset` days before today (offset <= 0), at local midnight. */
-function dateFromOffset(offset: number) {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() + offset);
-  return d;
-}
-
-function dayLabel(offset: number, date: Date) {
-  if (offset === 0) return "Today";
-  if (offset === -1) return "Yesterday";
-  return date.toLocaleDateString("en-US", {
+function dayLabel(key: string): string {
+  const today = getTodayKey();
+  if (key === today) return "Today";
+  if (key === addDaysToKey(today, -1)) return "Yesterday";
+  return keyToDate(key).toLocaleDateString("en-US", {
     weekday: "long",
     month: "short",
     day: "numeric",
@@ -52,6 +45,8 @@ export default function NutritionScreen({
 
   const { foods, loadFoods, loading } = useFoodStore();
   const setSelectedMeal = useAppStore((s) => s.setSelectedMeal);
+  const selectedKey = useAppStore((s) => s.selectedDateKey);
+  const setSelectedDateKey = useAppStore((s) => s.setSelectedDateKey);
 
   const foodsByMeal = useDailyLogStore((s) => s.foodsByMeal);
   const loadDailyLog = useDailyLogStore((s) => s.loadDailyLog);
@@ -59,10 +54,7 @@ export default function NutritionScreen({
   const totals = useDailyTotalsStore((s) => s.totals);
   const mealTotals = useDailyTotalsStore((s) => s.mealTotals);
 
-  // 0 = today, -1 = yesterday… (never positive; no future days).
-  const [dateOffset, setDateOffset] = useState(0);
-  const selectedDate = dateFromOffset(dateOffset);
-  const selectedKey = toDateKey(selectedDate);
+  const isToday = selectedKey === getTodayKey();
 
   useEffect(() => {
     loadFoods();
@@ -96,7 +88,7 @@ export default function NutritionScreen({
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setDateOffset((o) => o - 1)}
+            onClick={() => setSelectedDateKey(addDaysToKey(selectedKey, -1))}
             aria-label="Previous day"
             className="w-8 h-8 rounded-full flex items-center justify-center"
             style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
@@ -108,12 +100,14 @@ export default function NutritionScreen({
             className="text-sm font-semibold min-w-[130px] text-center"
             style={{ color: C.fg2 }}
           >
-            {dayLabel(dateOffset, selectedDate)}
+            {dayLabel(selectedKey)}
           </span>
 
           <button
-            onClick={() => setDateOffset((o) => Math.min(0, o + 1))}
-            disabled={dateOffset === 0}
+            onClick={() =>
+              !isToday && setSelectedDateKey(addDaysToKey(selectedKey, 1))
+            }
+            disabled={isToday}
             aria-label="Next day"
             className="w-8 h-8 rounded-full flex items-center justify-center disabled:opacity-40"
             style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}

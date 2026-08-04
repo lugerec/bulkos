@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { Screen } from "@/shared/ui";
+import { getTodayKey } from "@/lib/date";
 
 export type MealType =
   | "breakfast"
@@ -33,6 +34,11 @@ type AppState = {
 
   selectedMeal: MealType;
   setSelectedMeal: (meal: MealType) => void;
+
+  /** The day the Nutrition screen is viewing/logging to (YYYY-MM-DD). Kept in
+   * the store so it survives navigating to Add Food and back. */
+  selectedDateKey: string;
+  setSelectedDateKey: (key: string) => void;
 
   targets: {
     calories: number;
@@ -99,6 +105,9 @@ export const useAppStore = create<AppState>((set) => ({
     set({
       selectedMeal: meal,
     }),
+
+  selectedDateKey: getTodayKey(),
+  setSelectedDateKey: (key) => set({ selectedDateKey: key }),
 
   targets: {
     calories: 3300,

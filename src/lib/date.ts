@@ -18,3 +18,16 @@ export function toDateKey(date: Date): string {
 export function getTodayKey(now: Date = new Date()): string {
   return toDateKey(now);
 }
+
+/** Parse a `YYYY-MM-DD` key back to a local-time Date at midnight. */
+export function keyToDate(key: string): Date {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year, (month ?? 1) - 1, day ?? 1);
+}
+
+/** Shift a `YYYY-MM-DD` key by a number of days (may be negative). */
+export function addDaysToKey(key: string, days: number): string {
+  const d = keyToDate(key);
+  d.setDate(d.getDate() + days);
+  return toDateKey(d);
+}

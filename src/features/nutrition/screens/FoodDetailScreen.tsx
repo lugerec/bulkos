@@ -7,7 +7,6 @@ import { useAuthStore } from "@/store/authStore";
 import { useAppStore } from "@/store/appStore";
 import { useFoodStore } from "@/store/foodStore";
 import { addFoodToMeal } from "@/services/logService";
-import { toDateKey } from "@/lib/date";
 
 type Props = {
   food: FoodItem;
@@ -23,13 +22,10 @@ const mealLabels = {
   dinner: "Dinner",
 } as const;
 
-function getTodayKey() {
-  return toDateKey(new Date());
-}
-
 export default function FoodDetailScreen({ food, onBack }: Props) {
   const user = useAuthStore((state) => state.user);
   const selectedMeal = useAppStore((state) => state.selectedMeal);
+  const selectedDateKey = useAppStore((state) => state.selectedDateKey);
   const navigate = useAppStore((state) => state.navigate);
 
   const [grams, setGrams] = useState(
@@ -102,7 +98,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
 
       await addFoodToMeal({
         uid: user.uid,
-        date: getTodayKey(),
+        date: selectedDateKey,
         meal: selectedMeal,
         food,
         grams,
