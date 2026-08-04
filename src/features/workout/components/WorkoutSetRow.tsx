@@ -10,6 +10,8 @@ type Props = {
   weight: number;
   completed: boolean;
   effort?: SetEffort;
+  /** Same set from the last time this exercise was performed. */
+  previous?: { weight: number; reps: number };
 
   onToggle: () => void;
   onWeightChange: (value: number) => void;
@@ -30,6 +32,7 @@ export default function WorkoutSetRow({
   weight,
   completed,
   effort,
+  previous,
   onToggle,
   onWeightChange,
   onRepsChange,
@@ -45,12 +48,22 @@ export default function WorkoutSetRow({
           transition: "0.25s",
         }}
       >
-        <span
-          className="w-8 text-center text-xs font-semibold"
-          style={{ color: completed ? C.accent : C.fg3 }}
-        >
-          {index + 1}
-        </span>
+        <div className="w-10 flex flex-col items-center">
+          <span
+            className="text-xs font-semibold"
+            style={{ color: completed ? C.accent : C.fg3 }}
+          >
+            {index + 1}
+          </span>
+          {previous && (
+            <span
+              className="text-[9px] leading-tight text-center"
+              style={{ color: C.fg3, opacity: 0.7 }}
+            >
+              {previous.weight}×{previous.reps}
+            </span>
+          )}
+        </div>
 
         <div
           className="flex-1 rounded-xl flex items-center justify-between px-2 py-1"

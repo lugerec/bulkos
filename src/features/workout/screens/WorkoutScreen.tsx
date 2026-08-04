@@ -1554,6 +1554,14 @@ export default function WorkoutScreen() {
                     weight={set.weight}
                     completed={isDone}
                     effort={set.effort}
+                    previous={
+                      previous?.sets[setIdx]
+                        ? {
+                            weight: previous.sets[setIdx].weight,
+                            reps: previous.sets[setIdx].reps,
+                          }
+                        : undefined
+                    }
                     onToggle={() => toggleSet(exIdx, setIdx)}
                     onWeightChange={(value) =>
                       updateSet(exIdx, setIdx, "weight", value)
