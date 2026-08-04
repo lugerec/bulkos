@@ -4,6 +4,7 @@ import {
   getFoods,
   getUserFoods,
   saveUserFood,
+  deleteUserFood,
   getFavoriteFoods,
   addFavoriteFood,
   removeFavoriteFood,
@@ -14,6 +15,9 @@ import { useAuthStore } from "./authStore";
 
 type FoodState = {
   foods: FoodItem[];
+  /** The user's own foods (customFoods) — the only ones that can be edited or
+   * deleted. Kept separate so starter/shared entries aren't mistaken for own. */
+  userFoods: FoodItem[];
   favorites: FoodItem[];
   loading: boolean;
   error: string | null;
@@ -22,10 +26,14 @@ type FoodState = {
   loadFavorites: () => Promise<void>;
   /** Persist a food to the signed-in user's own database and merge it in. */
   saveFood: (food: FoodItem) => Promise<void>;
+  /** Delete one of the user's own foods (and unfavorite it if needed). */
+  deleteFood: (id: string) => Promise<void>;
   /** Add/remove a food from favorites, updating local state optimistically. */
   toggleFavorite: (food: FoodItem) => Promise<void>;
   /** True once a food with this id is in the local list. */
   hasFood: (id: string) => boolean;
+  /** True when the food is one of the user's own (editable/deletable). */
+  isOwnFood: (id: string) => boolean;
   isFavorite: (id: string) => boolean;
 };
 
@@ -35,6 +43,7 @@ function currentUid(): string | null {
 
 export const useFoodStore = create<FoodState>((set, get) => ({
   foods: [],
+  userFoods: [],
   favorites: [],
   loading: false,
   error: null,
@@ -65,6 +74,7 @@ export const useFoodStore = create<FoodState>((set, get) => ({
     }
 
     set({
+      userFoods,
       foods: mergeFoods(mergeFoods(STARTER_FOODS, shared), userFoods),
       loading: false,
     });
@@ -87,8 +97,34 @@ export const useFoodStore = create<FoodState>((set, get) => ({
 
     await saveUserFood(uid, food);
 
-    // Merge into the local list so it is searchable immediately, even offline.
-    set({ foods: mergeFoods(get().foods, [food]) });
+    // Merge into both lists so it's searchable immediately and marked as own.
+    set({
+      foods: mergeFoods(get().foods, [food]),
+      userFoods: mergeFoods(get().userFoods, [food]),
+    });
+  },
+
+  deleteFood: async (id) => {
+    const uid = currentUid();
+    if (!uid) throw new Error("Not signed in");
+
+    // Optimistic removal from every local list.
+    set({
+      foods: get().foods.filter((f) => f.id !== id),
+      userFoods: get().userFoods.filter((f) => f.id !== id),
+      favorites: get().favorites.filter((f) => f.id !== id),
+    });
+
+    try {
+      await deleteUserFood(uid, id);
+      if (get().favorites.every((f) => f.id !== id)) {
+        // Also drop the favorite entry if it existed.
+        await removeFavoriteFood(uid, id).catch(() => {});
+      }
+    } catch {
+      // If the delete failed, reload to resync local state with the server.
+      await get().loadFoods();
+    }
   },
 
   toggleFavorite: async (food) => {
@@ -108,5 +144,6 @@ export const useFoodStore = create<FoodState>((set, get) => ({
   },
 
   hasFood: (id) => get().foods.some((food) => food.id === id),
+  isOwnFood: (id) => get().userFoods.some((food) => food.id === id),
   isFavorite: (id) => get().favorites.some((food) => food.id === id),
 }));

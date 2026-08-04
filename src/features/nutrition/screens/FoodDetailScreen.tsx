@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, Minus, Plus, Bookmark, Check, Star } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Minus, Plus, Bookmark, Check, Star, Pencil, Trash2 } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import type { FoodItem } from "@/types/food";
@@ -41,6 +41,18 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
 
   const toggleFavorite = useFoodStore((state) => state.toggleFavorite);
   const isFavorite = useFoodStore((state) => state.isFavorite(food.id));
+  const isOwnFood = useFoodStore((state) => state.isOwnFood(food.id));
+  const deleteFood = useFoodStore((state) => state.deleteFood);
+
+  const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: food.name,
+    calories: String(food.calories),
+    protein: String(food.protein),
+    carbs: String(food.carbs),
+    fat: String(food.fat),
+  });
 
   const handleToggleFavorite = async () => {
     if (!user) return;
@@ -48,6 +60,45 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
       await toggleFavorite(food);
     } catch {
       // Optimistic; store already reverted nothing critical.
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    const name = editForm.name.trim();
+    const calories = Number(editForm.calories);
+    if (!name || !Number.isFinite(calories) || calories < 0) return;
+
+    const num = (v: string) => {
+      const n = Number(v);
+      return Number.isFinite(n) && n >= 0 ? Math.round(n * 10) / 10 : 0;
+    };
+
+    try {
+      setSavingToDb(true);
+      setError(null);
+      await saveFood({
+        ...food,
+        name,
+        calories: Math.round(calories),
+        protein: num(editForm.protein),
+        carbs: num(editForm.carbs),
+        fat: num(editForm.fat),
+      });
+      setEditing(false);
+      onBack();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save food");
+    } finally {
+      setSavingToDb(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteFood(food.id);
+      onBack();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete food");
     }
   };
 
@@ -357,46 +408,199 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={handleSaveToMyFoods}
-        disabled={!user || savingToDb || inMyFoods}
-        className="w-full py-3.5 rounded-[20px] font-bold text-sm mb-3 flex items-center justify-center gap-2"
-        style={{
-          background: C.card,
-          border: `1px solid ${inMyFoods ? C.accent : C.border}`,
-          color: inMyFoods ? C.accent : C.fg,
-          opacity: !user ? 0.6 : 1,
-        }}
-      >
-        {inMyFoods ? (
-          <>
-            <Check size={16} />
-            In your foods
-          </>
-        ) : (
-          <>
-            <Bookmark size={16} />
-            {savingToDb ? "Saving..." : "Save to my foods"}
-          </>
-        )}
-      </button>
+      {editing ? (
+        <div
+          className="rounded-[16px] p-4 mb-3"
+          style={{ background: C.card, border: `1px solid ${C.accent}` }}
+        >
+          <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>
+            Edit food
+          </p>
 
-      <button
-        type="button"
-        onClick={handleAddFood}
-        disabled={!user || saving}
-        className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
-        style={{
-          background: C.accent,
-          color: C.onAccent,
-          opacity: !user || saving ? 0.6 : 1,
-        }}
-      >
-        {saving
-          ? "Adding..."
-          : `Add to ${mealLabels[selectedMeal]}`}
-      </button>
+          <input
+            value={editForm.name}
+            onChange={(e) =>
+              setEditForm((f) => ({ ...f, name: e.target.value }))
+            }
+            placeholder="Name"
+            className="w-full bg-transparent outline-none text-sm px-3 py-2.5 rounded-[10px] mb-3"
+            style={{ color: C.fg, border: `1px solid ${C.border}` }}
+          />
+
+          <p className="text-[11px] mb-2" style={{ color: C.fg3 }}>
+            Per {food.serving}
+            {food.unit}
+          </p>
+
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            <EditField
+              label="kcal"
+              value={editForm.calories}
+              onChange={(v) => setEditForm((f) => ({ ...f, calories: v }))}
+            />
+            <EditField
+              label="P"
+              value={editForm.protein}
+              onChange={(v) => setEditForm((f) => ({ ...f, protein: v }))}
+            />
+            <EditField
+              label="C"
+              value={editForm.carbs}
+              onChange={(v) => setEditForm((f) => ({ ...f, carbs: v }))}
+            />
+            <EditField
+              label="F"
+              value={editForm.fat}
+              onChange={(v) => setEditForm((f) => ({ ...f, fat: v }))}
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setEditing(false)}
+              className="flex-1 py-3 rounded-[14px] font-bold text-sm"
+              style={{ background: C.card2, color: C.fg, border: `1px solid ${C.border}` }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveEdit}
+              disabled={savingToDb || !editForm.name.trim()}
+              className="flex-1 py-3 rounded-[14px] font-bold text-sm disabled:opacity-50"
+              style={{ background: C.accent, color: C.onAccent }}
+            >
+              {savingToDb ? "Saving..." : "Save changes"}
+            </button>
+          </div>
+        </div>
+      ) : isOwnFood ? (
+        <div className="flex gap-2 mb-3">
+          <button
+            type="button"
+            onClick={() => {
+              setEditForm({
+                name: food.name,
+                calories: String(food.calories),
+                protein: String(food.protein),
+                carbs: String(food.carbs),
+                fat: String(food.fat),
+              });
+              setEditing(true);
+            }}
+            className="flex-1 py-3.5 rounded-[20px] font-bold text-sm flex items-center justify-center gap-2"
+            style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
+          >
+            <Pencil size={15} />
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmDelete(true)}
+            className="flex-1 py-3.5 rounded-[20px] font-bold text-sm flex items-center justify-center gap-2"
+            style={{ background: C.card, border: "1px solid rgba(255,77,77,0.4)", color: "#ff4d4d" }}
+          >
+            <Trash2 size={15} />
+            Delete
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={handleSaveToMyFoods}
+          disabled={!user || savingToDb || inMyFoods}
+          className="w-full py-3.5 rounded-[20px] font-bold text-sm mb-3 flex items-center justify-center gap-2"
+          style={{
+            background: C.card,
+            border: `1px solid ${inMyFoods ? C.accent : C.border}`,
+            color: inMyFoods ? C.accent : C.fg,
+            opacity: !user ? 0.6 : 1,
+          }}
+        >
+          {inMyFoods ? (
+            <>
+              <Check size={16} />
+              In your foods
+            </>
+          ) : (
+            <>
+              <Bookmark size={16} />
+              {savingToDb ? "Saving..." : "Save to my foods"}
+            </>
+          )}
+        </button>
+      )}
+
+      {confirmDelete && (
+        <div
+          className="rounded-[16px] p-4 mb-3"
+          style={{ background: C.card, border: "1px solid rgba(255,77,77,0.4)" }}
+        >
+          <p className="text-sm mb-3" style={{ color: C.fg2 }}>
+            Delete “{food.name}” from your foods?
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="flex-1 py-2.5 rounded-[12px] font-bold text-sm"
+              style={{ background: C.card2, color: C.fg, border: `1px solid ${C.border}` }}
+            >
+              Keep
+            </button>
+            <button
+              onClick={handleDelete}
+              className="flex-1 py-2.5 rounded-[12px] font-bold text-sm"
+              style={{ background: "#ff4d4d", color: "#0A0A0B" }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!editing && (
+        <button
+          type="button"
+          onClick={handleAddFood}
+          disabled={!user || saving}
+          className="w-full py-4 rounded-[20px] font-bold text-base card-lit"
+          style={{
+            background: C.accent,
+            color: C.onAccent,
+            opacity: !user || saving ? 0.6 : 1,
+          }}
+        >
+          {saving ? "Adding..." : `Add to ${mealLabels[selectedMeal]}`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function EditField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div
+      className="rounded-xl px-2.5 py-2"
+      style={{ background: C.card2, border: `1px solid ${C.border}` }}
+    >
+      <span className="text-[10px] font-bold" style={{ color: C.fg3 }}>
+        {label}
+      </span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value.replace(/[^0-9.]/g, ""))}
+        inputMode="decimal"
+        placeholder="0"
+        className="w-full bg-transparent outline-none text-sm mt-0.5"
+        style={{ color: C.fg }}
+      />
     </div>
   );
 }

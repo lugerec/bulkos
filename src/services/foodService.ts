@@ -57,6 +57,10 @@ export async function saveUserFood(
   await setDoc(doc(db, "users", uid, "customFoods", id), data);
 }
 
+export async function deleteUserFood(uid: string, id: string): Promise<void> {
+  await deleteDoc(doc(db, "users", uid, "customFoods", id));
+}
+
 /** A user's favorite foods under users/{uid}/favoriteFoods for quick-add. */
 export async function getFavoriteFoods(uid: string): Promise<FoodItem[]> {
   const q = query(

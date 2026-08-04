@@ -61,6 +61,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
   const saveFood = useFoodStore((state) => state.saveFood);
   const favorites = useFoodStore((state) => state.favorites);
   const loadFavorites = useFoodStore((state) => state.loadFavorites);
+  const toggleFavorite = useFoodStore((state) => state.toggleFavorite);
 
   const selectedMeal = useAppStore((state) => state.selectedMeal);
   const selectedDateKey = useAppStore((state) => state.selectedDateKey);
@@ -492,6 +493,9 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
                     added={addedKey === `fav-${food.id}`}
                     onOpen={() => setSelectedFood(food)}
                     onQuickAdd={() => quickAddFavorite(food)}
+                    onRemoveFavorite={() => {
+                      toggleFavorite(food).catch(() => {});
+                    }}
                   />
                 ))}
               </div>
@@ -689,12 +693,14 @@ function QuickRow({
   added,
   onOpen,
   onQuickAdd,
+  onRemoveFavorite,
 }: {
   title: string;
   subtitle: string;
   added: boolean;
   onOpen?: () => void;
   onQuickAdd: () => void;
+  onRemoveFavorite?: () => void;
 }) {
   const Info = (
     <div className="min-w-0 text-left">
@@ -709,7 +715,7 @@ function QuickRow({
 
   return (
     <div
-      className="flex items-center justify-between gap-3 pl-4 pr-2 py-2.5 rounded-[14px]"
+      className="flex items-center justify-between gap-2 pl-4 pr-2 py-2.5 rounded-[14px]"
       style={{ background: C.card, border: `1px solid ${C.border}` }}
     >
       {onOpen ? (
@@ -718,6 +724,17 @@ function QuickRow({
         </button>
       ) : (
         <div className="min-w-0 flex-1">{Info}</div>
+      )}
+
+      {onRemoveFavorite && (
+        <button
+          onClick={onRemoveFavorite}
+          aria-label={`Remove ${title} from favorites`}
+          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ color: C.accent }}
+        >
+          <Star size={17} fill={C.accent} />
+        </button>
       )}
 
       <button
