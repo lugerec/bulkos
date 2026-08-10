@@ -37,6 +37,8 @@ export type RecommendationWorkout = {
   templateId?: string;
   volumeKg: number;
   exercises?: readonly RecommendationExercise[];
+  /** Post-workout "how did it feel" rating, if the user gave one. */
+  sessionRating?: "easy" | "moderate" | "hard";
 };
 
 export type RecommendationBodyMetrics = {
@@ -526,8 +528,15 @@ export function getRecentEffortStrain(
 
   let rated = 0;
   let hard = 0;
+  let sessionRated = 0;
+  let sessionHard = 0;
 
   for (const workout of recent) {
+    if (workout.sessionRating) {
+      sessionRated += 1;
+      if (workout.sessionRating === "hard") sessionHard += 1;
+    }
+
     for (const exercise of workout.exercises ?? []) {
       for (const set of exercise.sets) {
         if (set.completed && set.effort) {
@@ -539,8 +548,15 @@ export function getRecentEffortStrain(
   }
 
   const hardRatio = rated > 0 ? hard / rated : 0;
+
+  // Per-set signal (needs enough rated sets) OR a session-level signal for
+  // lifters who rate the whole workout instead of each set: two or more recent
+  // sessions flagged "tough" is a fatigue cue on its own.
+  const sessionStrain = sessionRated >= 2 && sessionHard / sessionRated >= 0.6;
+
   const highStrain =
-    rated >= EFFORT_STRAIN_MIN_RATED && hardRatio >= EFFORT_STRAIN_HARD_RATIO;
+    (rated >= EFFORT_STRAIN_MIN_RATED && hardRatio >= EFFORT_STRAIN_HARD_RATIO) ||
+    sessionStrain;
 
   return { highStrain, ratedSets: rated, hardRatio };
 }

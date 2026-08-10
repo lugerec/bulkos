@@ -1,4 +1,10 @@
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 
 import { db } from "@/services/db";
 import type { WorkoutExercise, SetEffort } from "@/types/workout";
@@ -24,7 +30,7 @@ type SaveWorkoutInput = {
   exercises: LoggedWorkoutExercise[];
 };
 
-export async function saveWorkout(input: SaveWorkoutInput) {
+export async function saveWorkout(input: SaveWorkoutInput): Promise<string> {
   const {
     uid,
     date,
@@ -37,7 +43,7 @@ export async function saveWorkout(input: SaveWorkoutInput) {
     exercises,
   } = input;
 
-  await addDoc(collection(db, "users", uid, "workoutLogs"), {
+  const ref = await addDoc(collection(db, "users", uid, "workoutLogs"), {
     date,
     templateId,
     name,
@@ -47,5 +53,18 @@ export async function saveWorkout(input: SaveWorkoutInput) {
     volumeKg,
     exercises,
     createdAt: serverTimestamp(),
+  });
+
+  return ref.id;
+}
+
+/** Attach the user's post-workout "how did it feel" rating to a saved log. */
+export async function updateWorkoutRating(
+  uid: string,
+  workoutId: string,
+  sessionRating: SetEffort
+): Promise<void> {
+  await updateDoc(doc(db, "users", uid, "workoutLogs", workoutId), {
+    sessionRating,
   });
 }

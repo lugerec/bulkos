@@ -24,7 +24,7 @@ import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import { getLevelConfig } from "@/features/settings/experienceLevel";
 import { writeStrengthWorkout } from "@/services/healthService";
 import { sendWorkoutToWatch, onWatchSetUpdate, sendSetUpdateToWatch } from "@/services/watchService";
-import { saveWorkout } from "@/services/workoutService";
+import { saveWorkout, updateWorkoutRating } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
 import { notifyRestComplete, adjustRest, hapticTick } from "@/features/workout/utils/restNotify";
@@ -69,6 +69,7 @@ export default function WorkoutScreen() {
 
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
+  const setWorkoutRatingLocal = useWorkoutHistoryStore((s) => s.setWorkoutRating);
 
   const bodyEntries = useBodyMetricsStore((s) => s.entries);
   const loadBodyMetrics = useBodyMetricsStore((s) => s.load);
@@ -93,6 +94,8 @@ export default function WorkoutScreen() {
   const [, forceTick] = useState(0);
   const [confirmStop, setConfirmStop] = useState(false);
   const [done, setDone] = useState(false);
+  const [savedWorkoutId, setSavedWorkoutId] = useState<string | null>(null);
+  const [sessionRating, setSessionRating] = useState<SetEffort | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const flags = useFeatureFlags();
@@ -850,7 +853,7 @@ export default function WorkoutScreen() {
         : null
     );
 
-      await saveWorkout({
+      const savedId = await saveWorkout({
         uid: user.uid,
         date: getTodayKey(),
         templateId: workout.id,
@@ -861,6 +864,10 @@ export default function WorkoutScreen() {
         volumeKg,
         exercises: loggedExercises,
       });
+
+      setSavedWorkoutId(savedId);
+      // Prefill the post-workout rating from the per-set efforts, if any.
+      setSessionRating(getSessionEffort(exercises).overall);
 
       await loadWorkouts(user.uid);
 
@@ -879,6 +886,15 @@ export default function WorkoutScreen() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const rateSession = (rating: SetEffort) => {
+    setSessionRating(rating);
+    if (!user || !savedWorkoutId) return;
+
+    // Persist and reflect locally so the generator sees it without a reload.
+    setWorkoutRatingLocal(savedWorkoutId, rating);
+    updateWorkoutRating(user.uid, savedWorkoutId, rating).catch(() => {});
   };
 
   if (done) {
@@ -941,6 +957,47 @@ export default function WorkoutScreen() {
               </p>
             </div>
           ))}
+        </div>
+
+        <div className="w-full mb-6">
+          <p className="text-sm font-semibold mb-1" style={{ color: C.fg }}>
+            How was your workout?
+          </p>
+          <p className="text-[11px] mb-3" style={{ color: C.fg3 }}>
+            This helps tune your next session
+          </p>
+
+          <div
+            className="h-1.5 rounded-full mb-3"
+            style={{
+              background: `linear-gradient(90deg, ${C.blue}, ${C.accent}, ${C.amber})`,
+              opacity: 0.5,
+            }}
+          />
+
+          <div className="flex gap-2">
+            {[
+              { value: "easy" as SetEffort, label: "Too easy", color: C.blue },
+              { value: "moderate" as SetEffort, label: "Just right", color: C.accent },
+              { value: "hard" as SetEffort, label: "Tough", color: C.amber },
+            ].map((option) => {
+              const active = sessionRating === option.value;
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => rateSession(option.value)}
+                  className="flex-1 py-2.5 rounded-[14px] text-sm font-bold"
+                  style={{
+                    background: active ? option.color : C.card,
+                    border: `1px solid ${active ? option.color : C.border}`,
+                    color: active ? C.bg : C.fg2,
+                  }}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
   
         {sessionEffort.overall && (

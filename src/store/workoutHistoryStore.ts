@@ -33,6 +33,8 @@ export type WorkoutLog = {
   totalSets: number;
   volumeKg: number;
   exercises?: LoggedWorkoutExercise[];
+  /** Post-workout "how did it feel" rating, if given. */
+  sessionRating?: SetEffort;
 };
 
 type WorkoutHistoryState = {
@@ -43,6 +45,8 @@ type WorkoutHistoryState = {
   loading: boolean;
 
   loadWorkouts: (uid: string) => Promise<void>;
+  /** Set a workout's post-session rating locally (after persisting). */
+  setWorkoutRating: (id: string, rating: SetEffort) => void;
   selectWorkout: (id: string) => void;
   clearSelectedWorkout: () => void;
   selectExercise: (exerciseId: string, exerciseName: string) => void;
@@ -81,6 +85,14 @@ export const useWorkoutHistoryStore = create<WorkoutHistoryState>((set, get) => 
     if (workout) {
       set({ selectedWorkout: workout });
     }
+  },
+
+  setWorkoutRating: (id, rating) => {
+    set({
+      workouts: get().workouts.map((w) =>
+        w.id === id ? { ...w, sessionRating: rating } : w
+      ),
+    });
   },
 
   clearSelectedWorkout: () => {

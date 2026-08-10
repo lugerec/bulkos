@@ -646,6 +646,24 @@ describe("getRecentEffortStrain", () => {
     };
   }
 
+  it("flags strain from session ratings alone, without per-set efforts", () => {
+    const workouts: RecommendationWorkout[] = [
+      { id: "a", date: "2026-07-15", name: "W", volumeKg: 1000, sessionRating: "hard" },
+      { id: "b", date: "2026-07-13", name: "W", volumeKg: 1000, sessionRating: "hard" },
+    ];
+
+    expect(getRecentEffortStrain(workouts).highStrain).toBe(true);
+  });
+
+  it("does not flag strain from a single tough session rating", () => {
+    const workouts: RecommendationWorkout[] = [
+      { id: "a", date: "2026-07-15", name: "W", volumeKg: 1000, sessionRating: "hard" },
+      { id: "b", date: "2026-07-13", name: "W", volumeKg: 1000, sessionRating: "moderate" },
+    ];
+
+    expect(getRecentEffortStrain(workouts).highStrain).toBe(false);
+  });
+
   it("flags strain when most recent rated sets are hard", () => {
     const hard = Array<"hard">(6).fill("hard");
     const workouts = [
