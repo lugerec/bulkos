@@ -22,6 +22,7 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "sendWorkout", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "sendSetUpdate", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendSetValueUpdate", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "isPaired", returnType: CAPPluginReturnPromise),
     ]
 
@@ -35,6 +36,17 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
                     "exerciseIndex": exerciseIndex,
                     "setIndex": setIndex,
                     "completed": completed,
+                ]
+            )
+        }
+        link.onSetValueUpdate = { [weak self] exerciseIndex, setIndex, weight, reps in
+            self?.notifyListeners(
+                "setValueUpdate",
+                data: [
+                    "exerciseIndex": exerciseIndex,
+                    "setIndex": setIndex,
+                    "weight": weight,
+                    "reps": reps,
                 ]
             )
         }
@@ -71,6 +83,27 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         call.resolve()
     }
 
+    /// Mirror a set's weight/reps the user edited on the phone over to the watch.
+    @objc func sendSetValueUpdate(_ call: CAPPluginCall) {
+        guard
+            let exerciseIndex = call.getInt("exerciseIndex"),
+            let setIndex = call.getInt("setIndex")
+        else {
+            call.reject("Missing 'exerciseIndex'/'setIndex'")
+            return
+        }
+
+        let weight = call.getDouble("weight") ?? 0
+        let reps = call.getInt("reps") ?? 0
+        link.sendSetValueUpdate(
+            exerciseIndex: exerciseIndex,
+            setIndex: setIndex,
+            weight: weight,
+            reps: reps
+        )
+        call.resolve()
+    }
+
     @objc func isPaired(_ call: CAPPluginCall) {
         call.resolve([
             "supported": WCSession.isSupported(),
@@ -84,6 +117,8 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
 final class PhoneWatchLink: NSObject {
     /// (exerciseIndex, setIndex, completed)
     var onSetUpdate: ((Int, Int, Bool) -> Void)?
+    /// (exerciseIndex, setIndex, weight, reps)
+    var onSetValueUpdate: ((Int, Int, Double, Int) -> Void)?
 
     var isPaired: Bool {
         WCSession.isSupported() ? WCSession.default.isPaired : false
@@ -142,16 +177,55 @@ final class PhoneWatchLink: NSObject {
         }
     }
 
-    private func handle(payload: [String: Any]) {
-        guard
-            payload["type"] as? String == "setUpdate",
-            let exerciseIndex = payload["exerciseIndex"] as? Int,
-            let setIndex = payload["setIndex"] as? Int,
-            let completed = payload["completed"] as? Bool
-        else { return }
+    /// Send a weight/reps edit to the watch (message when reachable, queued
+    /// user-info otherwise so it still lands when the watch wakes).
+    func sendSetValueUpdate(exerciseIndex: Int, setIndex: Int, weight: Double, reps: Int) {
+        guard WCSession.isSupported() else { return }
+        let session = WCSession.default
+        guard session.activationState == .activated else { return }
 
-        DispatchQueue.main.async {
-            self.onSetUpdate?(exerciseIndex, setIndex, completed)
+        let payload: [String: Any] = [
+            "type": "setValueUpdate",
+            "exerciseIndex": exerciseIndex,
+            "setIndex": setIndex,
+            "weight": weight,
+            "reps": reps,
+        ]
+
+        if session.isReachable {
+            session.sendMessage(payload, replyHandler: nil, errorHandler: nil)
+        } else {
+            session.transferUserInfo(payload)
+        }
+    }
+
+    private func handle(payload: [String: Any]) {
+        guard let type = payload["type"] as? String else { return }
+
+        if type == "setUpdate" {
+            guard
+                let exerciseIndex = payload["exerciseIndex"] as? Int,
+                let setIndex = payload["setIndex"] as? Int,
+                let completed = payload["completed"] as? Bool
+            else { return }
+
+            DispatchQueue.main.async {
+                self.onSetUpdate?(exerciseIndex, setIndex, completed)
+            }
+        } else if type == "setValueUpdate" {
+            guard
+                let exerciseIndex = payload["exerciseIndex"] as? Int,
+                let setIndex = payload["setIndex"] as? Int
+            else { return }
+
+            let weight = (payload["weight"] as? Double)
+                ?? Double(payload["weight"] as? Int ?? 0)
+            let reps = (payload["reps"] as? Int)
+                ?? Int(payload["reps"] as? Double ?? 0)
+
+            DispatchQueue.main.async {
+                self.onSetValueUpdate?(exerciseIndex, setIndex, weight, reps)
+            }
         }
     }
 }

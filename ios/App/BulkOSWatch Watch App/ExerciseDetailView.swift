@@ -35,13 +35,30 @@ struct ExerciseDetailView: View {
                     ForEach(Array(exercise.sets.enumerated()), id: \.element.id) { setIndex, set in
                         SetRow(
                             number: setIndex + 1,
-                            set: set
-                        ) {
-                            session.toggleSet(
-                                exerciseIndex: exerciseIndex,
-                                setIndex: setIndex
-                            )
-                        }
+                            set: set,
+                            onToggle: {
+                                session.toggleSet(
+                                    exerciseIndex: exerciseIndex,
+                                    setIndex: setIndex
+                                )
+                            },
+                            onWeight: { newWeight in
+                                session.updateSet(
+                                    exerciseIndex: exerciseIndex,
+                                    setIndex: setIndex,
+                                    weight: newWeight,
+                                    reps: set.reps
+                                )
+                            },
+                            onReps: { newReps in
+                                session.updateSet(
+                                    exerciseIndex: exerciseIndex,
+                                    setIndex: setIndex,
+                                    weight: set.weight,
+                                    reps: newReps
+                                )
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, 2)
@@ -51,14 +68,16 @@ struct ExerciseDetailView: View {
     }
 }
 
-/// A single set row: number, weight × reps, and a complete toggle.
+/// A single set row: number, weight × reps with steppers, and a complete toggle.
 private struct SetRow: View {
     let number: Int
     let set: WorkoutSet
     let onToggle: () -> Void
+    let onWeight: (Double) -> Void
+    let onReps: (Int) -> Void
 
     var body: some View {
-        Button(action: onToggle) {
+        VStack(spacing: 8) {
             HStack(spacing: 10) {
                 Text("\(number)")
                     .font(.system(size: 13, weight: .bold))
@@ -71,17 +90,64 @@ private struct SetRow: View {
 
                 Spacer()
 
-                Image(systemName: set.completed ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22))
-                    .foregroundStyle(set.completed ? Theme.accent : Theme.fg3)
+                Button(action: onToggle) {
+                    Image(systemName: set.completed ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 22))
+                        .foregroundStyle(set.completed ? Theme.accent : Theme.fg3)
+                }
+                .buttonStyle(.plain)
             }
-            .padding(12)
-            .background(
-                set.completed ? Theme.card2 : Theme.card,
-                in: RoundedRectangle(cornerRadius: 14)
-            )
+
+            HStack(spacing: 6) {
+                stepper(
+                    label: "kg",
+                    onDown: { onWeight(set.weight - 2.5) },
+                    onUp: { onWeight(set.weight + 2.5) }
+                )
+                stepper(
+                    label: "reps",
+                    onDown: { onReps(set.reps - 1) },
+                    onUp: { onReps(set.reps + 1) }
+                )
+            }
         }
-        .buttonStyle(.plain)
+        .padding(12)
+        .background(
+            set.completed ? Theme.card2 : Theme.card,
+            in: RoundedRectangle(cornerRadius: 14)
+        )
+    }
+
+    @ViewBuilder
+    private func stepper(
+        label: String,
+        onDown: @escaping () -> Void,
+        onUp: @escaping () -> Void
+    ) -> some View {
+        HStack(spacing: 4) {
+            Button(action: onDown) {
+                Image(systemName: "minus")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(Theme.fg)
+                    .frame(width: 24, height: 24)
+                    .background(Theme.card2, in: Circle())
+            }
+            .buttonStyle(.plain)
+
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(Theme.fg3)
+                .frame(maxWidth: .infinity)
+
+            Button(action: onUp) {
+                Image(systemName: "plus")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(Theme.onAccent)
+                    .frame(width: 24, height: 24)
+                    .background(Theme.accent, in: Circle())
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 

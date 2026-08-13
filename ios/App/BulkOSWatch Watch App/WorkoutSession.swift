@@ -55,6 +55,19 @@ final class WorkoutSession: ObservableObject {
             }
             .store(in: &cancellables)
 
+        // Mirror weight/reps the user edits on the phone.
+        WatchBridge.shared.setValueUpdates
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] exerciseIndex, setIndex, weight, reps in
+                self?.applyRemoteSetValue(
+                    exerciseIndex: exerciseIndex,
+                    setIndex: setIndex,
+                    weight: weight,
+                    reps: reps
+                )
+            }
+            .store(in: &cancellables)
+
         WatchBridge.shared.activate()
     }
 
@@ -94,6 +107,37 @@ final class WorkoutSession: ObservableObject {
         else { return }
 
         workout.exercises[exerciseIndex].sets[setIndex].completed = completed
+    }
+
+    /// Edit a set's weight/reps on the watch and mirror it to the phone.
+    func updateSet(exerciseIndex: Int, setIndex: Int, weight: Double, reps: Int) {
+        guard workout.exercises.indices.contains(exerciseIndex),
+              workout.exercises[exerciseIndex].sets.indices.contains(setIndex)
+        else { return }
+
+        let clampedWeight = max(0, weight)
+        let clampedReps = max(0, reps)
+
+        workout.exercises[exerciseIndex].sets[setIndex].weight = clampedWeight
+        workout.exercises[exerciseIndex].sets[setIndex].reps = clampedReps
+
+        WatchBridge.shared.sendSetValueUpdate(
+            exerciseIndex: exerciseIndex,
+            setIndex: setIndex,
+            weight: clampedWeight,
+            reps: clampedReps
+        )
+    }
+
+    /// Apply a weight/reps edit that originated on the phone. Sets the exact
+    /// values and never echoes back, to avoid a sync loop.
+    func applyRemoteSetValue(exerciseIndex: Int, setIndex: Int, weight: Double, reps: Int) {
+        guard workout.exercises.indices.contains(exerciseIndex),
+              workout.exercises[exerciseIndex].sets.indices.contains(setIndex)
+        else { return }
+
+        workout.exercises[exerciseIndex].sets[setIndex].weight = weight
+        workout.exercises[exerciseIndex].sets[setIndex].reps = reps
     }
 
     // MARK: - Rest timer

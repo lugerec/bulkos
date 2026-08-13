@@ -23,7 +23,7 @@ import { useActiveWorkoutStore } from "@/store/activeWorkoutStore";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import { getLevelConfig } from "@/features/settings/experienceLevel";
 import { writeStrengthWorkout } from "@/services/healthService";
-import { sendWorkoutToWatch, onWatchSetUpdate, sendSetUpdateToWatch } from "@/services/watchService";
+import { sendWorkoutToWatch, onWatchSetUpdate, sendSetUpdateToWatch, onWatchSetValueUpdate, sendSetValueToWatch } from "@/services/watchService";
 import { saveWorkout, updateWorkoutRating } from "@/services/workoutService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
@@ -146,7 +146,7 @@ export default function WorkoutScreen() {
 
   // Sets ticked off on the Apple Watch mirror straight into the session.
   useEffect(() => {
-    let cleanup: (() => void) | undefined;
+    const cleanups: (() => void)[] = [];
 
     onWatchSetUpdate(({ exerciseIndex, setIndex, completed: isDone }) => {
       const key = `${exerciseIndex}-${setIndex}`;
@@ -157,11 +157,24 @@ export default function WorkoutScreen() {
         else next.delete(key);
         return next;
       });
-    }).then((remove) => {
-      cleanup = remove;
-    });
+    }).then((remove) => cleanups.push(remove));
 
-    return () => cleanup?.();
+    // Weight/reps edited on the watch → mirror into local state.
+    onWatchSetValueUpdate(({ exerciseIndex, setIndex, weight, reps }) => {
+      setExercises((prev) =>
+        prev.map((exercise, exIdx) => {
+          if (exIdx !== exerciseIndex) return exercise;
+          return {
+            ...exercise,
+            sets: exercise.sets.map((set, sIdx) =>
+              sIdx === setIndex ? { ...set, weight, reps } : set
+            ),
+          };
+        })
+      );
+    }).then((remove) => cleanups.push(remove));
+
+    return () => cleanups.forEach((c) => c());
   }, []);
 
   useEffect(() => {
@@ -536,6 +549,13 @@ export default function WorkoutScreen() {
     field: "weight" | "reps",
     value: number
   ) => {
+    const currentSet = exercises[exIdx]?.sets[setIdx];
+    const nextWeight = field === "weight" ? value : currentSet?.weight ?? 0;
+    const nextReps = field === "reps" ? value : currentSet?.reps ?? 0;
+
+    // Keep the watch in sync with the edited weight/reps.
+    sendSetValueToWatch(exIdx, setIdx, nextWeight, nextReps);
+
     setExercises((current) =>
       current.map((exercise, exerciseIndex) => {
         if (exerciseIndex !== exIdx) return exercise;
@@ -545,10 +565,7 @@ export default function WorkoutScreen() {
           sets: exercise.sets.map((set, setIndex) => {
             if (setIndex !== setIdx) return set;
 
-            return {
-              ...set,
-              [field]: value,
-            };
+            return { ...set, [field]: value };
           }),
         };
       })

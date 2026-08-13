@@ -24,6 +24,8 @@ final class WatchBridge: NSObject, ObservableObject {
 
     /// Set updates pushed from the phone: (exerciseIndex, setIndex, completed).
     let setUpdates = PassthroughSubject<(Int, Int, Bool), Never>()
+    /// Weight/reps edits pushed from the phone: (exerciseIndex, setIndex, weight, reps).
+    let setValueUpdates = PassthroughSubject<(Int, Int, Double, Int), Never>()
 
     private override init() {
         super.init()
@@ -57,6 +59,27 @@ final class WatchBridge: NSObject, ObservableObject {
         }
     }
 
+    /// Tell the phone a set's weight/reps changed.
+    func sendSetValueUpdate(exerciseIndex: Int, setIndex: Int, weight: Double, reps: Int) {
+        guard WCSession.isSupported() else { return }
+        let session = WCSession.default
+        guard session.activationState == .activated else { return }
+
+        let payload: [String: Any] = [
+            "type": "setValueUpdate",
+            "exerciseIndex": exerciseIndex,
+            "setIndex": setIndex,
+            "weight": weight,
+            "reps": reps,
+        ]
+
+        if session.isReachable {
+            session.sendMessage(payload, replyHandler: nil, errorHandler: nil)
+        } else {
+            session.transferUserInfo(payload)
+        }
+    }
+
     // MARK: - Decoding
 
     private func handle(payload: [String: Any]) {
@@ -82,6 +105,19 @@ final class WatchBridge: NSObject, ObservableObject {
             else { return }
 
             self.setUpdates.send((exerciseIndex, setIndex, completed))
+
+        case "setValueUpdate":
+            guard
+                let exerciseIndex = payload["exerciseIndex"] as? Int,
+                let setIndex = payload["setIndex"] as? Int
+            else { return }
+
+            let weight = (payload["weight"] as? Double)
+                ?? Double(payload["weight"] as? Int ?? 0)
+            let reps = (payload["reps"] as? Int)
+                ?? Int(payload["reps"] as? Double ?? 0)
+
+            self.setValueUpdates.send((exerciseIndex, setIndex, weight, reps))
 
         default:
             break

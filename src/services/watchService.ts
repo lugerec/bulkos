@@ -14,12 +14,25 @@ type SetUpdateEvent = {
   completed: boolean;
 };
 
+type SetValueUpdateEvent = {
+  exerciseIndex: number;
+  setIndex: number;
+  weight: number;
+  reps: number;
+};
+
 type WatchBridgePlugin = {
   sendWorkout(options: { workout: string }): Promise<{ delivered: boolean }>;
   sendSetUpdate(options: {
     exerciseIndex: number;
     setIndex: number;
     completed: boolean;
+  }): Promise<void>;
+  sendSetValueUpdate(options: {
+    exerciseIndex: number;
+    setIndex: number;
+    weight: number;
+    reps: number;
   }): Promise<void>;
   isPaired(): Promise<{
     supported: boolean;
@@ -29,6 +42,10 @@ type WatchBridgePlugin = {
   addListener(
     eventName: "setUpdate",
     listener: (event: SetUpdateEvent) => void
+  ): Promise<PluginListenerHandle>;
+  addListener(
+    eventName: "setValueUpdate",
+    listener: (event: SetValueUpdateEvent) => void
   ): Promise<PluginListenerHandle>;
 };
 
@@ -111,6 +128,48 @@ export async function sendSetUpdateToWatch(
     await WatchBridge.sendSetUpdate({ exerciseIndex, setIndex, completed });
   } catch {
     // best-effort — never block on the watch link
+  }
+}
+
+/**
+ * Mirror a set's weight/reps the user edited on the phone to the watch. Only
+ * for user-initiated edits — never when applying an edit that came FROM the
+ * watch, or the two will ping-pong.
+ */
+export async function sendSetValueToWatch(
+  exerciseIndex: number,
+  setIndex: number,
+  weight: number,
+  reps: number
+): Promise<void> {
+  if (!isSupported()) return;
+
+  try {
+    await WatchBridge.sendSetValueUpdate({
+      exerciseIndex,
+      setIndex,
+      weight,
+      reps,
+    });
+  } catch {
+    // best-effort — never block on the watch link
+  }
+}
+
+/**
+ * Listen for weight/reps edited on the watch. Returns a cleanup function; safe
+ * to call off-device (returns a no-op).
+ */
+export async function onWatchSetValueUpdate(
+  handler: (event: SetValueUpdateEvent) => void
+): Promise<() => void> {
+  if (!isSupported()) return () => {};
+
+  try {
+    const listener = await WatchBridge.addListener("setValueUpdate", handler);
+    return () => listener.remove();
+  } catch {
+    return () => {};
   }
 }
 
