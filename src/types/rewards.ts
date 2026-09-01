@@ -15,6 +15,8 @@ export type UserStats = {
   longestStreak: number;
   /** Local date key (YYYY-MM-DD) of the last day that counted toward activity. */
   lastActiveDate?: string;
+  /** Local date key of the last day daily-goal XP was awarded (guards dup). */
+  lastGoalAwardDate?: string;
   /** Ids of unlocked achievements. */
   achievements: string[];
   /** Lifetime counters used for achievement checks. */

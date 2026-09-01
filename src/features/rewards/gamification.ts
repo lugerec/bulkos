@@ -140,6 +140,14 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
 ];
 
+/** Whether a daily-goal award may still be granted today (once per day). */
+export function canAwardDailyGoal(
+  lastGoalAwardDate: string | undefined,
+  todayKey: string
+): boolean {
+  return lastGoalAwardDate !== todayKey;
+}
+
 /** All achievement ids currently satisfied by these stats. */
 export function unlockedAchievementIds(stats: UserStats): string[] {
   return ACHIEVEMENTS.filter((a) => a.isUnlocked(stats)).map((a) => a.id);

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { EMPTY_STATS, type UserStats } from "@/types/rewards";
 import {
   advanceStreak,
+  canAwardDailyGoal,
   levelFromXp,
   newlyUnlocked,
   unlockedAchievementIds,
@@ -65,6 +66,14 @@ describe("advanceStreak", () => {
     const r = advanceStreak(undefined, "2026-08-04", 0);
     expect(r.streak).toBe(1);
     expect(r.countsAsNewDay).toBe(true);
+  });
+});
+
+describe("canAwardDailyGoal", () => {
+  it("allows an award on a new day and blocks a repeat", () => {
+    expect(canAwardDailyGoal(undefined, "2026-08-05")).toBe(true);
+    expect(canAwardDailyGoal("2026-08-04", "2026-08-05")).toBe(true);
+    expect(canAwardDailyGoal("2026-08-05", "2026-08-05")).toBe(false);
   });
 });
 

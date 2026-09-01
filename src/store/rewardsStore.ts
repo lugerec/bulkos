@@ -3,7 +3,13 @@ import { create } from "zustand";
 import { EMPTY_STATS, type UserStats } from "@/types/rewards";
 import { getUserStats, saveUserStats } from "@/services/rewardsService";
 import { upsertPublicProfile } from "@/services/socialService";
-import { advanceStreak, newlyUnlocked, levelFromXp } from "@/features/rewards/gamification";
+import {
+  advanceStreak,
+  newlyUnlocked,
+  levelFromXp,
+  canAwardDailyGoal,
+  XP_REWARDS,
+} from "@/features/rewards/gamification";
 import { getTodayKey } from "@/lib/date";
 import { useAuthStore } from "./authStore";
 
@@ -27,9 +33,16 @@ type RewardsState = {
   justUnlocked: string[];
   /** The new level reached by the most recent activity, or null. */
   justLeveledUp: number | null;
+  /** In-memory guard: the day we already checked/awarded the daily goal. */
+  goalCheckedDate: string | null;
 
   loadStats: () => Promise<void>;
   recordActivity: (input: ActivityInput) => Promise<void>;
+  /** Award daily-goal XP once per day when the protein goal is met. */
+  recordDailyGoal: (input: {
+    proteinHit: boolean;
+    calorieHit: boolean;
+  }) => Promise<void>;
   /** Achievement ids + new level to celebrate; cleared once shown. */
   clearCelebration: () => void;
 };
@@ -60,6 +73,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
   loaded: false,
   justUnlocked: [],
   justLeveledUp: null,
+  goalCheckedDate: null,
 
   loadStats: async () => {
     const uid = currentUid();
@@ -139,4 +153,72 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
   },
 
   clearCelebration: () => set({ justUnlocked: [], justLeveledUp: null }),
+
+  recordDailyGoal: async ({ proteinHit, calorieHit }) => {
+    const uid = currentUid();
+    if (!uid || !proteinHit) return;
+
+    const todayKey = getTodayKey();
+
+    // In-memory guard: don't hit Firestore repeatedly once handled today.
+    if (get().goalCheckedDate === todayKey) return;
+
+    let prev = get().stats;
+    try {
+      prev = await getUserStats(uid);
+    } catch {
+      // fall back to in-memory
+    }
+
+    // Persistent guard: already awarded today.
+    if (!canAwardDailyGoal(prev.lastGoalAwardDate, todayKey)) {
+      set({ goalCheckedDate: todayKey });
+      return;
+    }
+
+    const { streak, countsAsNewDay } = advanceStreak(
+      prev.lastActiveDate,
+      todayKey,
+      prev.streak
+    );
+
+    const xpGained =
+      XP_REWARDS.proteinGoalHit +
+      (calorieHit ? XP_REWARDS.calorieGoalHit : 0) +
+      (countsAsNewDay ? XP_REWARDS.streakDay : 0);
+
+    const next: UserStats = {
+      ...prev,
+      xp: prev.xp + xpGained,
+      streak,
+      longestStreak: Math.max(prev.longestStreak, streak),
+      lastActiveDate: todayKey,
+      lastGoalAwardDate: todayKey,
+      achievements: prev.achievements,
+    };
+
+    const fresh = newlyUnlocked(next);
+    next.achievements = [...prev.achievements, ...fresh];
+
+    const leveledUp =
+      levelFromXp(next.xp).level > levelFromXp(prev.xp).level
+        ? levelFromXp(next.xp).level
+        : null;
+
+    set({
+      stats: next,
+      loaded: true,
+      justUnlocked: fresh,
+      justLeveledUp: leveledUp,
+      goalCheckedDate: todayKey,
+    });
+
+    try {
+      await saveUserStats(uid, next);
+    } catch {
+      // local reflects it; resync later
+    }
+
+    mirrorPublicProfile(uid, next);
+  },
 }));

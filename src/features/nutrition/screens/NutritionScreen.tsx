@@ -6,6 +6,7 @@ import { useAppStore, type MealType } from "@/store/appStore";
 import { useAuthStore } from "@/store/authStore";
 import { useDailyLogStore } from "@/store/dailyLogStore";
 import { useDailyTotalsStore } from "@/store/dailyTotalsStore";
+import { useRewardsStore } from "@/store/rewardsStore";
 import { C, type Screen } from "@/shared/ui";
 import {
   ProgressRing,
@@ -52,6 +53,7 @@ export default function NutritionScreen({
   const loadDailyLog = useDailyLogStore((s) => s.loadDailyLog);
 
   const totals = useDailyTotalsStore((s) => s.totals);
+  const recordDailyGoal = useRewardsStore((s) => s.recordDailyGoal);
   const mealTotals = useDailyTotalsStore((s) => s.mealTotals);
 
   const isToday = selectedKey === getTodayKey();
@@ -78,6 +80,18 @@ export default function NutritionScreen({
     c: nutrition?.carbs ?? 310,
     f: nutrition?.fat ?? 85,
   };
+
+  // Award daily-goal XP once when today's protein target is met (the store
+  // guards against duplicates). Only for the actual current day.
+  useEffect(() => {
+    if (!isToday) return;
+    if (goals.p > 0 && totals.protein >= goals.p) {
+      recordDailyGoal({
+        proteinHit: true,
+        calorieHit: totals.calories >= goals.cal,
+      });
+    }
+  }, [isToday, totals.protein, totals.calories, goals.p, goals.cal, recordDailyGoal]);
 
   return (
     <div className="pb-8">
