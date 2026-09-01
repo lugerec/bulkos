@@ -5,13 +5,6 @@ import {
   Trophy,
   Lock,
   Dumbbell,
-  CalendarCheck,
-  Medal,
-  Zap,
-  Mountain,
-  Star,
-  LineChart,
-  Award,
   Users,
 } from "lucide-react";
 
@@ -21,20 +14,12 @@ import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useAuthStore } from "@/store/authStore";
 import { ACHIEVEMENTS, levelFromXp } from "@/features/rewards/gamification";
 import { getWeekDays } from "@/features/rewards/weeklyChallenge";
+import {
+  ACHIEVEMENT_ICONS,
+  FALLBACK_ACHIEVEMENT_ICON,
+} from "@/features/rewards/achievementIcons";
 import { getFrequencyAdherence } from "@/features/workout/utils/frequencyAdherence";
 
-/** Resolve an achievement's icon name to a lucide component (Award fallback). */
-const ICONS: Record<string, typeof Award> = {
-  Dumbbell,
-  CalendarCheck,
-  Medal,
-  Flame,
-  Zap,
-  Mountain,
-  Star,
-  LineChart,
-  Anvil: Dumbbell,
-};
 
 export default function RewardsScreen({
   onBack,
@@ -241,7 +226,7 @@ export default function RewardsScreen({
       <div className="grid grid-cols-2 gap-3">
         {ACHIEVEMENTS.map((achievement) => {
           const isUnlocked = unlocked.has(achievement.id);
-          const Icon = ICONS[achievement.icon] ?? Award;
+          const Icon = ACHIEVEMENT_ICONS[achievement.icon] ?? FALLBACK_ACHIEVEMENT_ICON;
 
           return (
             <div

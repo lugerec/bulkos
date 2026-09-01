@@ -1,9 +1,14 @@
 import { useMemo } from "react";
-import { Trophy, Sparkles, Award } from "lucide-react";
+import { Trophy, Sparkles } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useRewardsStore } from "@/store/rewardsStore";
 import { ACHIEVEMENTS } from "@/features/rewards/gamification";
+import {
+  ACHIEVEMENT_ICONS,
+  FALLBACK_ACHIEVEMENT_ICON,
+} from "@/features/rewards/achievementIcons";
+
 
 /**
  * App-level overlay that celebrates a level-up and/or newly unlocked
@@ -73,28 +78,32 @@ export default function RewardCelebration() {
               </p>
             )}
             <div className="flex flex-col gap-2">
-              {unlockedAchievements.map((a) => (
-                <div
-                  key={a.id}
-                  className="flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-left"
-                  style={{ background: C.card2, border: `1px solid ${C.border}` }}
-                >
+              {unlockedAchievements.map((a) => {
+                const Icon = ACHIEVEMENT_ICONS[a.icon] ?? FALLBACK_ACHIEVEMENT_ICON;
+
+                return (
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: C.accentDim }}
+                    key={a.id}
+                    className="flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-left"
+                    style={{ background: C.card2, border: `1px solid ${C.border}` }}
                   >
-                    <Award size={18} color={C.accent} />
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ background: C.accentDim }}
+                    >
+                      <Icon size={18} color={C.accent} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold" style={{ color: C.fg }}>
+                        {a.title}
+                      </p>
+                      <p className="text-[11px]" style={{ color: C.fg3 }}>
+                        {a.description}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold" style={{ color: C.fg }}>
-                      {a.title}
-                    </p>
-                    <p className="text-[11px]" style={{ color: C.fg3 }}>
-                      {a.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

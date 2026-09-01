@@ -14,7 +14,6 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
   const unfriend = useSocialStore((s) => s.unfriend);
   const updateDisplayName = useSocialStore((s) => s.updateDisplayName);
   const feed = useSocialStore((s) => s.feed);
-  const loadFeed = useSocialStore((s) => s.loadFeed);
   const clearAddStatus = useSocialStore((s) => s.clearAddStatus);
 
   const [code, setCode] = useState("");
@@ -23,8 +22,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
 
   useEffect(() => {
     loadSocial();
-    loadFeed();
-  }, [loadSocial, loadFeed]);
+  }, [loadSocial]);
 
   const leaderboard = buildLeaderboard(myProfile, friends);
 

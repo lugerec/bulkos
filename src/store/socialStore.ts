@@ -72,6 +72,14 @@ export const useSocialStore = create<SocialState>((set, get) => ({
 
       const friends = await getFriendProfiles(uid);
       set({ myProfile: mine, friends, loading: false });
+
+      // Reuse the profiles we just loaded so the feed doesn't re-read them.
+      try {
+        const profiles = mine ? [mine, ...friends] : friends;
+        set({ feed: await getFriendFeed(uid, { profiles }) });
+      } catch {
+        // Feed is non-critical.
+      }
     } catch {
       set({ loading: false });
     }
@@ -82,7 +90,14 @@ export const useSocialStore = create<SocialState>((set, get) => ({
     if (!uid) return;
 
     try {
-      set({ feed: await getFriendFeed(uid) });
+      const { myProfile, friends } = get();
+      const profiles = myProfile ? [myProfile, ...friends] : friends;
+      set({
+        feed: await getFriendFeed(
+          uid,
+          profiles.length > 0 ? { profiles } : {}
+        ),
+      });
     } catch {
       // Feed is non-critical; keep whatever is already shown.
     }

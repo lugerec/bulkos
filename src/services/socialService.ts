@@ -198,16 +198,24 @@ async function getUserActivity(uid: string): Promise<ActivityEvent[]> {
 
 /**
  * Combined, newest-first feed of the user's friends (and themselves), joined
- * with display names. Per-user failures are skipped rather than failing the
- * whole feed.
+ * with display names. Pass `profiles` when the caller already loaded them to
+ * avoid re-reading every profile. Per-user failures are skipped rather than
+ * failing the whole feed.
  */
 export async function getFriendFeed(
   uid: string,
-  limitItems = 30
+  options: { profiles?: PublicProfile[]; limitItems?: number } = {}
 ): Promise<FeedItem[]> {
-  const profiles = await getFriendProfiles(uid);
-  const mine = await getPublicProfile(uid);
-  const all = mine ? [mine, ...profiles] : profiles;
+  const { limitItems = 30 } = options;
+
+  let all: PublicProfile[];
+  if (options.profiles) {
+    all = options.profiles;
+  } else {
+    const friends = await getFriendProfiles(uid);
+    const mine = await getPublicProfile(uid);
+    all = mine ? [mine, ...friends] : friends;
+  }
 
   const perUser = await Promise.all(
     all.map(async (profile) => {
