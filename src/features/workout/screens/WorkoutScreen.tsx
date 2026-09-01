@@ -32,6 +32,7 @@ import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
 import { notifyRestComplete, adjustRest, hapticTick } from "@/features/workout/utils/restNotify";
 import { scheduleRestDone, cancelRestDone } from "@/services/reminderService";
+import PlateHint from "@/features/workout/components/PlateHint";
 import {
   getSessionEffort,
   describeSessionEffort,
@@ -1561,6 +1562,11 @@ export default function WorkoutScreen() {
                   ...ex.sets.map((set) => set.weight),
                   suggested?.weight ?? 0
                 )}
+                equipment={exerciseDefinition?.equipment}
+              />
+
+              <PlateHint
+                weight={Math.max(0, ...ex.sets.map((set) => set.weight))}
                 equipment={exerciseDefinition?.equipment}
               />
 
