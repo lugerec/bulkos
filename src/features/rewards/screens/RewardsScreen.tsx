@@ -17,7 +17,11 @@ import {
 
 import { C, type Screen } from "@/shared/ui";
 import { useRewardsStore } from "@/store/rewardsStore";
+import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import { useAuthStore } from "@/store/authStore";
 import { ACHIEVEMENTS, levelFromXp } from "@/features/rewards/gamification";
+import { getWeekDays } from "@/features/rewards/weeklyChallenge";
+import { getFrequencyAdherence } from "@/features/workout/utils/frequencyAdherence";
 
 /** Resolve an achievement's icon name to a lucide component (Award fallback). */
 const ICONS: Record<string, typeof Award> = {
@@ -41,10 +45,21 @@ export default function RewardsScreen({
 }) {
   const stats = useRewardsStore((s) => s.stats);
   const loadStats = useRewardsStore((s) => s.loadStats);
+  const workouts = useWorkoutHistoryStore((s) => s.workouts);
+  const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
+  const user = useAuthStore((s) => s.user);
+  const trainingFrequency =
+    (useAuthStore((s) => s.profile) as { profile?: { trainingFrequency?: number } } | null)
+      ?.profile?.trainingFrequency ?? 4;
 
   useEffect(() => {
     loadStats();
-  }, [loadStats]);
+    if (user) loadWorkouts(user.uid);
+  }, [loadStats, loadWorkouts, user]);
+
+  const workoutDates = workouts.map((w) => w.date);
+  const weekDays = getWeekDays(workoutDates);
+  const adherence = getFrequencyAdherence(workoutDates, trainingFrequency);
 
   const level = levelFromXp(stats.xp);
   const unlocked = new Set(stats.achievements);
@@ -128,6 +143,54 @@ export default function RewardsScreen({
             Longest streak
           </p>
         </div>
+      </div>
+
+      {/* Weekly challenge */}
+      <div
+        className="rounded-[18px] p-4 mb-4"
+        style={{ background: C.card, border: `1px solid ${C.border}` }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-bold" style={{ color: C.fg }}>
+            This week
+          </p>
+          <p className="text-[11px]" style={{ color: C.fg3 }}>
+            {adherence.completedThisWeek}/{trainingFrequency} workouts
+          </p>
+        </div>
+
+        <div className="flex justify-between gap-1.5">
+          {weekDays.map((day, i) => (
+            <div key={i} className="flex flex-col items-center gap-1.5 flex-1">
+              <div
+                className="w-full rounded-full flex items-center justify-center"
+                style={{
+                  height: 32,
+                  background: day.trained ? C.accent : C.card2,
+                  border: day.isToday ? `1.5px solid ${C.accent}` : `1px solid ${C.border}`,
+                  opacity: day.isFuture ? 0.4 : 1,
+                }}
+              >
+                {day.trained && (
+                  <Dumbbell size={13} color={C.onAccent} />
+                )}
+              </div>
+              <span className="text-[10px]" style={{ color: C.fg3 }}>
+                {day.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {adherence.remainingThisWeek > 0 ? (
+          <p className="text-[11px] mt-3" style={{ color: C.fg3 }}>
+            {adherence.remainingThisWeek} more to hit your weekly goal
+          </p>
+        ) : (
+          <p className="text-[11px] mt-3 font-semibold" style={{ color: C.accentInk }}>
+            Weekly goal complete — nice work!
+          </p>
+        )}
       </div>
 
       {/* Friends entry */}
