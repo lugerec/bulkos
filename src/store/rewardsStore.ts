@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { EMPTY_STATS, type UserStats } from "@/types/rewards";
 import { getUserStats, saveUserStats } from "@/services/rewardsService";
+import { upsertPublicProfile } from "@/services/socialService";
 import { advanceStreak, newlyUnlocked, levelFromXp } from "@/features/rewards/gamification";
 import { getTodayKey } from "@/lib/date";
 import { useAuthStore } from "./authStore";
@@ -37,6 +38,23 @@ function currentUid(): string | null {
   return useAuthStore.getState().user?.uid ?? null;
 }
 
+/** Mirror progression to the publicly-readable profile for friends/leaderboards. */
+function mirrorPublicProfile(uid: string, stats: UserStats) {
+  const authProfile = useAuthStore.getState().profile as
+    | { profile?: { name?: string } }
+    | null;
+  const displayName = authProfile?.profile?.name?.trim() || "Athlete";
+
+  upsertPublicProfile(uid, {
+    displayName,
+    level: levelFromXp(stats.xp).level,
+    xp: stats.xp,
+    streak: stats.streak,
+  }).catch(() => {
+    // Non-fatal — the mirror will refresh on the next activity/load.
+  });
+}
+
 export const useRewardsStore = create<RewardsState>((set, get) => ({
   stats: { ...EMPTY_STATS },
   loaded: false,
@@ -48,7 +66,9 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
     if (!uid) return;
 
     try {
-      set({ stats: await getUserStats(uid), loaded: true });
+      const stats = await getUserStats(uid);
+      set({ stats, loaded: true });
+      mirrorPublicProfile(uid, stats);
     } catch {
       // Non-critical — progression simply won't show until a later load.
     }
@@ -114,6 +134,8 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
     } catch {
       // Local state already reflects the change; a later load will resync.
     }
+
+    mirrorPublicProfile(uid, next);
   },
 
   clearCelebration: () => set({ justUnlocked: [], justLeveledUp: null }),
