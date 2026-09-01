@@ -1,3 +1,9 @@
+import {
+  cancelStreakReminder,
+  hasReminderPermission,
+  requestReminderPermission,
+  scheduleStreakReminder,
+} from "@/services/reminderService";
 import { create } from "zustand";
 
 export type UnitSystem = "metric" | "imperial";
@@ -5,6 +11,8 @@ export type ThemeMode = "dark" | "light";
 
 const STORAGE_KEY = "bulkos.settings.units";
 const THEME_KEY = "bulkos.settings.theme";
+const REMINDER_KEY = "bulkos.settings.streakReminder";
+const REMINDER_HOUR_KEY = "bulkos.settings.streakReminderHour";
 
 function loadUnits(): UnitSystem {
   if (typeof localStorage === "undefined") return "metric";
@@ -27,6 +35,27 @@ function loadTheme(): ThemeMode {
   }
 }
 
+function loadReminderEnabled(): boolean {
+  if (typeof localStorage === "undefined") return false;
+
+  try {
+    return localStorage.getItem(REMINDER_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function loadReminderHour(): number {
+  if (typeof localStorage === "undefined") return 19;
+
+  try {
+    const raw = Number(localStorage.getItem(REMINDER_HOUR_KEY));
+    return Number.isInteger(raw) && raw >= 0 && raw <= 23 ? raw : 19;
+  } catch {
+    return 19;
+  }
+}
+
 /** Reflect the theme onto <html data-theme> so CSS variables switch. */
 export function applyTheme(theme: ThemeMode): void {
   if (typeof document === "undefined") return;
@@ -39,6 +68,12 @@ type SettingsState = {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
+
+  /** Daily streak reminder (local notification). */
+  streakReminder: boolean;
+  streakReminderHour: number;
+  setStreakReminder: (enabled: boolean) => Promise<void>;
+  setStreakReminderHour: (hour: number) => Promise<void>;
 };
 
 /**
@@ -68,6 +103,61 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
   toggleTheme: () => {
     get().setTheme(get().theme === "dark" ? "light" : "dark");
+  },
+
+  streakReminder: loadReminderEnabled(),
+  streakReminderHour: loadReminderHour(),
+
+  setStreakReminder: async (enabled) => {
+    if (!enabled) {
+      try {
+        localStorage.setItem(REMINDER_KEY, "0");
+      } catch {
+        // non-fatal
+      }
+      set({ streakReminder: false });
+      await cancelStreakReminder();
+      return;
+    }
+
+    // Turning it on needs permission; if the user declines, leave it off
+    // rather than showing a toggle that silently does nothing.
+    const granted =
+      (await hasReminderPermission()) || (await requestReminderPermission());
+
+    if (!granted) {
+      set({ streakReminder: false });
+      return;
+    }
+
+    const scheduled = await scheduleStreakReminder(get().streakReminderHour);
+    if (!scheduled) {
+      set({ streakReminder: false });
+      return;
+    }
+
+    try {
+      localStorage.setItem(REMINDER_KEY, "1");
+    } catch {
+      // non-fatal
+    }
+    set({ streakReminder: true });
+  },
+
+  setStreakReminderHour: async (hour) => {
+    const safeHour = Math.min(23, Math.max(0, Math.round(hour)));
+
+    try {
+      localStorage.setItem(REMINDER_HOUR_KEY, String(safeHour));
+    } catch {
+      // non-fatal
+    }
+    set({ streakReminderHour: safeHour });
+
+    // Re-schedule at the new time if reminders are currently on.
+    if (get().streakReminder) {
+      await scheduleStreakReminder(safeHour);
+    }
   },
 }));
 

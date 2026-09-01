@@ -31,11 +31,14 @@ export default function SettingsScreen({
 }: {
   onNavigate: (s: Screen) => void;
 }) {
-  const [notifications, setNotifications] = useState(true);
   const units = useSettingsStore((s) => s.units);
   const setUnits = useSettingsStore((s) => s.setUnits);
   const theme = useSettingsStore((s) => s.theme);
   const setTheme = useSettingsStore((s) => s.setTheme);
+  const streakReminder = useSettingsStore((s) => s.streakReminder);
+  const streakReminderHour = useSettingsStore((s) => s.streakReminderHour);
+  const setStreakReminder = useSettingsStore((s) => s.setStreakReminder);
+  const setStreakReminderHour = useSettingsStore((s) => s.setStreakReminderHour);
 
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
@@ -283,13 +286,45 @@ export default function SettingsScreen({
           style={{ borderBottom: `1px solid ${C.border}` }}
         >
           <span className="text-sm" style={{ color: C.fg2 }}>
-            Notifications
+            Streak reminder
           </span>
           <Toggle
-            value={notifications}
-            onChange={() => setNotifications((n) => !n)}
+            value={streakReminder}
+            onChange={() => {
+              setStreakReminder(!streakReminder);
+            }}
           />
         </div>
+
+        {streakReminder && (
+          <div
+            className="flex justify-between items-center px-4 py-3.5"
+            style={{ borderBottom: `1px solid ${C.border}` }}
+          >
+            <span className="text-sm" style={{ color: C.fg2 }}>
+              Remind me at
+            </span>
+            <div className="flex gap-1.5">
+              {[17, 19, 21].map((hour) => (
+                <button
+                  key={hour}
+                  onClick={() => setStreakReminderHour(hour)}
+                  className="px-3 py-1.5 rounded-[10px] text-xs font-bold"
+                  style={{
+                    background:
+                      streakReminderHour === hour ? C.accent : "transparent",
+                    color: streakReminderHour === hour ? C.onAccent : C.fg2,
+                    border: `1px solid ${
+                      streakReminderHour === hour ? C.accent : C.border
+                    }`,
+                  }}
+                >
+                  {hour}:00
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div
           className="flex justify-between items-center px-4 py-3.5"
