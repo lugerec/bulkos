@@ -25,6 +25,8 @@ import { getLevelConfig } from "@/features/settings/experienceLevel";
 import { writeStrengthWorkout } from "@/services/healthService";
 import { sendWorkoutToWatch, onWatchSetUpdate, sendSetUpdateToWatch, onWatchSetValueUpdate, sendSetValueToWatch } from "@/services/watchService";
 import { saveWorkout, updateWorkoutRating } from "@/services/workoutService";
+import { useRewardsStore } from "@/store/rewardsStore";
+import { XP_REWARDS } from "@/features/rewards/gamification";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
 import { notifyRestComplete, adjustRest, hapticTick } from "@/features/workout/utils/restNotify";
@@ -69,6 +71,7 @@ export default function WorkoutScreen() {
 
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
+  const recordActivity = useRewardsStore((s) => s.recordActivity);
   const setWorkoutRatingLocal = useWorkoutHistoryStore((s) => s.setWorkoutRating);
 
   const bodyEntries = useBodyMetricsStore((s) => s.entries);
@@ -887,6 +890,15 @@ export default function WorkoutScreen() {
       setSessionRating(getSessionEffort(exercises).overall);
 
       await loadWorkouts(user.uid);
+
+      // Award progression: workout + per-set XP, volume and streak.
+      recordActivity({
+        xp:
+          XP_REWARDS.workoutCompleted + doneSets * XP_REWARDS.setCompleted,
+        workouts: 1,
+        volumeKg,
+        streakDayXp: XP_REWARDS.streakDay,
+      });
 
       clearActiveWorkout();
 

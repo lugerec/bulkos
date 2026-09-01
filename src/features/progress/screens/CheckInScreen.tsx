@@ -6,6 +6,8 @@ import { ArrowLeft, Camera } from "lucide-react";
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
+import { useRewardsStore } from "@/store/rewardsStore";
+import { XP_REWARDS } from "@/features/rewards/gamification";
 import { uploadProgressPhoto } from "@/services/progressPhotoService";
 import { toDateKey } from "@/lib/date";
 
@@ -23,6 +25,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
 
   const user = useAuthStore((s) => s.user);
   const addBodyMetrics = useBodyMetricsStore((s) => s.add);
+  const recordActivity = useRewardsStore((s) => s.recordActivity);
   const loading = useBodyMetricsStore((s) => s.loading);
 
   const today = toDateKey(new Date());
@@ -94,6 +97,13 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
 
       // Mirror weight to Apple Health (no-op off-device / if not granted).
       writeWeightKg(parsedWeight);
+
+      // Progression: a check-in counts as daily activity.
+      recordActivity({
+        xp: XP_REWARDS.checkIn,
+        checkIns: 1,
+        streakDayXp: XP_REWARDS.streakDay,
+      });
 
       onBack();
     } catch (error) {

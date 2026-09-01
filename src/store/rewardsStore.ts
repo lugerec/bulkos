@@ -54,7 +54,15 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
     const uid = currentUid();
     if (!uid) return;
 
-    const prev = get().stats;
+    // Read the authoritative stats first so we never overwrite prior XP when
+    // local state hasn't loaded yet (e.g. finishing a workout on a fresh open).
+    let prev = get().stats;
+    try {
+      prev = await getUserStats(uid);
+    } catch {
+      // Fall back to whatever is in memory.
+    }
+
     const todayKey = getTodayKey();
 
     const {

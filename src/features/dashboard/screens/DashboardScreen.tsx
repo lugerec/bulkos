@@ -38,6 +38,9 @@ import { useAuthStore } from "@/store/authStore";
 import { useDailyLogStore } from "@/store/dailyLogStore";
 import { useDailyTotalsStore } from "@/store/dailyTotalsStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import { useRewardsStore } from "@/store/rewardsStore";
+import { levelFromXp } from "@/features/rewards/gamification";
+import { Flame as FlameIcon, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import {
   applyDeloadToTemplate,
@@ -95,6 +98,10 @@ export default function DashboardScreen({
   const addWater = useHydrationStore((s) => s.addWater);
   const setWater = useHydrationStore((s) => s.setWater);
 
+  const rewardStats = useRewardsStore((s) => s.stats);
+  const loadStats = useRewardsStore((s) => s.loadStats);
+  const rewardLevel = levelFromXp(rewardStats.xp);
+
   useEffect(() => {
     if (!user) return;
     loadDailyLog(user.uid, getTodayKey());
@@ -102,7 +109,8 @@ export default function DashboardScreen({
     loadBodyMetrics(user.uid);
     loadHydration(user.uid);
     loadTemplates(user.uid);
-  }, [user, loadDailyLog, loadWorkouts, loadBodyMetrics, loadHydration, loadTemplates]);
+    loadStats();
+  }, [user, loadDailyLog, loadWorkouts, loadBodyMetrics, loadHydration, loadTemplates, loadStats]);
 
   const recommendation = useMemo(
     () =>
@@ -235,6 +243,44 @@ export default function DashboardScreen({
         name={userProfile?.name || "Lukáš"}
         date={dateStr}
       />
+
+      <button
+        onClick={() => onNavigate("rewards")}
+        className="w-full flex items-center gap-3 rounded-[16px] px-4 py-3 mb-4"
+        style={{ background: C.card, border: `1px solid ${C.border}` }}
+      >
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: C.accentDim }}
+        >
+          <span className="text-sm font-extrabold" style={{ color: C.accent }}>
+            {rewardLevel.level}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0 text-left">
+          <p className="text-sm font-bold" style={{ color: C.fg }}>
+            Level {rewardLevel.level}
+          </p>
+          <div
+            className="h-1.5 rounded-full mt-1 overflow-hidden"
+            style={{ background: C.card2 }}
+          >
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${Math.round(rewardLevel.progress * 100)}%`, background: C.accent }}
+            />
+          </div>
+        </div>
+        {rewardStats.streak > 0 && (
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <FlameIcon size={16} color={C.amber} />
+            <span className="text-sm font-bold" style={{ color: C.fg }}>
+              {rewardStats.streak}
+            </span>
+          </div>
+        )}
+        <ChevronRightIcon size={18} color={C.fg3} />
+      </button>
 
       <HealthActivityCard />
 

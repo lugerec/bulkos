@@ -94,6 +94,7 @@ export const T = {
   | "workout-history"
   | "workout-detail"
   | "progress"
+  | "rewards"
   | "analytics"
   | "grocery"
   | "one-rep-max"

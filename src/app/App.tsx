@@ -7,6 +7,7 @@ import WorkoutDetailScreen from "@/features/workout/screens/WorkoutDetailScreen"
 import WorkoutHistoryScreen from "@/features/workout/screens/WorkoutHistoryScreen";
 import SettingsScreen from "@/features/settings/screens/SettingsScreen";
 import ProgressScreen from "@/features/progress/screens/ProgressScreen";
+import RewardsScreen from "@/features/rewards/screens/RewardsScreen";
 import WorkoutScreen from "@/features/workout/screens/WorkoutScreen";
 import OneRepMaxScreen from "@/features/workout/screens/OneRepMaxScreen";
 import FoodDatabaseScreenNew from "../features/nutrition/screens/FoodDatabaseScreen";
@@ -1043,6 +1044,10 @@ export default function App() {
         <ExerciseHistoryScreen onBack={() => navigate("workout-detail")} />
         )}
           {screen === "progress" && <ProgressScreen onNavigate={navigate} />}
+
+          {screen === "rewards" && (
+            <RewardsScreen onBack={() => navigate("dashboard")} />
+          )}
 
           {screen === "check-in" && (
           <CheckInScreen onBack={() => navigate("progress")} />
