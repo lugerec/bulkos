@@ -40,6 +40,7 @@ import { useDailyTotalsStore } from "@/store/dailyTotalsStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useRewardsStore } from "@/store/rewardsStore";
 import { levelFromXp } from "@/features/rewards/gamification";
+import { readTodayTotal } from "@/services/healthService";
 import { Flame as FlameIcon, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
 import {
@@ -100,6 +101,7 @@ export default function DashboardScreen({
 
   const rewardStats = useRewardsStore((s) => s.stats);
   const loadStats = useRewardsStore((s) => s.loadStats);
+  const recordCardio = useRewardsStore((s) => s.recordCardio);
   const rewardLevel = levelFromXp(rewardStats.xp);
 
   useEffect(() => {
@@ -111,6 +113,20 @@ export default function DashboardScreen({
     loadTemplates(user.uid);
     loadStats();
   }, [user, loadDailyLog, loadWorkouts, loadBodyMetrics, loadHydration, loadTemplates, loadStats]);
+
+  // Count today's Apple Health cardio toward XP/streak (no-op off-device or
+  // without Health access — readTodayTotal returns 0). Guarded once/day.
+  useEffect(() => {
+    let cancelled = false;
+    readTodayTotal("distance")
+      .then((meters) => {
+        if (!cancelled && meters > 0) recordCardio(meters);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [user, recordCardio]);
 
   const recommendation = useMemo(
     () =>

@@ -9,6 +9,7 @@ import {
   levelFromXp,
   canAwardDailyGoal,
   XP_REWARDS,
+  CARDIO_MIN_METERS,
 } from "@/features/rewards/gamification";
 import { getTodayKey } from "@/lib/date";
 import { useAuthStore } from "./authStore";
@@ -35,6 +36,8 @@ type RewardsState = {
   justLeveledUp: number | null;
   /** In-memory guard: the day we already checked/awarded the daily goal. */
   goalCheckedDate: string | null;
+  /** In-memory guard: the day we already checked/awarded cardio. */
+  cardioCheckedDate: string | null;
 
   loadStats: () => Promise<void>;
   recordActivity: (input: ActivityInput) => Promise<void>;
@@ -43,6 +46,8 @@ type RewardsState = {
     proteinHit: boolean;
     calorieHit: boolean;
   }) => Promise<void>;
+  /** Award cardio XP once per day when today's Health distance clears the bar. */
+  recordCardio: (distanceMeters: number) => Promise<void>;
   /** Achievement ids + new level to celebrate; cleared once shown. */
   clearCelebration: () => void;
 };
@@ -74,6 +79,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
   justUnlocked: [],
   justLeveledUp: null,
   goalCheckedDate: null,
+  cardioCheckedDate: null,
 
   loadStats: async () => {
     const uid = currentUid();
@@ -211,6 +217,69 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       justUnlocked: fresh,
       justLeveledUp: leveledUp,
       goalCheckedDate: todayKey,
+    });
+
+    try {
+      await saveUserStats(uid, next);
+    } catch {
+      // local reflects it; resync later
+    }
+
+    mirrorPublicProfile(uid, next);
+  },
+
+  recordCardio: async (distanceMeters) => {
+    const uid = currentUid();
+    if (!uid || distanceMeters < CARDIO_MIN_METERS) return;
+
+    const todayKey = getTodayKey();
+    if (get().cardioCheckedDate === todayKey) return;
+
+    let prev = get().stats;
+    try {
+      prev = await getUserStats(uid);
+    } catch {
+      // fall back to in-memory
+    }
+
+    if (!canAwardDailyGoal(prev.lastCardioAwardDate, todayKey)) {
+      set({ cardioCheckedDate: todayKey });
+      return;
+    }
+
+    const { streak, countsAsNewDay } = advanceStreak(
+      prev.lastActiveDate,
+      todayKey,
+      prev.streak
+    );
+
+    const xpGained =
+      XP_REWARDS.cardioLogged + (countsAsNewDay ? XP_REWARDS.streakDay : 0);
+
+    const next: UserStats = {
+      ...prev,
+      xp: prev.xp + xpGained,
+      streak,
+      longestStreak: Math.max(prev.longestStreak, streak),
+      lastActiveDate: todayKey,
+      lastCardioAwardDate: todayKey,
+      achievements: prev.achievements,
+    };
+
+    const fresh = newlyUnlocked(next);
+    next.achievements = [...prev.achievements, ...fresh];
+
+    const leveledUp =
+      levelFromXp(next.xp).level > levelFromXp(prev.xp).level
+        ? levelFromXp(next.xp).level
+        : null;
+
+    set({
+      stats: next,
+      loaded: true,
+      justUnlocked: fresh,
+      justLeveledUp: leveledUp,
+      cardioCheckedDate: todayKey,
     });
 
     try {

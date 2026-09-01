@@ -16,8 +16,12 @@ export const XP_REWARDS: Record<XpSource, number> = {
   proteinGoalHit: 25,
   calorieGoalHit: 15,
   checkIn: 20,
+  cardioLogged: 30,
   streakDay: 10,
 };
+
+/** Minimum Apple Health distance (metres) for a day to count as cardio. */
+export const CARDIO_MIN_METERS = 1500;
 
 /**
  * Cumulative XP required to *reach* a level (level 1 starts at 0). The per-level
