@@ -38,6 +38,8 @@ type RewardsState = {
   goalCheckedDate: string | null;
   /** In-memory guard: the day we already checked/awarded cardio. */
   cardioCheckedDate: string | null;
+  /** In-memory guard: the week-start we already checked the weekly bonus. */
+  weekBonusChecked: string | null;
 
   loadStats: () => Promise<void>;
   recordActivity: (input: ActivityInput) => Promise<void>;
@@ -48,6 +50,8 @@ type RewardsState = {
   }) => Promise<void>;
   /** Award cardio XP once per day when today's Health distance clears the bar. */
   recordCardio: (distanceMeters: number) => Promise<void>;
+  /** Award a one-off weekly bonus the first time the weekly goal is hit. */
+  recordWeeklyGoal: (weekStartKey: string) => Promise<void>;
   /** Achievement ids + new level to celebrate; cleared once shown. */
   clearCelebration: () => void;
 };
@@ -80,6 +84,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
   justLeveledUp: null,
   goalCheckedDate: null,
   cardioCheckedDate: null,
+  weekBonusChecked: null,
 
   loadStats: async () => {
     const uid = currentUid();
@@ -280,6 +285,57 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       justUnlocked: fresh,
       justLeveledUp: leveledUp,
       cardioCheckedDate: todayKey,
+    });
+
+    try {
+      await saveUserStats(uid, next);
+    } catch {
+      // local reflects it; resync later
+    }
+
+    mirrorPublicProfile(uid, next);
+  },
+
+  recordWeeklyGoal: async (weekStartKey) => {
+    const uid = currentUid();
+    if (!uid) return;
+
+    if (get().weekBonusChecked === weekStartKey) return;
+
+    let prev = get().stats;
+    try {
+      prev = await getUserStats(uid);
+    } catch {
+      // fall back to in-memory
+    }
+
+    // One bonus per week.
+    if (prev.lastWeekBonusDate === weekStartKey) {
+      set({ weekBonusChecked: weekStartKey });
+      return;
+    }
+
+    const next: UserStats = {
+      ...prev,
+      xp: prev.xp + XP_REWARDS.weeklyGoal,
+      lastWeekBonusDate: weekStartKey,
+      achievements: prev.achievements,
+    };
+
+    const fresh = newlyUnlocked(next);
+    next.achievements = [...prev.achievements, ...fresh];
+
+    const leveledUp =
+      levelFromXp(next.xp).level > levelFromXp(prev.xp).level
+        ? levelFromXp(next.xp).level
+        : null;
+
+    set({
+      stats: next,
+      loaded: true,
+      justUnlocked: fresh,
+      justLeveledUp: leveledUp,
+      weekBonusChecked: weekStartKey,
     });
 
     try {

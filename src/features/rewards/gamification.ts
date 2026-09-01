@@ -17,6 +17,7 @@ export const XP_REWARDS: Record<XpSource, number> = {
   calorieGoalHit: 15,
   checkIn: 20,
   cardioLogged: 30,
+  weeklyGoal: 100,
   streakDay: 10,
 };
 

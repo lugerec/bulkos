@@ -45,6 +45,7 @@ export default function RewardsScreen({
 }) {
   const stats = useRewardsStore((s) => s.stats);
   const loadStats = useRewardsStore((s) => s.loadStats);
+  const recordWeeklyGoal = useRewardsStore((s) => s.recordWeeklyGoal);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
   const user = useAuthStore((s) => s.user);
@@ -60,6 +61,18 @@ export default function RewardsScreen({
   const workoutDates = workouts.map((w) => w.date);
   const weekDays = getWeekDays(workoutDates);
   const adherence = getFrequencyAdherence(workoutDates, trainingFrequency);
+
+  // Award the one-off weekly bonus once the weekly goal is met (store guards
+  // against repeats across the week).
+  useEffect(() => {
+    if (
+      trainingFrequency > 0 &&
+      adherence.completedThisWeek >= trainingFrequency &&
+      weekDays[0]
+    ) {
+      recordWeeklyGoal(weekDays[0].key);
+    }
+  }, [adherence.completedThisWeek, trainingFrequency, weekDays, recordWeeklyGoal]);
 
   const level = levelFromXp(stats.xp);
   const unlocked = new Set(stats.achievements);

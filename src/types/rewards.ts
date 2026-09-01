@@ -6,6 +6,7 @@ export type XpSource =
   | "calorieGoalHit"
   | "checkIn"
   | "cardioLogged"
+  | "weeklyGoal"
   | "streakDay";
 
 /** Persisted per-user progression state. */
@@ -20,6 +21,8 @@ export type UserStats = {
   lastGoalAwardDate?: string;
   /** Local date key of the last day cardio XP was awarded (guards dup). */
   lastCardioAwardDate?: string;
+  /** Week-start (Monday) key of the last week the weekly bonus was awarded. */
+  lastWeekBonusDate?: string;
   /** Ids of unlocked achievements. */
   achievements: string[];
   /** Lifetime counters used for achievement checks. */
