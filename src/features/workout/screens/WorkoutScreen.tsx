@@ -31,6 +31,7 @@ import { publishActivity } from "@/services/socialService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
 import { notifyRestComplete, adjustRest, hapticTick } from "@/features/workout/utils/restNotify";
+import { scheduleRestDone, cancelRestDone } from "@/services/reminderService";
 import {
   getSessionEffort,
   describeSessionEffort,
@@ -283,6 +284,7 @@ export default function WorkoutScreen() {
         if (r <= 1) {
           setIsResting(false);
           setRestKey(null);
+          cancelRestDone();
           notifyRestComplete();
           return 0;
         }
@@ -529,18 +531,20 @@ export default function WorkoutScreen() {
           (item) => item.id === (exercise.exerciseId ?? exercise.id)
         );
 
-        setRestTimer(
-          getRestSeconds(
-            {
-              equipment: restDefinition?.equipment,
-              category: restDefinition?.category,
-              name: exercise.name,
-            },
-            exercise.restSeconds ?? restDefinition?.defaultRestSeconds
-          )
+        const restSeconds = getRestSeconds(
+          {
+            equipment: restDefinition?.equipment,
+            category: restDefinition?.category,
+            name: exercise.name,
+          },
+          exercise.restSeconds ?? restDefinition?.defaultRestSeconds
         );
+
+        setRestTimer(restSeconds);
         setIsResting(true);
         setRestKey(key);
+        // Cover the pocketed/locked phone: the in-app beep can't fire then.
+        scheduleRestDone(restSeconds);
       }
 
       return next;
@@ -1629,14 +1633,27 @@ export default function WorkoutScreen() {
                         </span>
 
                         <button
-                          onClick={() => setRestTimer((r) => adjustRest(r, -15))}
+                          onClick={() =>
+                            setRestTimer((r) => {
+                              const next = adjustRest(r, -15);
+                              // Keep the scheduled alert in sync with the timer.
+                              scheduleRestDone(next);
+                              return next;
+                            })
+                          }
                           className="px-2 py-1 rounded-lg text-[11px] font-semibold"
                           style={{ background: C.card2, border: `1px solid ${C.border}`, color: C.fg2 }}
                         >
                           −15
                         </button>
                         <button
-                          onClick={() => setRestTimer((r) => adjustRest(r, 15))}
+                          onClick={() =>
+                            setRestTimer((r) => {
+                              const next = adjustRest(r, 15);
+                              scheduleRestDone(next);
+                              return next;
+                            })
+                          }
                           className="px-2 py-1 rounded-lg text-[11px] font-semibold"
                           style={{ background: C.card2, border: `1px solid ${C.border}`, color: C.fg2 }}
                         >
@@ -1646,6 +1663,7 @@ export default function WorkoutScreen() {
                           onClick={() => {
                             setIsResting(false);
                             setRestKey(null);
+                            cancelRestDone();
                           }}
                           aria-label="Skip rest"
                           className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"

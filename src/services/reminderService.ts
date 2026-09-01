@@ -10,6 +10,7 @@ import { Capacitor } from "@capacitor/core";
 
 /** Fixed ids so re-scheduling replaces rather than stacks up reminders. */
 const STREAK_REMINDER_ID = 1001;
+const REST_DONE_ID = 1002;
 
 export function areRemindersSupported(): boolean {
   return Capacitor.isNativePlatform();
@@ -97,5 +98,49 @@ export async function cancelStreakReminder(): Promise<void> {
     });
   } catch {
     // Nothing scheduled, or the plugin is unavailable — nothing to undo.
+  }
+}
+
+/**
+ * Fire a notification when the rest period ends. The in-app beep and vibration
+ * only work while the webview is awake, so a pocketed or locked phone misses
+ * the end of rest entirely — this covers that case.
+ *
+ * Silently does nothing without permission (we never prompt mid-workout).
+ */
+export async function scheduleRestDone(seconds: number): Promise<void> {
+  if (!areRemindersSupported() || seconds <= 0) return;
+  if (!(await hasReminderPermission())) return;
+
+  try {
+    const LocalNotifications = await plugin();
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: REST_DONE_ID,
+          title: "Rest over",
+          body: "Time for your next set.",
+          schedule: {
+            at: new Date(Date.now() + seconds * 1000),
+            allowWhileIdle: true,
+          },
+        },
+      ],
+    });
+  } catch {
+    // Best-effort — the in-app timer is still the source of truth.
+  }
+}
+
+/** Cancel a pending rest notification (rest skipped, or finished in-app). */
+export async function cancelRestDone(): Promise<void> {
+  if (!areRemindersSupported()) return;
+
+  try {
+    const LocalNotifications = await plugin();
+    await LocalNotifications.cancel({ notifications: [{ id: REST_DONE_ID }] });
+  } catch {
+    // Nothing pending.
   }
 }
