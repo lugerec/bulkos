@@ -11,6 +11,7 @@ import {
 } from "../services/foodService";
 import { mergeFoods } from "@/lib/mergeFoods";
 import { STARTER_FOODS } from "@/data/starterFoods";
+import { SLOVAK_FOODS } from "@/data/slovakFoods";
 import { useAuthStore } from "./authStore";
 
 type FoodState = {
@@ -75,7 +76,10 @@ export const useFoodStore = create<FoodState>((set, get) => ({
 
     set({
       userFoods,
-      foods: mergeFoods(mergeFoods(STARTER_FOODS, shared), userFoods),
+      foods: mergeFoods(
+        mergeFoods(mergeFoods(STARTER_FOODS, SLOVAK_FOODS), shared),
+        userFoods
+      ),
       loading: false,
     });
   },

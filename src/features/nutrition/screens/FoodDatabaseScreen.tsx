@@ -4,6 +4,7 @@ import { ArrowLeft, Globe, Search, CheckCircle2, ScanLine, X, Star, Plus, Clock 
 import { C } from "@/shared/ui";
 import { useFoodStore } from "@/store/foodStore";
 import { useAppStore } from "@/store/appStore";
+import { matchesSearch } from "@/lib/text";
 import { useAuthStore } from "@/store/authStore";
 import { useDailyLogStore } from "@/store/dailyLogStore";
 import {
@@ -244,13 +245,12 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
   }, [search]);
 
   const filteredFoods = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const query = search.trim();
 
     if (!query) return foods;
 
-    return foods.filter((food) =>
-      food.name.toLowerCase().includes(query)
-    );
+    // Diacritic-insensitive so "sosovica" finds "šošovica".
+    return foods.filter((food) => matchesSearch(food.name, query));
   }, [foods, search]);
 
   if (selectedFood) {
