@@ -8,6 +8,7 @@ import WorkoutHistoryScreen from "@/features/workout/screens/WorkoutHistoryScree
 import SettingsScreen from "@/features/settings/screens/SettingsScreen";
 import ProgressScreen from "@/features/progress/screens/ProgressScreen";
 import RewardsScreen from "@/features/rewards/screens/RewardsScreen";
+import RewardCelebration from "@/features/rewards/components/RewardCelebration";
 import WorkoutScreen from "@/features/workout/screens/WorkoutScreen";
 import OneRepMaxScreen from "@/features/workout/screens/OneRepMaxScreen";
 import FoodDatabaseScreenNew from "../features/nutrition/screens/FoodDatabaseScreen";
@@ -1092,6 +1093,8 @@ export default function App() {
 
         {/* Bottom navigation */}
         {showNav && <BottomNav active={screen} onNavigate={navigate} />}
+
+        <RewardCelebration />
       </div>
     </div>
   );

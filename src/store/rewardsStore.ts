@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { EMPTY_STATS, type UserStats } from "@/types/rewards";
 import { getUserStats, saveUserStats } from "@/services/rewardsService";
-import { advanceStreak, newlyUnlocked } from "@/features/rewards/gamification";
+import { advanceStreak, newlyUnlocked, levelFromXp } from "@/features/rewards/gamification";
 import { getTodayKey } from "@/lib/date";
 import { useAuthStore } from "./authStore";
 
@@ -24,10 +24,13 @@ type RewardsState = {
   loaded: boolean;
   /** Achievement ids unlocked by the most recent activity, for celebration UI. */
   justUnlocked: string[];
+  /** The new level reached by the most recent activity, or null. */
+  justLeveledUp: number | null;
 
   loadStats: () => Promise<void>;
   recordActivity: (input: ActivityInput) => Promise<void>;
-  clearJustUnlocked: () => void;
+  /** Achievement ids + new level to celebrate; cleared once shown. */
+  clearCelebration: () => void;
 };
 
 function currentUid(): string | null {
@@ -38,6 +41,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
   stats: { ...EMPTY_STATS },
   loaded: false,
   justUnlocked: [],
+  justLeveledUp: null,
 
   loadStats: async () => {
     const uid = currentUid();
@@ -92,8 +96,18 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
     const fresh = newlyUnlocked(next);
     next.achievements = [...prev.achievements, ...fresh];
 
+    const leveledUp =
+      levelFromXp(next.xp).level > levelFromXp(prev.xp).level
+        ? levelFromXp(next.xp).level
+        : null;
+
     // Optimistic: reflect immediately, persist in the background.
-    set({ stats: next, loaded: true, justUnlocked: fresh });
+    set({
+      stats: next,
+      loaded: true,
+      justUnlocked: fresh,
+      justLeveledUp: leveledUp,
+    });
 
     try {
       await saveUserStats(uid, next);
@@ -102,5 +116,5 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
     }
   },
 
-  clearJustUnlocked: () => set({ justUnlocked: [] }),
+  clearCelebration: () => set({ justUnlocked: [], justLeveledUp: null }),
 }));
