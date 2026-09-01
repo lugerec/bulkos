@@ -7,7 +7,10 @@ import {
   getFriendProfiles,
   getPublicProfile,
   removeFriend,
+  upsertPublicProfile,
 } from "@/services/socialService";
+import { levelFromXp } from "@/features/rewards/gamification";
+import { useRewardsStore } from "./rewardsStore";
 import { useAuthStore } from "./authStore";
 
 export type LeaderboardEntry = PublicProfile & { isMe: boolean };
@@ -41,10 +44,24 @@ export const useSocialStore = create<SocialState>((set, get) => ({
 
     set({ loading: true });
     try {
-      const [mine, friends] = await Promise.all([
-        getPublicProfile(uid),
-        getFriendProfiles(uid),
-      ]);
+      let mine = await getPublicProfile(uid);
+
+      // First time here? Create the public mirror so the user gets a code.
+      if (!mine) {
+        const stats = useRewardsStore.getState().stats;
+        const authProfile = useAuthStore.getState().profile as
+          | { profile?: { name?: string } }
+          | null;
+        await upsertPublicProfile(uid, {
+          displayName: authProfile?.profile?.name?.trim() || "Athlete",
+          level: levelFromXp(stats.xp).level,
+          xp: stats.xp,
+          streak: stats.streak,
+        });
+        mine = await getPublicProfile(uid);
+      }
+
+      const friends = await getFriendProfiles(uid);
       set({ myProfile: mine, friends, loading: false });
     } catch {
       set({ loading: false });

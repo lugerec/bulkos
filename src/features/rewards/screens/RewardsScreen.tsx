@@ -12,9 +12,10 @@ import {
   Star,
   LineChart,
   Award,
+  Users,
 } from "lucide-react";
 
-import { C } from "@/shared/ui";
+import { C, type Screen } from "@/shared/ui";
 import { useRewardsStore } from "@/store/rewardsStore";
 import { ACHIEVEMENTS, levelFromXp } from "@/features/rewards/gamification";
 
@@ -31,7 +32,13 @@ const ICONS: Record<string, typeof Award> = {
   Anvil: Dumbbell,
 };
 
-export default function RewardsScreen({ onBack }: { onBack: () => void }) {
+export default function RewardsScreen({
+  onBack,
+  onNavigate,
+}: {
+  onBack: () => void;
+  onNavigate: (screen: Screen) => void;
+}) {
   const stats = useRewardsStore((s) => s.stats);
   const loadStats = useRewardsStore((s) => s.loadStats);
 
@@ -122,6 +129,28 @@ export default function RewardsScreen({ onBack }: { onBack: () => void }) {
           </p>
         </div>
       </div>
+
+      {/* Friends entry */}
+      <button
+        onClick={() => onNavigate("friends")}
+        className="w-full flex items-center gap-3 rounded-[18px] px-4 py-3.5 mb-6"
+        style={{ background: C.card, border: `1px solid ${C.border}` }}
+      >
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: C.accentDim }}
+        >
+          <Users size={18} color={C.accent} />
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-sm font-bold" style={{ color: C.fg }}>
+            Friends & leaderboard
+          </p>
+          <p className="text-[11px]" style={{ color: C.fg3 }}>
+            Compare streaks and XP
+          </p>
+        </div>
+      </button>
 
       {/* Achievements */}
       <div className="flex items-center justify-between mb-3">

@@ -9,6 +9,7 @@ import SettingsScreen from "@/features/settings/screens/SettingsScreen";
 import ProgressScreen from "@/features/progress/screens/ProgressScreen";
 import RewardsScreen from "@/features/rewards/screens/RewardsScreen";
 import RewardCelebration from "@/features/rewards/components/RewardCelebration";
+import FriendsScreen from "@/features/social/screens/FriendsScreen";
 import WorkoutScreen from "@/features/workout/screens/WorkoutScreen";
 import OneRepMaxScreen from "@/features/workout/screens/OneRepMaxScreen";
 import FoodDatabaseScreenNew from "../features/nutrition/screens/FoodDatabaseScreen";
@@ -1047,7 +1048,11 @@ export default function App() {
           {screen === "progress" && <ProgressScreen onNavigate={navigate} />}
 
           {screen === "rewards" && (
-            <RewardsScreen onBack={() => navigate("dashboard")} />
+            <RewardsScreen onBack={() => navigate("dashboard")} onNavigate={navigate} />
+          )}
+
+          {screen === "friends" && (
+            <FriendsScreen onBack={() => navigate("rewards")} />
           )}
 
           {screen === "check-in" && (

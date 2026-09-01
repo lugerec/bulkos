@@ -95,6 +95,7 @@ export const T = {
   | "workout-detail"
   | "progress"
   | "rewards"
+  | "friends"
   | "analytics"
   | "grocery"
   | "one-rep-max"
