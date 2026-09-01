@@ -229,6 +229,8 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
               >
                 {item.kind === "levelUp" ? (
                   <Sparkles size={15} color={C.accent} />
+                ) : item.kind === "streak" ? (
+                  <Flame size={15} color={C.amber} />
                 ) : (
                   <Dumbbell size={15} color={C.accent} />
                 )}

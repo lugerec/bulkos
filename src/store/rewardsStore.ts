@@ -60,6 +60,9 @@ function currentUid(): string | null {
   return useAuthStore.getState().user?.uid ?? null;
 }
 
+/** Last mirrored public-profile signature, to avoid redundant writes. */
+let lastMirrorSignature: string | null = null;
+
 /** Mirror progression to the publicly-readable profile for friends/leaderboards. */
 function mirrorPublicProfile(uid: string, stats: UserStats) {
   const authProfile = useAuthStore.getState().profile as
@@ -67,13 +70,23 @@ function mirrorPublicProfile(uid: string, stats: UserStats) {
     | null;
   const displayName = authProfile?.profile?.name?.trim() || "Athlete";
 
+  const level = levelFromXp(stats.xp).level;
+
+  // Skip the write when nothing friends can see has changed — loadStats runs
+  // on every dashboard open, and re-writing identical values each time is
+  // needless Firestore traffic.
+  const signature = `${uid}:${level}:${stats.xp}:${stats.streak}:${displayName}`;
+  if (signature === lastMirrorSignature) return;
+  lastMirrorSignature = signature;
+
   upsertPublicProfile(uid, {
     displayName,
-    level: levelFromXp(stats.xp).level,
+    level,
     xp: stats.xp,
     streak: stats.streak,
   }).catch(() => {
     // Non-fatal — the mirror will refresh on the next activity/load.
+    lastMirrorSignature = null;
   });
 }
 
@@ -148,6 +161,16 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
 
     if (leveledUp !== null) {
       publishActivity(uid, "levelUp", `Reached level ${leveledUp}`).catch(
+        () => {}
+      );
+    }
+
+    // Streak milestones are worth sharing; only on the day they're reached.
+    if (
+      next.streak !== prev.streak &&
+      [7, 14, 30, 50, 100].includes(next.streak)
+    ) {
+      publishActivity(uid, "streak", `${next.streak}-day streak`).catch(
         () => {}
       );
     }
