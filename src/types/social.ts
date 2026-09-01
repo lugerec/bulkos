@@ -12,6 +12,8 @@ export type PublicProfile = {
   streak: number;
   /** Short shareable code others use to add this user. */
   friendCode: string;
+  /** True once the user chose their own nickname (blocks profile-name syncs). */
+  nameLocked?: boolean;
   updatedAt?: number;
 };
 

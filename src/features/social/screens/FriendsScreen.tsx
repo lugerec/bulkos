@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, UserPlus, Flame, Trophy, X } from "lucide-react";
+import { ArrowLeft, UserPlus, Flame, Trophy, X, Pencil } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useSocialStore, buildLeaderboard } from "@/store/socialStore";
@@ -12,9 +12,12 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
   const loadSocial = useSocialStore((s) => s.loadSocial);
   const addFriendByCode = useSocialStore((s) => s.addFriendByCode);
   const unfriend = useSocialStore((s) => s.unfriend);
+  const updateDisplayName = useSocialStore((s) => s.updateDisplayName);
   const clearAddStatus = useSocialStore((s) => s.clearAddStatus);
 
   const [code, setCode] = useState("");
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
 
   useEffect(() => {
     loadSocial();
@@ -57,9 +60,50 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
         >
           {myProfile?.friendCode ?? "······"}
         </p>
-        <p className="text-[11px] mt-2" style={{ color: C.fg3 }}>
+        <p className="text-[11px] mt-2 mb-4" style={{ color: C.fg3 }}>
           Share this so friends can add you.
         </p>
+
+        <p className="text-[11px] font-semibold mb-1.5" style={{ color: C.fg3 }}>
+          DISPLAY NAME
+        </p>
+        {editingName ? (
+          <div className="flex gap-2">
+            <input
+              value={nameDraft}
+              onChange={(e) => setNameDraft(e.target.value)}
+              maxLength={20}
+              placeholder="How friends see you"
+              className="flex-1 bg-transparent outline-none text-sm px-3 py-2.5 rounded-[12px]"
+              style={{ color: C.fg, border: `1px solid ${C.border}`, background: C.card2 }}
+            />
+            <button
+              onClick={async () => {
+                await updateDisplayName(nameDraft);
+                setEditingName(false);
+              }}
+              disabled={!nameDraft.trim()}
+              className="px-4 rounded-[12px] font-bold text-sm disabled:opacity-50"
+              style={{ background: C.accent, color: C.onAccent }}
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              setNameDraft(myProfile?.displayName ?? "");
+              setEditingName(true);
+            }}
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-[12px]"
+            style={{ background: C.card2, border: `1px solid ${C.border}` }}
+          >
+            <span className="text-sm font-semibold" style={{ color: C.fg }}>
+              {myProfile?.displayName ?? "Athlete"}
+            </span>
+            <Pencil size={14} color={C.fg3} />
+          </button>
+        )}
       </div>
 
       {/* Add by code */}

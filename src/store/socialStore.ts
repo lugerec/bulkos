@@ -8,6 +8,7 @@ import {
   getPublicProfile,
   removeFriend,
   upsertPublicProfile,
+  setDisplayName as setDisplayNameService,
 } from "@/services/socialService";
 import { levelFromXp } from "@/features/rewards/gamification";
 import { useRewardsStore } from "./rewardsStore";
@@ -24,6 +25,8 @@ type SocialState = {
 
   loadSocial: () => Promise<void>;
   addFriendByCode: (code: string) => Promise<boolean>;
+  /** Set the public nickname shown to friends on the leaderboard. */
+  updateDisplayName: (name: string) => Promise<void>;
   unfriend: (friendUid: string) => Promise<void>;
   clearAddStatus: () => void;
 };
@@ -103,6 +106,25 @@ export const useSocialStore = create<SocialState>((set, get) => ({
     } catch {
       set({ addStatus: "Couldn't add friend — try again" });
       return false;
+    }
+  },
+
+  updateDisplayName: async (name) => {
+    const uid = currentUid();
+    const trimmed = name.trim().slice(0, 20);
+    if (!uid || !trimmed) return;
+
+    const current = get().myProfile;
+    // Optimistic local update, then persist.
+    if (current) {
+      set({ myProfile: { ...current, displayName: trimmed, nameLocked: true } });
+    }
+
+    try {
+      await setDisplayNameService(uid, trimmed);
+    } catch {
+      // Revert on failure so the UI doesn't lie.
+      if (current) set({ myProfile: current });
     }
   },
 

@@ -47,27 +47,55 @@ export async function getPublicProfile(
 
 /**
  * Create/update the public mirror. Preserves an existing friendCode; only
- * generates one the first time.
+ * generates one the first time. A displayName the user set explicitly (via
+ * setDisplayName) wins over the onboarding name passed by progression
+ * updates, so routine XP syncs never clobber a chosen nickname.
  */
 export async function upsertPublicProfile(
   uid: string,
-  data: { displayName: string; level: number; xp: number; streak: number }
+  data: { displayName: string; level: number; xp: number; streak: number },
+  options: { overrideName?: boolean } = {}
 ): Promise<void> {
   const existing = await getPublicProfile(uid);
 
+  const displayName =
+    !options.overrideName && existing?.nameLocked
+      ? existing.displayName
+      : data.displayName;
+
   const profile: PublicProfile = {
     uid,
-    displayName: data.displayName,
+    displayName,
     level: data.level,
     xp: data.xp,
     streak: data.streak,
     friendCode: existing?.friendCode ?? generateFriendCode(),
+    ...(options.overrideName || existing?.nameLocked ? { nameLocked: true } : {}),
   };
 
   await setDoc(
     publicRef(uid),
     { ...profile, updatedAt: serverTimestamp() },
     { merge: true }
+  );
+}
+
+/** Set a chosen public nickname; locks it against later profile-name syncs. */
+export async function setDisplayName(
+  uid: string,
+  displayName: string
+): Promise<void> {
+  const existing = await getPublicProfile(uid);
+
+  await upsertPublicProfile(
+    uid,
+    {
+      displayName,
+      level: existing?.level ?? 1,
+      xp: existing?.xp ?? 0,
+      streak: existing?.streak ?? 0,
+    },
+    { overrideName: true }
   );
 }
 
