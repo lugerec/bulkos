@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, UserPlus, Flame, Trophy, X, Pencil } from "lucide-react";
+import { ArrowLeft, UserPlus, Flame, Trophy, X, Pencil, Activity, Dumbbell, Sparkles } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useSocialStore, buildLeaderboard } from "@/store/socialStore";
@@ -13,6 +13,8 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
   const addFriendByCode = useSocialStore((s) => s.addFriendByCode);
   const unfriend = useSocialStore((s) => s.unfriend);
   const updateDisplayName = useSocialStore((s) => s.updateDisplayName);
+  const feed = useSocialStore((s) => s.feed);
+  const loadFeed = useSocialStore((s) => s.loadFeed);
   const clearAddStatus = useSocialStore((s) => s.clearAddStatus);
 
   const [code, setCode] = useState("");
@@ -21,7 +23,8 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
 
   useEffect(() => {
     loadSocial();
-  }, [loadSocial]);
+    loadFeed();
+  }, [loadSocial, loadFeed]);
 
   const leaderboard = buildLeaderboard(myProfile, friends);
 
@@ -199,6 +202,62 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
           </div>
         ))}
       </div>
+
+      {/* Activity feed */}
+      <div className="flex items-center gap-2 mt-8 mb-3">
+        <Activity size={16} color={C.accent} />
+        <h2 className="text-sm font-bold" style={{ color: C.fg }}>
+          Recent activity
+        </h2>
+      </div>
+
+      {feed.length === 0 ? (
+        <p className="text-sm px-1" style={{ color: C.fg3 }}>
+          Workouts and level-ups from you and your friends show up here.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {feed.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center gap-3 rounded-[14px] px-4 py-3"
+              style={{ background: C.card, border: `1px solid ${C.border}` }}
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ background: C.accentDim }}
+              >
+                {item.kind === "levelUp" ? (
+                  <Sparkles size={15} color={C.accent} />
+                ) : (
+                  <Dumbbell size={15} color={C.accent} />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold truncate" style={{ color: C.fg }}>
+                  {item.displayName}
+                </p>
+                <p className="text-[11px]" style={{ color: C.fg3 }}>
+                  {item.text}
+                </p>
+              </div>
+              <span className="text-[10px] flex-shrink-0" style={{ color: C.fg3 }}>
+                {timeAgo(item.createdAt)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
+}
+
+/** Compact relative time: "just now", "3h", "2d". */
+function timeAgo(timestamp: number): string {
+  const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+
+  if (seconds < 60) return "now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+  return `${Math.floor(seconds / 86400)}d`;
 }

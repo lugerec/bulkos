@@ -27,6 +27,7 @@ import { sendWorkoutToWatch, onWatchSetUpdate, sendSetUpdateToWatch, onWatchSetV
 import { saveWorkout, updateWorkoutRating } from "@/services/workoutService";
 import { useRewardsStore } from "@/store/rewardsStore";
 import { XP_REWARDS } from "@/features/rewards/gamification";
+import { publishActivity } from "@/services/socialService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
 import { notifyRestComplete, adjustRest, hapticTick } from "@/features/workout/utils/restNotify";
@@ -899,6 +900,13 @@ export default function WorkoutScreen() {
         volumeKg,
         streakDayXp: XP_REWARDS.streakDay,
       });
+
+      // Share it on the friend feed (best-effort).
+      publishActivity(
+        user.uid,
+        "workout",
+        `Finished ${workout.name} · ${doneSets} sets`
+      ).catch(() => {});
 
       clearActiveWorkout();
 

@@ -1,10 +1,12 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
   limit,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -12,7 +14,13 @@ import {
 } from "firebase/firestore";
 
 import { db } from "@/services/db";
-import type { Friend, PublicProfile } from "@/types/social";
+import type {
+  ActivityEvent,
+  ActivityKind,
+  FeedItem,
+  Friend,
+  PublicProfile,
+} from "@/types/social";
 
 /**
  * Social graph is intentionally simple: a one-way "follow" so no accept flow
@@ -149,4 +157,74 @@ export async function getFriendProfiles(
   );
 
   return profiles.filter((p): p is PublicProfile => p !== null);
+}
+
+// MARK: - Activity feed
+
+/** Keep only recent items so the public trail stays small. */
+const FEED_PER_USER = 10;
+
+/**
+ * Publish an activity item to the owner's public trail. Best-effort: a failure
+ * here must never block the action that produced it.
+ */
+export async function publishActivity(
+  uid: string,
+  kind: ActivityKind,
+  text: string
+): Promise<void> {
+  await addDoc(collection(db, "publicProfiles", uid, "activity"), {
+    uid,
+    kind,
+    text,
+    createdAt: Date.now(),
+  });
+}
+
+/** Most recent activity items for one user. */
+async function getUserActivity(uid: string): Promise<ActivityEvent[]> {
+  const q = query(
+    collection(db, "publicProfiles", uid, "activity"),
+    orderBy("createdAt", "desc"),
+    limit(FEED_PER_USER)
+  );
+
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({
+    id: d.id,
+    ...(d.data() as Omit<ActivityEvent, "id">),
+  }));
+}
+
+/**
+ * Combined, newest-first feed of the user's friends (and themselves), joined
+ * with display names. Per-user failures are skipped rather than failing the
+ * whole feed.
+ */
+export async function getFriendFeed(
+  uid: string,
+  limitItems = 30
+): Promise<FeedItem[]> {
+  const profiles = await getFriendProfiles(uid);
+  const mine = await getPublicProfile(uid);
+  const all = mine ? [mine, ...profiles] : profiles;
+
+  const perUser = await Promise.all(
+    all.map(async (profile) => {
+      try {
+        const events = await getUserActivity(profile.uid);
+        return events.map((event) => ({
+          ...event,
+          displayName: profile.displayName,
+        }));
+      } catch {
+        return [] as FeedItem[];
+      }
+    })
+  );
+
+  return perUser
+    .flat()
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, limitItems);
 }

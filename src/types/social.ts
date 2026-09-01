@@ -22,3 +22,22 @@ export type Friend = {
   uid: string;
   since: number;
 };
+
+/** What kind of thing happened. */
+export type ActivityKind = "workout" | "levelUp" | "streak";
+
+/**
+ * A public activity item, written by its owner under
+ * publicProfiles/{uid}/activity and readable by friends.
+ */
+export type ActivityEvent = {
+  id: string;
+  uid: string;
+  kind: ActivityKind;
+  /** Short human summary, e.g. "Finished Push Day · 12 sets". */
+  text: string;
+  createdAt: number;
+};
+
+/** Feed item joined with its author's display name. */
+export type FeedItem = ActivityEvent & { displayName: string };

@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { EMPTY_STATS, type UserStats } from "@/types/rewards";
 import { getUserStats, saveUserStats } from "@/services/rewardsService";
-import { upsertPublicProfile } from "@/services/socialService";
+import { upsertPublicProfile, publishActivity } from "@/services/socialService";
 import {
   advanceStreak,
   newlyUnlocked,
@@ -145,6 +145,12 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       levelFromXp(next.xp).level > levelFromXp(prev.xp).level
         ? levelFromXp(next.xp).level
         : null;
+
+    if (leveledUp !== null) {
+      publishActivity(uid, "levelUp", `Reached level ${leveledUp}`).catch(
+        () => {}
+      );
+    }
 
     // Optimistic: reflect immediately, persist in the background.
     set({

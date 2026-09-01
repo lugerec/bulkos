@@ -1,11 +1,12 @@
 import { create } from "zustand";
 
-import type { PublicProfile } from "@/types/social";
+import type { FeedItem, PublicProfile } from "@/types/social";
 import {
   addFriend,
   findProfileByCode,
   getFriendProfiles,
   getPublicProfile,
+  getFriendFeed,
   removeFriend,
   upsertPublicProfile,
   setDisplayName as setDisplayNameService,
@@ -19,11 +20,15 @@ export type LeaderboardEntry = PublicProfile & { isMe: boolean };
 type SocialState = {
   myProfile: PublicProfile | null;
   friends: PublicProfile[];
+  /** Combined activity feed of friends (and you), newest first. */
+  feed: FeedItem[];
   loading: boolean;
   /** Non-fatal status message for the last add attempt. */
   addStatus: string | null;
 
   loadSocial: () => Promise<void>;
+  /** Load the friend activity feed. */
+  loadFeed: () => Promise<void>;
   addFriendByCode: (code: string) => Promise<boolean>;
   /** Set the public nickname shown to friends on the leaderboard. */
   updateDisplayName: (name: string) => Promise<void>;
@@ -38,6 +43,7 @@ function currentUid(): string | null {
 export const useSocialStore = create<SocialState>((set, get) => ({
   myProfile: null,
   friends: [],
+  feed: [],
   loading: false,
   addStatus: null,
 
@@ -68,6 +74,17 @@ export const useSocialStore = create<SocialState>((set, get) => ({
       set({ myProfile: mine, friends, loading: false });
     } catch {
       set({ loading: false });
+    }
+  },
+
+  loadFeed: async () => {
+    const uid = currentUid();
+    if (!uid) return;
+
+    try {
+      set({ feed: await getFriendFeed(uid) });
+    } catch {
+      // Feed is non-critical; keep whatever is already shown.
     }
   },
 
