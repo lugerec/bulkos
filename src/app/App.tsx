@@ -10,6 +10,7 @@ import ProgressScreen from "@/features/progress/screens/ProgressScreen";
 import RewardsScreen from "@/features/rewards/screens/RewardsScreen";
 import RewardCelebration from "@/features/rewards/components/RewardCelebration";
 import FriendsScreen from "@/features/social/screens/FriendsScreen";
+import PaywallScreen from "@/features/billing/screens/PaywallScreen";
 import WorkoutScreen from "@/features/workout/screens/WorkoutScreen";
 import OneRepMaxScreen from "@/features/workout/screens/OneRepMaxScreen";
 import FoodDatabaseScreenNew from "../features/nutrition/screens/FoodDatabaseScreen";
@@ -1053,6 +1054,10 @@ export default function App() {
 
           {screen === "friends" && (
             <FriendsScreen onBack={() => navigate("rewards")} />
+          )}
+
+          {screen === "paywall" && (
+            <PaywallScreen onBack={() => navigate("rewards")} />
           )}
 
           {screen === "check-in" && (

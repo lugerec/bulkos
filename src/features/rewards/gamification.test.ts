@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { EMPTY_STATS, type UserStats } from "@/types/rewards";
 import {
   advanceStreak,
+  applyStreakFreeze,
+  earnedFreezes,
   canAwardDailyGoal,
   levelFromXp,
   newlyUnlocked,
@@ -119,5 +121,51 @@ describe("achievements", () => {
     const fresh = newlyUnlocked(s);
     expect(fresh).toContain("ten-workouts");
     expect(fresh).not.toContain("first-workout");
+  });
+});
+
+describe("streak freezes", () => {
+  it("covers a single missed day and spends one freeze", () => {
+    // Last active Mon 03rd, today Wed 05th → Tue 04th was missed.
+    const r = applyStreakFreeze("2026-08-03", "2026-08-05", 9, 1);
+
+    expect(r.used).toBe(true);
+    expect(r.streak).toBe(10);
+    expect(r.freezesLeft).toBe(0);
+  });
+
+  it("does nothing without a banked freeze", () => {
+    const r = applyStreakFreeze("2026-08-03", "2026-08-05", 9, 0);
+
+    expect(r.used).toBe(false);
+    expect(r.streak).toBe(9);
+  });
+
+  it("does not cover a gap of two or more days", () => {
+    // Last active 02nd, today 05th → two missed days.
+    const r = applyStreakFreeze("2026-08-02", "2026-08-05", 9, 3);
+
+    expect(r.used).toBe(false);
+    expect(r.streak).toBe(9);
+    expect(r.freezesLeft).toBe(3);
+  });
+
+  it("does nothing when yesterday was already active", () => {
+    const r = applyStreakFreeze("2026-08-04", "2026-08-05", 9, 1);
+
+    expect(r.used).toBe(false);
+  });
+
+  it("earns a freeze every 7 days, capped by tier", () => {
+    expect(earnedFreezes(7, 0, false)).toBe(1);
+    expect(earnedFreezes(14, 1, false)).toBe(1); // free cap reached
+    expect(earnedFreezes(14, 1, true)).toBe(2); // pro allows more
+    expect(earnedFreezes(21, 2, true)).toBe(3);
+    expect(earnedFreezes(28, 3, true)).toBe(3); // pro cap reached
+  });
+
+  it("earns nothing on a non-milestone day", () => {
+    expect(earnedFreezes(5, 0, false)).toBe(0);
+    expect(earnedFreezes(0, 0, true)).toBe(0);
   });
 });

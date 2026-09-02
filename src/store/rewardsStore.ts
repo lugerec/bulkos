@@ -5,6 +5,8 @@ import { getUserStats, saveUserStats } from "@/services/rewardsService";
 import { upsertPublicProfile, publishActivity } from "@/services/socialService";
 import {
   advanceStreak,
+  applyStreakFreeze,
+  earnedFreezes,
   newlyUnlocked,
   levelFromXp,
   canAwardDailyGoal,
@@ -13,6 +15,7 @@ import {
 } from "@/features/rewards/gamification";
 import { getTodayKey } from "@/lib/date";
 import { useAuthStore } from "./authStore";
+import { useEntitlementStore } from "./entitlementStore";
 
 /** Deltas applied by an activity event. */
 type ActivityInput = {
@@ -58,6 +61,33 @@ type RewardsState = {
 
 function currentUid(): string | null {
   return useAuthStore.getState().user?.uid ?? null;
+}
+
+/**
+ * Advance the streak for today, spending a banked freeze to cover a single
+ * missed day rather than resetting to 1. Also banks a new freeze on every
+ * 7-day milestone (capped by tier).
+ */
+function resolveStreak(prev: UserStats, todayKey: string) {
+  const isPro = useEntitlementStore.getState().isPro;
+  const banked = prev.streakFreezes ?? 0;
+
+  const frozen = applyStreakFreeze(
+    prev.lastActiveDate,
+    todayKey,
+    prev.streak,
+    banked
+  );
+
+  const { streak, countsAsNewDay } = frozen.used
+    ? { streak: frozen.streak, countsAsNewDay: true }
+    : advanceStreak(prev.lastActiveDate, todayKey, prev.streak);
+
+  return {
+    streak,
+    countsAsNewDay,
+    streakFreezes: earnedFreezes(streak, frozen.freezesLeft, isPro),
+  };
 }
 
 /** Last mirrored public-profile signature, to avoid redundant writes. */
@@ -130,9 +160,14 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
     const {
       streak,
       countsAsNewDay,
+      streakFreezes,
     } = input.countsForStreak === false
-      ? { streak: prev.streak, countsAsNewDay: false }
-      : advanceStreak(prev.lastActiveDate, todayKey, prev.streak);
+      ? {
+          streak: prev.streak,
+          countsAsNewDay: false,
+          streakFreezes: prev.streakFreezes ?? 0,
+        }
+      : resolveStreak(prev, todayKey);
 
     const streakBonus = countsAsNewDay ? input.streakDayXp ?? 0 : 0;
 
@@ -141,6 +176,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       xp: prev.xp + (input.xp ?? 0) + streakBonus,
       streak,
       longestStreak: Math.max(prev.longestStreak, streak),
+      streakFreezes,
       lastActiveDate:
         input.countsForStreak === false ? prev.lastActiveDate : todayKey,
       totals: {
@@ -216,10 +252,9 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       return;
     }
 
-    const { streak, countsAsNewDay } = advanceStreak(
-      prev.lastActiveDate,
-      todayKey,
-      prev.streak
+    const { streak, countsAsNewDay, streakFreezes } = resolveStreak(
+      prev,
+      todayKey
     );
 
     const xpGained =
@@ -232,6 +267,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       xp: prev.xp + xpGained,
       streak,
       longestStreak: Math.max(prev.longestStreak, streak),
+      streakFreezes,
       lastActiveDate: todayKey,
       lastGoalAwardDate: todayKey,
       achievements: prev.achievements,
@@ -281,10 +317,9 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       return;
     }
 
-    const { streak, countsAsNewDay } = advanceStreak(
-      prev.lastActiveDate,
-      todayKey,
-      prev.streak
+    const { streak, countsAsNewDay, streakFreezes } = resolveStreak(
+      prev,
+      todayKey
     );
 
     const xpGained =
@@ -295,6 +330,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       xp: prev.xp + xpGained,
       streak,
       longestStreak: Math.max(prev.longestStreak, streak),
+      streakFreezes,
       lastActiveDate: todayKey,
       lastCardioAwardDate: todayKey,
       achievements: prev.achievements,

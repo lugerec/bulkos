@@ -23,6 +23,8 @@ export type UserStats = {
   lastCardioAwardDate?: string;
   /** Week-start (Monday) key of the last week the weekly bonus was awarded. */
   lastWeekBonusDate?: string;
+  /** Banked streak freezes that can cover a missed day. */
+  streakFreezes?: number;
   /** Ids of unlocked achievements. */
   achievements: string[];
   /** Lifetime counters used for achievement checks. */

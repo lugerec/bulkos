@@ -6,12 +6,14 @@ import {
   Lock,
   Dumbbell,
   Users,
+  Snowflake,
 } from "lucide-react";
 
 import { C, type Screen } from "@/shared/ui";
 import { useRewardsStore } from "@/store/rewardsStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useAuthStore } from "@/store/authStore";
+import { useEntitlementStore } from "@/store/entitlementStore";
 import { ACHIEVEMENTS, levelFromXp } from "@/features/rewards/gamification";
 import { getWeekDays } from "@/features/rewards/weeklyChallenge";
 import {
@@ -31,6 +33,8 @@ export default function RewardsScreen({
   const stats = useRewardsStore((s) => s.stats);
   const loadStats = useRewardsStore((s) => s.loadStats);
   const recordWeeklyGoal = useRewardsStore((s) => s.recordWeeklyGoal);
+  const isPro = useEntitlementStore((s) => s.isPro);
+  const loadEntitlement = useEntitlementStore((s) => s.loadEntitlement);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
   const user = useAuthStore((s) => s.user);
@@ -40,8 +44,9 @@ export default function RewardsScreen({
 
   useEffect(() => {
     loadStats();
+    loadEntitlement();
     if (user) loadWorkouts(user.uid);
-  }, [loadStats, loadWorkouts, user]);
+  }, [loadStats, loadEntitlement, loadWorkouts, user]);
 
   const workoutDates = workouts.map((w) => w.date);
   const weekDays = getWeekDays(workoutDates);
@@ -142,6 +147,30 @@ export default function RewardsScreen({
           </p>
         </div>
       </div>
+
+      {/* Streak freezes */}
+      <button
+        onClick={() => !isPro && onNavigate("paywall")}
+        className="w-full flex items-center gap-3 rounded-[18px] px-4 py-3.5 mb-4"
+        style={{ background: C.card, border: `1px solid ${C.border}` }}
+      >
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: C.accentDim }}
+        >
+          <Snowflake size={17} color={C.blue} />
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-sm font-bold" style={{ color: C.fg }}>
+            {stats.streakFreezes ?? 0} streak {(stats.streakFreezes ?? 0) === 1 ? "freeze" : "freezes"}
+          </p>
+          <p className="text-[11px]" style={{ color: C.fg3 }}>
+            {isPro
+              ? "Covers a missed day. You bank one per 7-day streak, up to 3."
+              : "Covers a missed day. Pro banks up to 3 instead of 1."}
+          </p>
+        </div>
+      </button>
 
       {/* Weekly challenge */}
       <div

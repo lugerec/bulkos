@@ -96,6 +96,7 @@ export const T = {
   | "progress"
   | "rewards"
   | "friends"
+  | "paywall"
   | "analytics"
   | "grocery"
   | "one-rep-max"

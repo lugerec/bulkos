@@ -153,6 +153,58 @@ export function canAwardDailyGoal(
   return lastGoalAwardDate !== todayKey;
 }
 
+/** Streak freezes earned per this many consecutive days. */
+export const FREEZE_EARNED_EVERY_DAYS = 7;
+
+/** How many freezes can be banked, by tier. */
+export const FREEZE_CAP_FREE = 1;
+export const FREEZE_CAP_PRO = 3;
+
+export function freezeCap(isPro: boolean): number {
+  return isPro ? FREEZE_CAP_PRO : FREEZE_CAP_FREE;
+}
+
+/**
+ * Whether a banked freeze should be spent to cover a missed day, and what the
+ * streak becomes.
+ *
+ * A freeze only covers a *single* missed day — miss two in a row and the streak
+ * is genuinely broken, otherwise the streak stops meaning anything. Returns the
+ * unchanged streak when there's nothing to cover or no freeze available.
+ */
+export function applyStreakFreeze(
+  lastActiveDate: string | undefined,
+  todayKey: string,
+  currentStreak: number,
+  freezes: number
+): { streak: number; freezesLeft: number; used: boolean } {
+  const noChange = { streak: currentStreak, freezesLeft: freezes, used: false };
+
+  if (!lastActiveDate || currentStreak <= 0) return noChange;
+
+  // Exactly one day was skipped: yesterday. Anything longer isn't coverable.
+  const missedDay = addDaysToKey(todayKey, -1);
+  const isSingleGap =
+    lastActiveDate === addDaysToKey(missedDay, -1) && lastActiveDate < todayKey;
+
+  if (!isSingleGap || freezes <= 0) return noChange;
+
+  return { streak: currentStreak + 1, freezesLeft: freezes - 1, used: true };
+}
+
+/** Freezes earned by reaching `streak`, capped by tier. */
+export function earnedFreezes(
+  streak: number,
+  currentFreezes: number,
+  isPro: boolean
+): number {
+  if (streak <= 0 || streak % FREEZE_EARNED_EVERY_DAYS !== 0) {
+    return currentFreezes;
+  }
+
+  return Math.min(currentFreezes + 1, freezeCap(isPro));
+}
+
 /** All achievement ids currently satisfied by these stats. */
 export function unlockedAchievementIds(stats: UserStats): string[] {
   return ACHIEVEMENTS.filter((a) => a.isUnlocked(stats)).map((a) => a.id);
