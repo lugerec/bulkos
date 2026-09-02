@@ -25,7 +25,7 @@ import ProfileGoalsCard from "../components/ProfileGoalsCard";
 import {
   buildBodyMetricsCsv,
   buildWorkoutsCsv,
-  downloadTextFile,
+  downloadCsvFiles,
 } from "@/lib/exportCsv";
 import { toDateKey } from "@/lib/date";
 
@@ -47,6 +47,8 @@ export default function SettingsScreen({
   const setAccentPack = useSettingsStore((s) => s.setAccentPack);
   // Accent packs come with Pro (or a one-off unlock, once billing is live).
   const hasAccentUnlock = useEntitlementStore((s) => s.isPro);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
@@ -70,15 +72,28 @@ export default function SettingsScreen({
 
   const todayKey = toDateKey(new Date());
 
-  const handleExport = () => {
-    downloadTextFile(
-      `bulkos-workouts-${todayKey}.csv`,
-      buildWorkoutsCsv(workouts)
-    );
-    downloadTextFile(
-      `bulkos-body-metrics-${todayKey}.csv`,
-      buildBodyMetricsCsv(bodyEntries)
-    );
+  const handleExport = async () => {
+    setExporting(true);
+    setExportError(null);
+
+    try {
+      await downloadCsvFiles([
+        {
+          filename: `bulkos-workouts-${todayKey}.csv`,
+          content: buildWorkoutsCsv(workouts),
+        },
+        {
+          filename: `bulkos-body-metrics-${todayKey}.csv`,
+          content: buildBodyMetricsCsv(bodyEntries),
+        },
+      ]);
+    } catch (err) {
+      setExportError(
+        err instanceof Error ? err.message : "Couldn't export your data."
+      );
+    } finally {
+      setExporting(false);
+    }
   };
 
   const Toggle = ({
@@ -432,18 +447,30 @@ export default function SettingsScreen({
         </div>
       </div>
 
-      <button
-        onClick={handleExport}
-        className="w-full py-4 rounded-[20px] font-semibold text-sm flex items-center justify-center gap-2 mb-3 card-lit"
-        style={{
-          background: C.card,
-          border: `1px solid ${C.border}`,
-          color: C.fg2,
-        }}
-      >
-        <Download size={16} />
-        Export Data (CSV)
-      </button>
+      <div className="mb-3">
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="w-full py-4 rounded-[20px] font-semibold text-sm flex items-center justify-center gap-2 card-lit disabled:opacity-60"
+          style={{
+            background: C.card,
+            border: `1px solid ${C.border}`,
+            color: C.fg2,
+          }}
+        >
+          <Download size={16} />
+          {exporting ? "Preparing export…" : "Export Data (CSV)"}
+        </button>
+
+        {exportError && (
+          <p
+            className="text-[11px] text-center mt-2"
+            style={{ color: C.amber }}
+          >
+            {exportError}
+          </p>
+        )}
+      </div>
 
       <button
         onClick={logout}

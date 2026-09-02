@@ -81,11 +81,76 @@ export function buildBodyMetricsCsv(
 }
 
 /** Trigger a browser download of the given text as a file. */
-export function downloadTextFile(
+import { Capacitor } from "@capacitor/core";
+
+/**
+ * Save (or offer to save) a text file.
+ *
+ * `<a download>` only works in a real browser tab — inside the native
+ * Capacitor/WKWebView shell there's no browser chrome to catch the download,
+ * so it silently does nothing. On native, write the file via Filesystem and
+ * hand it to the native Share sheet (Save to Files, AirDrop, Mail, ...);
+ * the browser trick remains the fallback when running as a plain web page.
+ */
+/**
+ * Save/share several text files together. On native, all files are written
+ * first and handed to a single Share sheet call — sharing them one-by-one
+ * would pop a separate native share sheet per file, which is jarring.
+ */
+export async function downloadCsvFiles(
+  files: ReadonlyArray<{ filename: string; content: string }>
+): Promise<void> {
+  if (Capacitor.isNativePlatform()) {
+    const { Filesystem, Directory, Encoding } = await import(
+      "@capacitor/filesystem"
+    );
+    const { Share } = await import("@capacitor/share");
+
+    const uris: string[] = [];
+    for (const file of files) {
+      const written = await Filesystem.writeFile({
+        path: file.filename,
+        data: file.content,
+        directory: Directory.Cache,
+        encoding: Encoding.UTF8,
+      });
+      uris.push(written.uri);
+    }
+
+    await Share.share({ title: "BulkOS data export", files: uris });
+    return;
+  }
+
+  for (const file of files) {
+    await downloadTextFile(file.filename, file.content);
+  }
+}
+
+export async function downloadTextFile(
   filename: string,
   content: string,
   mimeType = "text/csv"
-): void {
+): Promise<void> {
+  if (Capacitor.isNativePlatform()) {
+    const { Filesystem, Directory, Encoding } = await import(
+      "@capacitor/filesystem"
+    );
+    const { Share } = await import("@capacitor/share");
+
+    const written = await Filesystem.writeFile({
+      path: filename,
+      data: content,
+      directory: Directory.Cache,
+      encoding: Encoding.UTF8,
+    });
+
+    await Share.share({
+      title: filename,
+      files: [written.uri],
+    });
+    return;
+  }
+
   const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
