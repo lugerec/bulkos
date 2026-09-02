@@ -91,6 +91,8 @@ type SettingsState = {
   streakReminderHour: number;
   /** Human-readable reason the last toggle attempt failed, or null. */
   reminderStatus: string | null;
+  /** True while a permission/schedule request is in flight, for UI feedback. */
+  reminderBusy: boolean;
   setStreakReminder: (enabled: boolean) => Promise<void>;
   setStreakReminderHour: (hour: number) => Promise<void>;
 
@@ -143,15 +145,17 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   streakReminder: loadReminderEnabled(),
   streakReminderHour: loadReminderHour(),
   reminderStatus: null,
+  reminderBusy: false,
 
   setStreakReminder: async (enabled) => {
+    set({ reminderBusy: true });
     if (!enabled) {
       try {
         localStorage.setItem(REMINDER_KEY, "0");
       } catch {
         // non-fatal
       }
-      set({ streakReminder: false, reminderStatus: null });
+      set({ streakReminder: false, reminderStatus: null, reminderBusy: false });
       await cancelStreakReminder();
       return;
     }
@@ -160,6 +164,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       set({
         streakReminder: false,
         reminderStatus: "Reminders only work in the app, not in a browser.",
+        reminderBusy: false,
       });
       return;
     }
@@ -177,6 +182,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           status === "denied"
             ? "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications."
             : "Couldn't turn on reminders — please try again.",
+        reminderBusy: false,
       });
       return;
     }
@@ -186,6 +192,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       set({
         streakReminder: false,
         reminderStatus: "Couldn't schedule the reminder — please try again.",
+        reminderBusy: false,
       });
       return;
     }
@@ -195,7 +202,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     } catch {
       // non-fatal
     }
-    set({ streakReminder: true, reminderStatus: null });
+    set({ streakReminder: true, reminderStatus: null, reminderBusy: false });
   },
 
   setStreakReminderHour: async (hour) => {

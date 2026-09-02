@@ -43,6 +43,7 @@ export default function SettingsScreen({
   const setStreakReminder = useSettingsStore((s) => s.setStreakReminder);
   const setStreakReminderHour = useSettingsStore((s) => s.setStreakReminderHour);
   const reminderStatus = useSettingsStore((s) => s.reminderStatus);
+  const reminderBusy = useSettingsStore((s) => s.reminderBusy);
   const accentPack = useSettingsStore((s) => s.accentPack);
   const setAccentPack = useSettingsStore((s) => s.setAccentPack);
   // Accent packs come with Pro (or a one-off unlock, once billing is live).
@@ -311,12 +312,27 @@ export default function SettingsScreen({
           <span className="text-sm" style={{ color: C.fg2 }}>
             Streak reminder
           </span>
-          <Toggle
-            value={streakReminder}
-            onChange={() => {
-              setStreakReminder(!streakReminder);
-            }}
-          />
+          {reminderBusy ? (
+            <div
+              className="w-11 h-6 rounded-full flex items-center justify-center"
+              style={{ background: C.card2, border: `1px solid ${C.border}` }}
+            >
+              <div
+                className="w-3.5 h-3.5 rounded-full border-2 animate-spin"
+                style={{
+                  borderColor: C.fg3,
+                  borderTopColor: "transparent",
+                }}
+              />
+            </div>
+          ) : (
+            <Toggle
+              value={streakReminder}
+              onChange={() => {
+                setStreakReminder(!streakReminder);
+              }}
+            />
+          )}
         </div>
 
         {reminderStatus && (
