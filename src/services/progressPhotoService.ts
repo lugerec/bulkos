@@ -48,6 +48,10 @@ export async function uploadProgressPhoto({
   }
 
   const { Filesystem, Directory } = await import("@capacitor/filesystem");
+  // Documents is the directory Capacitor explicitly documents for user-
+  // generated content, and (on iOS) is what gets included in the user's
+  // own iCloud device backup — so a phone replaced via "Restore from iCloud
+  // backup" brings progress photos back automatically.
 
   const base64 = await fileToBase64(file);
   const path = `progress-photos/${uid}/${date}/${type}.jpg`;
@@ -55,7 +59,7 @@ export async function uploadProgressPhoto({
   const result = await Filesystem.writeFile({
     path,
     data: base64,
-    directory: Directory.Data,
+    directory: Directory.Documents,
     recursive: true,
   });
 
