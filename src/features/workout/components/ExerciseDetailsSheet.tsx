@@ -120,7 +120,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="w-full rounded-t-[30px] px-5 pt-4 pb-7 overflow-y-auto"
+        className="w-full rounded-t-[30px] px-5 pt-4 pb-7 overflow-y-auto relative"
         style={{
           background: C.bg,
           borderTop: `1px solid ${C.border}`,
@@ -140,20 +140,31 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           />
         </div>
 
-        <div className="flex items-start justify-between gap-4 mb-5">
-          <div>
-            <p
-              className="text-[11px] uppercase tracking-widest font-bold mb-1"
-              style={{ color: C.accentInk }}
-            >
-              Exercise Detail
-            </p>
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-4 right-5 w-9 h-9 rounded-full flex items-center justify-center z-10"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          <X size={16} color={C.fg2} />
+        </button>
 
-            <h2 className="text-[22px] font-extrabold" style={{ color: C.fg }}>
-              {exercise.name}
-            </h2>
+        <div className="mb-5">
+          <p
+            className="text-[11px] uppercase tracking-widest font-bold mb-1"
+            style={{ color: C.accentInk }}
+          >
+            Exercise Detail
+          </p>
 
-            <div className="flex flex-wrap gap-2 mt-3 mb-5">
+          <h2
+            className="text-[22px] font-extrabold pr-12"
+            style={{ color: C.fg }}
+          >
+            {exercise.name}
+          </h2>
+
+          <div className="flex flex-wrap gap-2 mt-3">
             {exercise.difficulty && (
               <InfoBadge>
                 {difficultyStars(exercise.difficulty)}{" "}
@@ -161,20 +172,12 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
               </InfoBadge>
             )}
 
-            <InfoBadge>
-              {capitalize(exercise.category)}
-            </InfoBadge>
-
-            <InfoBadge>
-              {capitalize(exercise.equipment)}
-            </InfoBadge>
-
-            <InfoBadge>
-              {capitalize(exercise.primaryMuscle)}
-            </InfoBadge>
+            <InfoBadge>{capitalize(exercise.category)}</InfoBadge>
+            <InfoBadge>{capitalize(exercise.equipment)}</InfoBadge>
+            <InfoBadge>{capitalize(exercise.primaryMuscle)}</InfoBadge>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-4">
             <ExerciseMedia
               media={getExerciseMedia(exercise.id, exercise.media)}
               name={exercise.name}
@@ -182,48 +185,45 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
             />
           </div>
 
-            <div className="flex flex-wrap gap-2 mt-5">
+          <div className="flex flex-wrap gap-2 mt-4">
             <InfoChip label="Primary" value={exercise.primaryMuscle} />
             <InfoChip label="Equipment" value={exercise.equipment} />
             <InfoChip label="Category" value={exercise.category} />
 
             {exercise.difficulty && (
-                <InfoChip
-                label="Difficulty"
-                value={exercise.difficulty}
-                />
+              <InfoChip label="Difficulty" value={exercise.difficulty} />
             )}
-            </div>
+          </div>
 
-            {exercise.secondaryMuscles?.length ? (
-            <div className="mt-6">
-                <p
+          {exercise.secondaryMuscles?.length ? (
+            <div className="mt-5">
+              <p
                 className="text-xs font-bold uppercase mb-2"
                 style={{ color: C.fg3 }}
-                >
+              >
                 Secondary muscles
-                </p>
+              </p>
 
-                <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                 {exercise.secondaryMuscles.map((muscle) => (
-                    <div
+                  <div
                     key={muscle}
                     className="px-3 py-2 rounded-full"
                     style={{
-                        background: C.card2,
-                        border: `1px solid ${C.border}`,
-                        color: C.fg,
+                      background: C.card2,
+                      border: `1px solid ${C.border}`,
+                      color: C.fg,
                     }}
-                    >
+                  >
                     {muscle}
-                    </div>
+                  </div>
                 ))}
-                </div>
+              </div>
             </div>
-            ) : null}
-          </div>
+          ) : null}
+        </div>
 
-          <Section title="Muscle Activation">
+        <Section title="Muscle Activation">
           {exercise.activation ? (
             <MuscleActivationList activation={exercise.activation} />
           ) : (
@@ -232,15 +232,6 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
             </p>
           )}
         </Section>
-
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: C.card, border: `1px solid ${C.border}` }}
-          >
-            <X size={16} color={C.fg2} />
-          </button>
-        </div>
 
         <div
           className="rounded-[20px] p-5 mb-4 flex items-center justify-center card-lit"
