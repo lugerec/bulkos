@@ -63,6 +63,8 @@ type RewardsState = {
   recordCardio: (distanceMeters: number) => Promise<void>;
   /** Award a one-off weekly bonus the first time the weekly goal is hit. */
   recordWeeklyGoal: (weekStartKey: string) => Promise<void>;
+  /** Pick an earned avatar (mirrored to the public profile). */
+  setAvatar: (avatarId: string) => Promise<void>;
   /** Achievement ids + new level to celebrate; cleared once shown. */
   clearCelebration: () => void;
 };
@@ -113,7 +115,7 @@ function mirrorPublicProfile(uid: string, stats: UserStats) {
   // Skip the write when nothing friends can see has changed — loadStats runs
   // on every dashboard open, and re-writing identical values each time is
   // needless Firestore traffic.
-  const signature = `${uid}:${level}:${stats.xp}:${stats.streak}:${displayName}`;
+  const signature = `${uid}:${level}:${stats.xp}:${stats.streak}:${displayName}:${stats.avatarId ?? ""}`;
   if (signature === lastMirrorSignature) return;
   lastMirrorSignature = signature;
 
@@ -122,6 +124,7 @@ function mirrorPublicProfile(uid: string, stats: UserStats) {
     level,
     xp: stats.xp,
     streak: stats.streak,
+    avatarId: stats.avatarId,
   }).catch(() => {
     // Non-fatal — the mirror will refresh on the next activity/load.
     lastMirrorSignature = null;
@@ -232,6 +235,22 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       await saveUserStats(uid, next);
     } catch {
       // Local state already reflects the change; a later load will resync.
+    }
+
+    mirrorPublicProfile(uid, next);
+  },
+
+  setAvatar: async (avatarId) => {
+    const uid = currentUid();
+    if (!uid) return;
+
+    const next = { ...get().stats, avatarId };
+    set({ stats: next });
+
+    try {
+      await saveUserStats(uid, next);
+    } catch {
+      // local reflects it; resync later
     }
 
     mirrorPublicProfile(uid, next);

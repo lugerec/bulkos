@@ -17,6 +17,13 @@ import { useEntitlementStore } from "@/store/entitlementStore";
 import { ACHIEVEMENTS, levelFromXp } from "@/features/rewards/gamification";
 import { getWeekDays } from "@/features/rewards/weeklyChallenge";
 import {
+  AVATARS,
+  findAvatar,
+  isAvatarUnlocked,
+  nextAvatar,
+} from "@/features/rewards/avatars";
+import AvatarBadge from "@/features/rewards/components/AvatarBadge";
+import {
   ACHIEVEMENT_ICONS,
   FALLBACK_ACHIEVEMENT_ICON,
 } from "@/features/rewards/achievementIcons";
@@ -35,6 +42,7 @@ export default function RewardsScreen({
   const recordWeeklyGoal = useRewardsStore((s) => s.recordWeeklyGoal);
   const isPro = useEntitlementStore((s) => s.isPro);
   const loadEntitlement = useEntitlementStore((s) => s.loadEntitlement);
+  const setAvatar = useRewardsStore((s) => s.setAvatar);
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loadWorkouts = useWorkoutHistoryStore((s) => s.loadWorkouts);
   const user = useAuthStore((s) => s.user);
@@ -118,6 +126,59 @@ export default function RewardsScreen({
         <p className="text-[11px] mt-2" style={{ color: C.fg3 }}>
           {level.xpForLevel - level.xpIntoLevel} XP to level {level.level + 1}
         </p>
+      </div>
+
+      {/* Avatars — earned by levelling, never bought */}
+      <div
+        className="rounded-[18px] p-4 mb-4"
+        style={{ background: C.card, border: `1px solid ${C.border}` }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-bold" style={{ color: C.fg }}>
+            Avatar
+          </p>
+          {nextAvatar(level.level) && (
+            <p className="text-[11px]" style={{ color: C.fg3 }}>
+              Next at level {nextAvatar(level.level)?.unlocksAtLevel}
+            </p>
+          )}
+        </div>
+
+        <div className="flex gap-2.5 flex-wrap">
+          {AVATARS.map((avatar) => {
+            const unlocked = isAvatarUnlocked(avatar, level.level);
+            const selected = findAvatar(stats.avatarId).id === avatar.id;
+
+            return (
+              <button
+                key={avatar.id}
+                onClick={() => unlocked && setAvatar(avatar.id)}
+                disabled={!unlocked}
+                aria-label={
+                  unlocked
+                    ? avatar.name
+                    : `${avatar.name}, unlocks at level ${avatar.unlocksAtLevel}`
+                }
+                className="relative"
+              >
+                <AvatarBadge
+                  avatar={avatar}
+                  size={40}
+                  locked={!unlocked}
+                  ring={selected ? C.fg : undefined}
+                />
+                {!unlocked && (
+                  <span
+                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1 rounded"
+                    style={{ background: C.card2, color: C.fg3 }}
+                  >
+                    {avatar.unlocksAtLevel}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Streak */}

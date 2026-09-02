@@ -10,6 +10,8 @@ export type PublicProfile = {
   level: number;
   xp: number;
   streak: number;
+  /** Chosen avatar id, so friends see it on the leaderboard. */
+  avatarId?: string;
   /** Short shareable code others use to add this user. */
   friendCode: string;
   /** True once the user chose their own nickname (blocks profile-name syncs). */

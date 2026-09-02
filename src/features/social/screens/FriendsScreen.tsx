@@ -3,6 +3,8 @@ import { ArrowLeft, UserPlus, Flame, Trophy, X, Pencil, Activity, Dumbbell, Spar
 
 import { C } from "@/shared/ui";
 import { useSocialStore, buildLeaderboard } from "@/store/socialStore";
+import { findAvatar } from "@/features/rewards/avatars";
+import AvatarBadge from "@/features/rewards/components/AvatarBadge";
 
 export default function FriendsScreen({ onBack }: { onBack: () => void }) {
   const myProfile = useSocialStore((s) => s.myProfile);
@@ -160,11 +162,13 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
             }}
           >
             <span
-              className="text-sm font-extrabold w-6 text-center"
+              className="text-sm font-extrabold w-5 text-center"
               style={{ color: rank === 0 ? C.accentInk : C.fg3 }}
             >
               {rank + 1}
             </span>
+
+            <AvatarBadge avatar={findAvatar(entry.avatarId)} size={32} />
 
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold truncate" style={{ color: C.fg }}>

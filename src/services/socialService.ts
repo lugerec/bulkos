@@ -61,7 +61,13 @@ export async function getPublicProfile(
  */
 export async function upsertPublicProfile(
   uid: string,
-  data: { displayName: string; level: number; xp: number; streak: number },
+  data: {
+    displayName: string;
+    level: number;
+    xp: number;
+    streak: number;
+    avatarId?: string;
+  },
   options: { overrideName?: boolean } = {}
 ): Promise<void> {
   const existing = await getPublicProfile(uid);
@@ -78,6 +84,7 @@ export async function upsertPublicProfile(
     xp: data.xp,
     streak: data.streak,
     friendCode: existing?.friendCode ?? generateFriendCode(),
+    ...(data.avatarId ? { avatarId: data.avatarId } : {}),
     ...(options.overrideName || existing?.nameLocked ? { nameLocked: true } : {}),
   };
 
