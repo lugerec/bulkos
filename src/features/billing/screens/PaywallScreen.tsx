@@ -29,6 +29,7 @@ const PERKS = [
 
 export default function PaywallScreen({ onBack }: { onBack: () => void }) {
   const isPro = useEntitlementStore((s) => s.isPro);
+  const setPro = useEntitlementStore((s) => s.setPro);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -146,6 +147,20 @@ export default function PaywallScreen({ onBack }: { onBack: () => void }) {
         <p className="text-[11px] text-center mt-2" style={{ color: C.fg2 }}>
           {message}
         </p>
+      )}
+
+      {import.meta.env.DEV && (
+        <button
+          onClick={() => setPro(!isPro)}
+          className="w-full py-2.5 mt-6 rounded-[12px] text-[11px] font-semibold"
+          style={{
+            background: "transparent",
+            border: `1px dashed ${C.border}`,
+            color: C.fg3,
+          }}
+        >
+          Dev: {isPro ? "turn Pro off" : "turn Pro on"}
+        </button>
       )}
 
       {!billing.available && !isPro && (

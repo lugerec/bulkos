@@ -47,6 +47,7 @@ import {
 import type { Goal } from "../types/profile";
 import { useAppStore } from "../store/appStore";
 import { useActiveWorkoutStore } from "../store/activeWorkoutStore";
+import { useEntitlementStore } from "../store/entitlementStore";
 
 import "../config/firebase";
 
@@ -916,6 +917,16 @@ export default function App() {
     if (!user) return;
     loadTemplates(user.uid);
   }, [user, loadTemplates]);
+
+  const loadEntitlement = useEntitlementStore((s) => s.loadEntitlement);
+
+  // Load the Pro tier once at sign-in: Settings, the paywall and the streak
+  // freeze cap all read it, so waiting until the Rewards screen is opened left
+  // them showing free-tier behaviour to a paying user.
+  useEffect(() => {
+    if (!user) return;
+    loadEntitlement();
+  }, [user, loadEntitlement]);
 
   const screen = useAppStore((s) => s.screen);
   const navigate = useAppStore((s) => s.navigate);
