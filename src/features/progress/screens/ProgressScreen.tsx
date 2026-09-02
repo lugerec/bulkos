@@ -1,3 +1,4 @@
+import { resolvePhotoSrc } from "@/services/progressPhotoService";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
@@ -652,7 +653,11 @@ function ProgressPhoto({
       }}
     >
       {url ? (
-        <img src={url} alt={label} className="w-full h-full object-cover" />
+        <img
+          src={resolvePhotoSrc(url)}
+          alt={label}
+          className="w-full h-full object-cover"
+        />
       ) : (
         <div className="h-full flex items-center justify-center">
           <p className="text-[11px]" style={{ color: C.fg3 }}>

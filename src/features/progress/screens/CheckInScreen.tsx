@@ -67,6 +67,21 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
       (r) => r.status === "rejected"
     );
 
+    // Firestore rejects explicit `undefined`, so only include a field when
+    // the upload actually succeeded — this was previously computed and then
+    // never used at all, so photos never made it onto the saved check-in.
+    const photoFields = {
+      ...(frontResult.status === "fulfilled" && frontResult.value
+        ? { frontPhotoUrl: frontResult.value }
+        : {}),
+      ...(sideResult.status === "fulfilled" && sideResult.value
+        ? { sidePhotoUrl: sideResult.value }
+        : {}),
+      ...(backResult.status === "fulfilled" && backResult.value
+        ? { backPhotoUrl: backResult.value }
+        : {}),
+    };
+
     try {
       await addBodyMetrics(user.uid, {
         date: today,
@@ -76,6 +91,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
         chestCm: toNumber(chest),
         armCm: toNumber(arms),
         legCm: toNumber(legs),
+        ...photoFields,
       });
 
       // Mirror weight to Apple Health (no-op off-device / if not granted).

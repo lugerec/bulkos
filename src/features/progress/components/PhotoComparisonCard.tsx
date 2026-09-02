@@ -4,6 +4,7 @@ import { GitCompareArrows } from "lucide-react";
 import { C } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
 import type { BodyMetrics } from "@/types/bodyMetrics";
+import { resolvePhotoSrc } from "@/services/progressPhotoService";
 
 type Props = {
   entries: BodyMetrics[];
@@ -93,7 +94,7 @@ export default function PhotoComparisonCard({ entries }: Props) {
         >
           {url ? (
             <img
-              src={url}
+              src={resolvePhotoSrc(url)}
               alt={`${label} ${type}`}
               className="w-full h-full object-cover"
             />
