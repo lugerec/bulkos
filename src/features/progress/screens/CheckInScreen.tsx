@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { writeWeightKg } from "@/services/healthService";
-import { ArrowLeft, Camera } from "lucide-react";
+import { ArrowLeft, Camera, X } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
@@ -37,54 +37,37 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
       : parsed;
   };
 
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   const handleSave = async () => {
+    setSaveError(null);
+
+    const parsedWeight = Number(weight);
+
+    if (!user || !weight || Number.isNaN(parsedWeight) || parsedWeight <= 0) {
+      return;
+    }
+
+    // Photos are best-effort and must never block saving the numbers — a
+    // failed upload (e.g. Storage not yet configured) shouldn't lose the
+    // weight/measurements the user just entered.
+    const [frontResult, sideResult, backResult] = await Promise.allSettled([
+      frontPhoto
+        ? uploadProgressPhoto({ uid: user.uid, date: today, type: "front", file: frontPhoto })
+        : Promise.resolve(undefined),
+      sidePhoto
+        ? uploadProgressPhoto({ uid: user.uid, date: today, type: "side", file: sidePhoto })
+        : Promise.resolve(undefined),
+      backPhoto
+        ? uploadProgressPhoto({ uid: user.uid, date: today, type: "back", file: backPhoto })
+        : Promise.resolve(undefined),
+    ]);
+
+    const photoUploadFailed = [frontResult, sideResult, backResult].some(
+      (r) => r.status === "rejected"
+    );
+
     try {
-      console.log("SAVE CLICKED");
-  
-      const parsedWeight = Number(weight);
-  
-      if (!user || !weight || Number.isNaN(parsedWeight) || parsedWeight <= 0) {
-        console.log("INVALID DATA", { user, weight, parsedWeight });
-        return;
-      }
-  
-      console.log("UPLOADING PHOTOS");
-  
-      const [frontPhotoUrl, sidePhotoUrl, backPhotoUrl] = await Promise.all([
-        frontPhoto
-          ? uploadProgressPhoto({
-              uid: user.uid,
-              date: today,
-              type: "front",
-              file: frontPhoto,
-            })
-          : Promise.resolve(undefined),
-  
-        sidePhoto
-          ? uploadProgressPhoto({
-              uid: user.uid,
-              date: today,
-              type: "side",
-              file: sidePhoto,
-            })
-          : Promise.resolve(undefined),
-  
-        backPhoto
-          ? uploadProgressPhoto({
-              uid: user.uid,
-              date: today,
-              type: "back",
-              file: backPhoto,
-            })
-          : Promise.resolve(undefined),
-      ]);
-  
-      console.log("PHOTO URLS", {
-        frontPhotoUrl,
-        sidePhotoUrl,
-        backPhotoUrl,
-      });
-  
       await addBodyMetrics(user.uid, {
         date: today,
         weightKg: parsedWeight,
@@ -105,9 +88,22 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
         streakDayXp: XP_REWARDS.streakDay,
       });
 
+      if (photoUploadFailed) {
+        // Metrics saved fine; only the photo(s) failed — let the user know
+        // rather than silently dropping them.
+        setSaveError(
+          "Saved, but one or more photos couldn't upload. Check your connection and try again."
+        );
+        return;
+      }
+
       onBack();
     } catch (error) {
-      console.error("CHECK-IN SAVE FAILED", error);
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Couldn't save your check-in — please try again."
+      );
     }
   };
 
@@ -166,6 +162,15 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
       >
         {loading ? "Saving..." : "Save Check-in"}
       </button>
+
+      {saveError && (
+        <p
+          className="text-[11px] text-center mt-3"
+          style={{ color: C.amber }}
+        >
+          {saveError}
+        </p>
+      )}
     </div>
   );
 }
@@ -218,9 +223,23 @@ function PhotoInput({
   file: File | null;
   onChange: (file: File | null) => void;
 }) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
   return (
     <label
-      className="rounded-[20px] p-3 flex flex-col items-center justify-center text-center cursor-pointer card-lit"
+      className="relative rounded-[20px] overflow-hidden flex flex-col items-center justify-center text-center cursor-pointer card-lit"
       style={{
         background: C.card,
         border: `1px solid ${file ? C.accent : C.border}`,
@@ -234,15 +253,50 @@ function PhotoInput({
         onChange={(e) => onChange(e.target.files?.[0] ?? null)}
       />
 
-      <Camera size={18} color={file ? C.accent : C.fg3} />
-
-      <p className="text-xs font-bold mt-2" style={{ color: C.fg }}>
-        {label}
-      </p>
-
-      <p className="text-[11px] mt-1" style={{ color: file ? C.accent : C.fg3 }}>
-        {file ? "Selected" : "Upload"}
-      </p>
+      {previewUrl ? (
+        <>
+          <img
+            src={previewUrl}
+            alt={`${label} progress photo`}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0) 55%)",
+            }}
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              onChange(null);
+            }}
+            aria-label={`Remove ${label} photo`}
+            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center"
+            style={{ background: "rgba(0,0,0,0.55)" }}
+          >
+            <X size={12} color="#fff" />
+          </button>
+          <p
+            className="relative text-xs font-bold mt-auto mb-2"
+            style={{ color: "#fff" }}
+          >
+            {label}
+          </p>
+        </>
+      ) : (
+        <>
+          <Camera size={18} color={C.fg3} />
+          <p className="text-xs font-bold mt-2" style={{ color: C.fg }}>
+            {label}
+          </p>
+          <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
+            Upload
+          </p>
+        </>
+      )}
     </label>
   );
 }
