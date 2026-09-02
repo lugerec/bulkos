@@ -43,6 +43,8 @@ type RewardsState = {
   cardioCheckedDate: string | null;
   /** In-memory guard: the week-start we already checked the weekly bonus. */
   weekBonusChecked: string | null;
+  /** In-memory guard: the day engagement was already recorded. */
+  engagementCheckedDate: string | null;
 
   loadStats: () => Promise<void>;
   recordActivity: (input: ActivityInput) => Promise<void>;
@@ -51,6 +53,12 @@ type RewardsState = {
     proteinHit: boolean;
     calorieHit: boolean;
   }) => Promise<void>;
+  /**
+   * Keep the streak alive for simply showing up (logging any food). Training
+   * is not a daily activity — rest days are part of the programme — so the
+   * streak measures engagement, while the weekly challenge measures training.
+   */
+  recordEngagement: () => Promise<void>;
   /** Award cardio XP once per day when today's Health distance clears the bar. */
   recordCardio: (distanceMeters: number) => Promise<void>;
   /** Award a one-off weekly bonus the first time the weekly goal is hit. */
@@ -128,6 +136,7 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
   goalCheckedDate: null,
   cardioCheckedDate: null,
   weekBonusChecked: null,
+  engagementCheckedDate: null,
 
   loadStats: async () => {
     const uid = currentUid();
@@ -287,6 +296,72 @@ export const useRewardsStore = create<RewardsState>((set, get) => ({
       justUnlocked: fresh,
       justLeveledUp: leveledUp,
       goalCheckedDate: todayKey,
+    });
+
+    try {
+      await saveUserStats(uid, next);
+    } catch {
+      // local reflects it; resync later
+    }
+
+    mirrorPublicProfile(uid, next);
+  },
+
+  recordEngagement: async () => {
+    const uid = currentUid();
+    if (!uid) return;
+
+    const todayKey = getTodayKey();
+
+    // Cheap guards first — this fires on every food log, and most of them
+    // happen on a day that already counts.
+    if (get().engagementCheckedDate === todayKey) return;
+    if (get().stats.lastActiveDate === todayKey) {
+      set({ engagementCheckedDate: todayKey });
+      return;
+    }
+
+    let prev = get().stats;
+    try {
+      prev = await getUserStats(uid);
+    } catch {
+      // fall back to in-memory
+    }
+
+    if (prev.lastActiveDate === todayKey) {
+      set({ engagementCheckedDate: todayKey });
+      return;
+    }
+
+    const { streak, countsAsNewDay, streakFreezes } = resolveStreak(
+      prev,
+      todayKey
+    );
+
+    const next: UserStats = {
+      ...prev,
+      xp: prev.xp + (countsAsNewDay ? XP_REWARDS.streakDay : 0),
+      streak,
+      longestStreak: Math.max(prev.longestStreak, streak),
+      streakFreezes,
+      lastActiveDate: todayKey,
+      achievements: prev.achievements,
+    };
+
+    const fresh = newlyUnlocked(next);
+    next.achievements = [...prev.achievements, ...fresh];
+
+    const leveledUp =
+      levelFromXp(next.xp).level > levelFromXp(prev.xp).level
+        ? levelFromXp(next.xp).level
+        : null;
+
+    set({
+      stats: next,
+      loaded: true,
+      justUnlocked: fresh,
+      justLeveledUp: leveledUp,
+      engagementCheckedDate: todayKey,
     });
 
     try {

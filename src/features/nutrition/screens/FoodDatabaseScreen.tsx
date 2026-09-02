@@ -3,6 +3,7 @@ import { ArrowLeft, Globe, Search, CheckCircle2, ScanLine, X, Star, Plus, Clock 
 
 import { C } from "@/shared/ui";
 import { useFoodStore } from "@/store/foodStore";
+import { useRewardsStore } from "@/store/rewardsStore";
 import { useAppStore } from "@/store/appStore";
 import { matchesSearch } from "@/lib/text";
 import { useAuthStore } from "@/store/authStore";
@@ -63,6 +64,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
   const favorites = useFoodStore((state) => state.favorites);
   const loadFavorites = useFoodStore((state) => state.loadFavorites);
   const toggleFavorite = useFoodStore((state) => state.toggleFavorite);
+  const recordEngagement = useRewardsStore((state) => state.recordEngagement);
 
   const selectedMeal = useAppStore((state) => state.selectedMeal);
   const selectedDateKey = useAppStore((state) => state.selectedDateKey);
@@ -107,6 +109,8 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
 
     const grams = food.serving > 0 ? food.serving : 100;
 
+    recordEngagement();
+
     await addFoodToMeal({
       uid,
       date: selectedDateKey,
@@ -121,6 +125,8 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
 
   async function quickAddRecent(recent: RecentFood, index: number) {
     if (!uid) return;
+
+    recordEngagement();
 
     await logPortion(uid, selectedDateKey, selectedMeal, recent);
 

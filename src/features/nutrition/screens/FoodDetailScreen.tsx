@@ -6,6 +6,7 @@ import type { FoodItem } from "@/types/food";
 import { useAuthStore } from "@/store/authStore";
 import { useAppStore } from "@/store/appStore";
 import { useFoodStore } from "@/store/foodStore";
+import { useRewardsStore } from "@/store/rewardsStore";
 import { addFoodToMeal } from "@/services/logService";
 
 type Props = {
@@ -43,6 +44,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
   const isFavorite = useFoodStore((state) => state.isFavorite(food.id));
   const isOwnFood = useFoodStore((state) => state.isOwnFood(food.id));
   const deleteFood = useFoodStore((state) => state.deleteFood);
+  const recordEngagement = useRewardsStore((state) => state.recordEngagement);
 
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -146,6 +148,9 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
     try {
       setSaving(true);
       setError(null);
+
+      // Logging food counts as showing up, so rest days keep the streak.
+      recordEngagement();
 
       await addFoodToMeal({
         uid: user.uid,
