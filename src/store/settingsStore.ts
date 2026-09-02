@@ -1,4 +1,5 @@
 import {
+  areRemindersSupported,
   cancelStreakReminder,
   hasReminderPermission,
   requestReminderPermission,
@@ -88,6 +89,8 @@ type SettingsState = {
   /** Daily streak reminder (local notification). */
   streakReminder: boolean;
   streakReminderHour: number;
+  /** Human-readable reason the last toggle attempt failed, or null. */
+  reminderStatus: string | null;
   setStreakReminder: (enabled: boolean) => Promise<void>;
   setStreakReminderHour: (hour: number) => Promise<void>;
 
@@ -139,6 +142,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   streakReminder: loadReminderEnabled(),
   streakReminderHour: loadReminderHour(),
+  reminderStatus: null,
 
   setStreakReminder: async (enabled) => {
     if (!enabled) {
@@ -147,24 +151,42 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       } catch {
         // non-fatal
       }
-      set({ streakReminder: false });
+      set({ streakReminder: false, reminderStatus: null });
       await cancelStreakReminder();
       return;
     }
 
-    // Turning it on needs permission; if the user declines, leave it off
-    // rather than showing a toggle that silently does nothing.
-    const granted =
-      (await hasReminderPermission()) || (await requestReminderPermission());
+    if (!areRemindersSupported()) {
+      set({
+        streakReminder: false,
+        reminderStatus: "Reminders only work in the app, not in a browser.",
+      });
+      return;
+    }
 
-    if (!granted) {
-      set({ streakReminder: false });
+    // Turning it on needs permission; if already granted, skip the prompt.
+    const alreadyGranted = await hasReminderPermission();
+    const status = alreadyGranted
+      ? "granted"
+      : await requestReminderPermission();
+
+    if (status !== "granted") {
+      set({
+        streakReminder: false,
+        reminderStatus:
+          status === "denied"
+            ? "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications."
+            : "Couldn't turn on reminders — please try again.",
+      });
       return;
     }
 
     const scheduled = await scheduleStreakReminder(get().streakReminderHour);
     if (!scheduled) {
-      set({ streakReminder: false });
+      set({
+        streakReminder: false,
+        reminderStatus: "Couldn't schedule the reminder — please try again.",
+      });
       return;
     }
 
@@ -173,7 +195,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     } catch {
       // non-fatal
     }
-    set({ streakReminder: true });
+    set({ streakReminder: true, reminderStatus: null });
   },
 
   setStreakReminderHour: async (hour) => {

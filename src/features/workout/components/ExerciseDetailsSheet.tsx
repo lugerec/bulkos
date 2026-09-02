@@ -22,7 +22,7 @@ function InfoBadge({ children }: { children: React.ReactNode }) {
     <span
       className="px-3 py-1 rounded-full text-xs font-semibold"
       style={{
-        background: C.card2,
+        background: C.accentDim2,
         border: `1px solid ${C.border}`,
         color: C.fg,
       }}
@@ -120,13 +120,18 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="w-full rounded-t-[30px] px-5 pt-4 pb-7 overflow-y-auto relative"
+        className="w-full rounded-t-[30px] px-5 pt-4 overflow-y-auto relative"
         style={{
           background: C.bg,
           borderTop: `1px solid ${C.border}`,
           maxHeight: "82vh",
           overscrollBehavior: "contain",
           WebkitOverflowScrolling: "touch",
+          // Extra room below the last section so it clears the iOS home
+          // indicator's gesture zone — without this, releasing a swipe near
+          // the very bottom edge gets eaten by the system and the sheet
+          // appears to "bounce back" before reaching the true end.
+          paddingBottom: "max(28px, env(safe-area-inset-bottom) + 24px)",
         }}
       >
         <div className="flex justify-center mb-4">
@@ -469,6 +474,16 @@ function StatCard({
   );
 }
 
+const CHIP_STYLES: Record<
+  string,
+  { icon: string; color: string }
+> = {
+  Primary: { icon: "🎯", color: C.accent },
+  Equipment: { icon: "🏋️", color: C.blue },
+  Category: { icon: "🔁", color: C.purple },
+  Difficulty: { icon: "⚡", color: C.amber },
+};
+
 function InfoChip({
     label,
     value,
@@ -476,23 +491,26 @@ function InfoChip({
     label: string;
     value: string;
   }) {
+    const style = CHIP_STYLES[label];
+
     return (
       <div
-        className="rounded-full px-3 py-2"
+        className="rounded-2xl px-3 py-2"
         style={{
-          background: C.card,
-          border: `1px solid ${C.border}`,
+          background: style ? `${style.color}14` : C.card,
+          border: `1px solid ${style ? style.color + "40" : C.border}`,
         }}
       >
         <div
-          className="text-[11px] uppercase"
-          style={{ color: C.fg3 }}
+          className="text-[10px] uppercase font-semibold flex items-center gap-1"
+          style={{ color: style?.color ?? C.fg3 }}
         >
+          <span>{style?.icon}</span>
           {label}
         </div>
-  
+
         <div
-          className="text-xs font-semibold"
+          className="text-xs font-bold mt-0.5"
           style={{ color: C.fg }}
         >
           {value}

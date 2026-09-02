@@ -42,6 +42,7 @@ export default function SettingsScreen({
   const streakReminderHour = useSettingsStore((s) => s.streakReminderHour);
   const setStreakReminder = useSettingsStore((s) => s.setStreakReminder);
   const setStreakReminderHour = useSettingsStore((s) => s.setStreakReminderHour);
+  const reminderStatus = useSettingsStore((s) => s.reminderStatus);
   const accentPack = useSettingsStore((s) => s.accentPack);
   const setAccentPack = useSettingsStore((s) => s.setAccentPack);
   // Accent packs come with Pro (or a one-off unlock, once billing is live).
@@ -302,6 +303,15 @@ export default function SettingsScreen({
             }}
           />
         </div>
+
+        {reminderStatus && (
+          <p
+            className="text-[11px] px-4 py-2.5"
+            style={{ color: C.amber, borderBottom: `1px solid ${C.border}` }}
+          >
+            {reminderStatus}
+          </p>
+        )}
 
         {streakReminder && (
           <div

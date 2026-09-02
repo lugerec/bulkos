@@ -21,16 +21,22 @@ async function plugin() {
   return mod.LocalNotifications;
 }
 
-/** Ask for notification permission. Returns true when granted. */
-export async function requestReminderPermission(): Promise<boolean> {
-  if (!areRemindersSupported()) return false;
+export type ReminderPermissionStatus =
+  | "granted"
+  | "denied"
+  | "unsupported"
+  | "error";
+
+/** Ask for notification permission. */
+export async function requestReminderPermission(): Promise<ReminderPermissionStatus> {
+  if (!areRemindersSupported()) return "unsupported";
 
   try {
     const LocalNotifications = await plugin();
     const status = await LocalNotifications.requestPermissions();
-    return status.display === "granted";
+    return status.display === "granted" ? "granted" : "denied";
   } catch {
-    return false;
+    return "error";
   }
 }
 
