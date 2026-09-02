@@ -12,6 +12,9 @@ type Props = {
   effort?: SetEffort;
   /** Same set from the last time this exercise was performed. */
   previous?: { weight: number; reps: number };
+  isDropSet?: boolean;
+  /** Add a drop set right after this one. Omitted when not offered. */
+  onAddDrop?: () => void;
 
   onToggle: () => void;
   onWeightChange: (value: number) => void;
@@ -33,6 +36,8 @@ export default function WorkoutSetRow({
   completed,
   effort,
   previous,
+  isDropSet,
+  onAddDrop,
   onToggle,
   onWeightChange,
   onRepsChange,
@@ -46,16 +51,26 @@ export default function WorkoutSetRow({
         style={{
           opacity: completed ? 0.55 : 1,
           transition: "0.25s",
+          marginLeft: isDropSet ? 18 : 0,
         }}
       >
         <div className="w-10 flex flex-col items-center">
-          <span
-            className="text-xs font-semibold"
-            style={{ color: completed ? C.accent : C.fg3 }}
-          >
-            {index + 1}
-          </span>
-          {previous && (
+          {isDropSet ? (
+            <span
+              className="text-[9px] font-bold uppercase"
+              style={{ color: C.amber }}
+            >
+              ↳ drop
+            </span>
+          ) : (
+            <span
+              className="text-xs font-semibold"
+              style={{ color: completed ? C.accent : C.fg3 }}
+            >
+              {index + 1}
+            </span>
+          )}
+          {previous && !isDropSet && (
             <span
               className="text-[9px] leading-tight text-center"
               style={{ color: C.fg3, opacity: 0.7 }}
@@ -67,7 +82,10 @@ export default function WorkoutSetRow({
 
         <div
           className="flex-1 rounded-xl flex items-center justify-between px-2 py-1"
-          style={{ background: C.card2, border: `1px solid ${C.border}` }}
+          style={{
+            background: C.card2,
+            border: `1px solid ${isDropSet ? C.amber + "55" : C.border}`,
+          }}
         >
           <button onClick={() => onWeightChange(Math.max(0, round1(weight - WEIGHT_STEP)))}>
             <Minus size={14} color={C.fg3} />
@@ -124,12 +142,17 @@ export default function WorkoutSetRow({
         </button>
       </div>
 
-      {completed && showEffort && (
-        <div className="flex items-center gap-2 pl-10 pr-1 pb-2">
-          <span className="text-[11px]" style={{ color: C.fg3 }}>
-            Felt
-          </span>
-          {EFFORTS.map((option) => {
+      {completed && (showEffort || (onAddDrop && !isDropSet)) && (
+        <div
+          className="flex items-center gap-2 pr-1 pb-2 flex-wrap"
+          style={{ paddingLeft: isDropSet ? 28 + 18 : 40 }}
+        >
+          {showEffort && (
+            <span className="text-[11px]" style={{ color: C.fg3 }}>
+              Felt
+            </span>
+          )}
+          {showEffort && EFFORTS.map((option) => {
             const active = effort === option.value;
 
             return (
@@ -147,6 +170,16 @@ export default function WorkoutSetRow({
               </button>
             );
           })}
+
+          {onAddDrop && !isDropSet && (
+            <button
+              onClick={onAddDrop}
+              className="px-2.5 py-1 rounded-full text-[11px] font-semibold ml-auto"
+              style={{ background: "transparent", border: `1px dashed ${C.amber}`, color: C.amber }}
+            >
+              + Drop set
+            </button>
+          )}
         </div>
       )}
     </div>

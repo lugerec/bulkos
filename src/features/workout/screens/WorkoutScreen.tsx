@@ -27,6 +27,7 @@ import { sendWorkoutToWatch, onWatchSetUpdate, sendSetUpdateToWatch, onWatchSetV
 import { saveWorkout, updateWorkoutRating } from "@/services/workoutService";
 import { useRewardsStore } from "@/store/rewardsStore";
 import { XP_REWARDS } from "@/features/rewards/gamification";
+import { suggestDropWeight, skipsFullRest, DROP_SET_REST_SECONDS } from "@/features/workout/utils/dropSets";
 import { publishActivity } from "@/services/socialService";
 import { getEffectiveSetWeight } from "@/features/workout/utils/setVolume";
 import { getRestSeconds } from "@/features/workout/utils/restTime";
@@ -532,14 +533,18 @@ export default function WorkoutScreen() {
           (item) => item.id === (exercise.exerciseId ?? exercise.id)
         );
 
-        const restSeconds = getRestSeconds(
-          {
-            equipment: restDefinition?.equipment,
-            category: restDefinition?.category,
-            name: exercise.name,
-          },
-          exercise.restSeconds ?? restDefinition?.defaultRestSeconds
-        );
+        // A drop set right after this one wants a short, near-immediate rest,
+        // not the exercise's normal recovery window.
+        const restSeconds = skipsFullRest(exercise.sets, setIdx)
+          ? DROP_SET_REST_SECONDS
+          : getRestSeconds(
+              {
+                equipment: restDefinition?.equipment,
+                category: restDefinition?.category,
+                name: exercise.name,
+              },
+              exercise.restSeconds ?? restDefinition?.defaultRestSeconds
+            );
 
         setRestTimer(restSeconds);
         setIsResting(true);
@@ -619,6 +624,45 @@ export default function WorkoutScreen() {
         return { ...exercise, sets: [...exercise.sets, newSet] };
       })
     );
+  };
+
+  /** Insert a drop set right after setIdx: reduced weight, same reps, unstarted. */
+  const addDropSet = (exIdx: number, setIdx: number) => {
+    setExercises((current) =>
+      current.map((exercise, exerciseIndex) => {
+        if (exerciseIndex !== exIdx) return exercise;
+
+        const source = exercise.sets[setIdx];
+        if (!source) return exercise;
+
+        const drop = {
+          weight: suggestDropWeight(source.weight),
+          reps: source.reps,
+          completed: false,
+          isDropSet: true,
+        };
+
+        const sets = [...exercise.sets];
+        sets.splice(setIdx + 1, 0, drop);
+
+        return { ...exercise, sets };
+      })
+    );
+
+    // completed is keyed by "exIdx-setIdx"; inserting mid-array shifts every
+    // later set's index in this exercise up by one, so re-key those entries
+    // or their checkmarks would land on the wrong row.
+    setCompleted((prev) => {
+      const next = new Set<string>();
+      for (const key of prev) {
+        const [exPart, setPart] = key.split("-");
+        const ex = Number(exPart);
+        const idx = Number(setPart);
+
+        next.add(ex === exIdx && idx > setIdx ? `${ex}-${idx + 1}` : key);
+      }
+      return next;
+    });
   };
 
   const removeSet = (exIdx: number) => {
@@ -1614,6 +1658,8 @@ export default function WorkoutScreen() {
                         updateEffort(exIdx, setIdx, value)
                       }
                       showEffort={flags.effortRating}
+                      isDropSet={set.isDropSet}
+                      onAddDrop={() => addDropSet(exIdx, setIdx)}
                     />
 
                     {isResting && restKey === key && (

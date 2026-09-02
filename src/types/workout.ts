@@ -91,6 +91,9 @@ export type WorkoutSet = {
   completed?: boolean;
   /** How the set felt — a simple 3-level effort rating. */
   effort?: SetEffort;
+  /** A drop set performed immediately after the set before it, at reduced
+   * weight and with no full rest — same exercise, back-to-back. */
+  isDropSet?: boolean;
 };
 
 export type WorkoutExercise = {
