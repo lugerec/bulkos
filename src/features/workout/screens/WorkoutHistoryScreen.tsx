@@ -6,6 +6,7 @@ import EmptyState from "@/shared/EmptyState";
 import { classifyWorkoutSplit } from "@/features/workout/utils/workoutRecommendation";
 import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
+import { useEntitlementStore } from "@/store/entitlementStore";
 
 function fmt(seconds: number) {
   if (seconds < 60) return `${seconds}s`;
@@ -29,6 +30,9 @@ function formatSplit(workout: { exercises?: { id: string; exerciseId?: string; n
   return split ? SPLIT_LABELS[split] ?? "Mixed" : "Mixed";
 }
 
+/** Free tier sees the most recent N sessions; Pro sees the full history. */
+export const FREE_HISTORY_LIMIT = 20;
+
 function formatDate(dateKey: string) {
   const [year, month, day] = dateKey.split("-").map(Number);
   if (!year || !month || !day) return dateKey;
@@ -48,6 +52,7 @@ export default function WorkoutHistoryScreen({
   onNavigate: (screen: Screen) => void;
 }) {
   const user = useAuthStore((s) => s.user);
+  const isPro = useEntitlementStore((s) => s.isPro);
 
   const workouts = useWorkoutHistoryStore((s) => s.workouts);
   const loading = useWorkoutHistoryStore((s) => s.loading);
@@ -58,6 +63,11 @@ export default function WorkoutHistoryScreen({
     if (!user) return;
     loadWorkouts(user.uid);
   }, [user, loadWorkouts]);
+
+  // Nothing is ever deleted for free users — this only limits what's shown,
+  // so upgrading later reveals the same history rather than starting fresh.
+  const visibleWorkouts = isPro ? workouts : workouts.slice(0, FREE_HISTORY_LIMIT);
+  const hiddenCount = workouts.length - visibleWorkouts.length;
 
   return (
     <div className="px-5 pb-8 pt-4">
@@ -95,7 +105,7 @@ export default function WorkoutHistoryScreen({
             />
           )
         ) : (
-          workouts.map((workout) => (
+          visibleWorkouts.map((workout) => (
             <button
               key={workout.id}
               onClick={() => {
@@ -131,6 +141,21 @@ export default function WorkoutHistoryScreen({
               </div>
             </button>
           ))
+        )}
+
+        {hiddenCount > 0 && (
+          <button
+            onClick={() => onNavigate("paywall")}
+            className="w-full text-left rounded-[20px] p-4"
+            style={{ background: C.card2, border: `1px dashed ${C.border}` }}
+          >
+            <p className="text-sm font-bold" style={{ color: C.fg }}>
+              {hiddenCount} older {hiddenCount === 1 ? "session is" : "sessions are"} saved but hidden
+            </p>
+            <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
+              Nothing was deleted — Pro unlocks your full history.
+            </p>
+          </button>
         )}
       </div>
     </div>

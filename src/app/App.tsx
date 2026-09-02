@@ -11,6 +11,7 @@ import RewardsScreen from "@/features/rewards/screens/RewardsScreen";
 import RewardCelebration from "@/features/rewards/components/RewardCelebration";
 import FriendsScreen from "@/features/social/screens/FriendsScreen";
 import PaywallScreen from "@/features/billing/screens/PaywallScreen";
+import ProAnalyticsScreen from "@/features/analytics/screens/ProAnalyticsScreen";
 import WorkoutScreen from "@/features/workout/screens/WorkoutScreen";
 import OneRepMaxScreen from "@/features/workout/screens/OneRepMaxScreen";
 import FoodDatabaseScreenNew from "../features/nutrition/screens/FoodDatabaseScreen";
@@ -1069,6 +1070,13 @@ export default function App() {
 
           {screen === "paywall" && (
             <PaywallScreen onBack={() => navigate("rewards")} />
+          )}
+
+          {screen === "pro-analytics" && (
+            <ProAnalyticsScreen
+              onBack={() => navigate("rewards")}
+              onNavigate={navigate}
+            />
           )}
 
           {screen === "check-in" && (

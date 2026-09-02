@@ -18,6 +18,10 @@ export type LoggedWorkoutSet = {
 
 export type LoggedWorkoutExercise = {
   id: string;
+  /** The exercise definition id, when the log was saved from a live session
+   * (spread from WorkoutExercise). Older/partial logs may lack it — fall
+   * back to `id`. */
+  exerciseId?: string;
   name: string;
   notes?: string;
   sets: LoggedWorkoutSet[];

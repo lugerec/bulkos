@@ -7,6 +7,7 @@ import {
   Dumbbell,
   Users,
   Snowflake,
+  BarChart3,
 } from "lucide-react";
 
 import { C, type Screen } from "@/shared/ui";
@@ -283,6 +284,28 @@ export default function RewardsScreen({
           </p>
         )}
       </div>
+
+      {/* Advanced analytics entry */}
+      <button
+        onClick={() => onNavigate("pro-analytics")}
+        className="w-full flex items-center gap-3 rounded-[18px] px-4 py-3.5 mb-3"
+        style={{ background: C.card, border: `1px solid ${C.border}` }}
+      >
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: C.accentDim }}
+        >
+          <BarChart3 size={18} color={C.accent} />
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-sm font-bold" style={{ color: C.fg }}>
+            Advanced analytics
+          </p>
+          <p className="text-[11px]" style={{ color: C.fg3 }}>
+            {isPro ? "Strength trends & muscle balance" : "Pro — strength trends & muscle balance"}
+          </p>
+        </div>
+      </button>
 
       {/* Friends entry */}
       <button
