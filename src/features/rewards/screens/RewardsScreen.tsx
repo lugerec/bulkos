@@ -23,6 +23,7 @@ import {
   nextAvatar,
 } from "@/features/rewards/avatars";
 import AvatarBadge from "@/features/rewards/components/AvatarBadge";
+import ActivitySummary from "@/features/rewards/components/ActivitySummary";
 import {
   ACHIEVEMENT_ICONS,
   FALLBACK_ACHIEVEMENT_ICON,
@@ -232,6 +233,8 @@ export default function RewardsScreen({
           </p>
         </div>
       </button>
+
+      <ActivitySummary workouts={workouts} />
 
       {/* Weekly challenge */}
       <div
