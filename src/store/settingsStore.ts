@@ -5,6 +5,11 @@ import {
   scheduleStreakReminder,
 } from "@/services/reminderService";
 import { create } from "zustand";
+import {
+  applyAccentPack,
+  DEFAULT_ACCENT_PACK,
+  findAccentPack,
+} from "@/features/appearance/accentPacks";
 
 export type UnitSystem = "metric" | "imperial";
 export type ThemeMode = "dark" | "light";
@@ -13,6 +18,7 @@ const STORAGE_KEY = "bulkos.settings.units";
 const THEME_KEY = "bulkos.settings.theme";
 const REMINDER_KEY = "bulkos.settings.streakReminder";
 const REMINDER_HOUR_KEY = "bulkos.settings.streakReminderHour";
+const ACCENT_KEY = "bulkos.settings.accentPack";
 
 function loadUnits(): UnitSystem {
   if (typeof localStorage === "undefined") return "metric";
@@ -56,6 +62,16 @@ function loadReminderHour(): number {
   }
 }
 
+function loadAccentPack(): string {
+  if (typeof localStorage === "undefined") return DEFAULT_ACCENT_PACK.id;
+
+  try {
+    return localStorage.getItem(ACCENT_KEY) ?? DEFAULT_ACCENT_PACK.id;
+  } catch {
+    return DEFAULT_ACCENT_PACK.id;
+  }
+}
+
 /** Reflect the theme onto <html data-theme> so CSS variables switch. */
 export function applyTheme(theme: ThemeMode): void {
   if (typeof document === "undefined") return;
@@ -74,6 +90,10 @@ type SettingsState = {
   streakReminderHour: number;
   setStreakReminder: (enabled: boolean) => Promise<void>;
   setStreakReminderHour: (hour: number) => Promise<void>;
+
+  /** Cosmetic accent pack id. */
+  accentPack: string;
+  setAccentPack: (id: string) => void;
 };
 
 /**
@@ -100,9 +120,21 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
     applyTheme(theme);
     set({ theme });
+    applyAccentPack(findAccentPack(get().accentPack), theme === "light");
   },
   toggleTheme: () => {
     get().setTheme(get().theme === "dark" ? "light" : "dark");
+  },
+
+  accentPack: loadAccentPack(),
+  setAccentPack: (id) => {
+    try {
+      localStorage.setItem(ACCENT_KEY, id);
+    } catch {
+      // non-fatal
+    }
+    set({ accentPack: id });
+    applyAccentPack(findAccentPack(id), get().theme === "light");
   },
 
   streakReminder: loadReminderEnabled(),

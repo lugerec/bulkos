@@ -12,6 +12,10 @@
   --app-fg: #F4F4F5;
   --app-fg2: #B0B0BA;
   --app-fg3: #999AA4;
+  /* Accent is overridable at runtime by the selected accent pack. */
+  --app-accent: #CCF232;
+  --app-accent-2: #BFE829;
+  --app-accent-gradient: linear-gradient(135deg, #D8FA4F 0%, #BFE829 100%);
   --app-accent-dim: rgba(204, 242, 50, 0.16);
   --app-accent-dim2: rgba(204, 242, 50, 0.07);
   /* Accent tuned for text/icons — neon reads fine on dark. */
@@ -27,6 +31,9 @@
   --app-fg: #14151A;
   --app-fg2: #4A4C55;
   --app-fg3: #71747E;
+  --app-accent: #CCF232;
+  --app-accent-2: #BFE829;
+  --app-accent-gradient: linear-gradient(135deg, #D8FA4F 0%, #BFE829 100%);
   --app-accent-dim: rgba(101, 130, 12, 0.14);
   --app-accent-dim2: rgba(101, 130, 12, 0.07);
   /* Neon lime is unreadable on white — use a deep olive-lime for text/icons. */

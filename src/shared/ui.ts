@@ -3,7 +3,7 @@ export const C = {
     card: "var(--app-card)",
     card2: "var(--app-card2)",
     border: "var(--app-border)",
-    accent: "#CCF232",
+    accent: "var(--app-accent)",
     /** accent for text/icons on the app background — darkens in light mode */
     accentInk: "var(--app-accent-ink)",
     /** bottom-nav glass background — follows the theme */
@@ -11,8 +11,8 @@ export const C = {
     accentDim: "var(--app-accent-dim)",
     accentDim2: "var(--app-accent-dim2)",
     /** signature gradient for primary CTAs and hero accents */
-    accentGradient: "linear-gradient(135deg, #D8FA4F 0%, #BFE829 100%)",
-    accent2: "#BFE829",
+    accentGradient: "var(--app-accent-gradient)",
+    accent2: "var(--app-accent-2)",
     fg: "var(--app-fg)",
     fg2: "var(--app-fg2)",
     fg3: "var(--app-fg3)",

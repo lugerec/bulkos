@@ -6,6 +6,7 @@ import {
   Download,
   Dumbbell,
   Flame,
+  Lock,
 } from "lucide-react";
 
 import { C, type Screen } from "@/shared/ui";
@@ -16,6 +17,8 @@ import { useAuthStore } from "@/store/authStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useSettingsStore } from "@/store/settingsStore";
+import { useEntitlementStore } from "@/store/entitlementStore";
+import { ACCENT_PACKS } from "@/features/appearance/accentPacks";
 import { LEVEL_CONFIG, DEFAULT_LEVEL, getFeatureFlags } from "@/features/settings/experienceLevel";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import ProfileGoalsCard from "../components/ProfileGoalsCard";
@@ -39,6 +42,10 @@ export default function SettingsScreen({
   const streakReminderHour = useSettingsStore((s) => s.streakReminderHour);
   const setStreakReminder = useSettingsStore((s) => s.setStreakReminder);
   const setStreakReminderHour = useSettingsStore((s) => s.setStreakReminderHour);
+  const accentPack = useSettingsStore((s) => s.accentPack);
+  const setAccentPack = useSettingsStore((s) => s.setAccentPack);
+  // Accent packs come with Pro (or a one-off unlock, once billing is live).
+  const hasAccentUnlock = useEntitlementStore((s) => s.isPro);
 
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
@@ -337,6 +344,56 @@ export default function SettingsScreen({
             value={theme === "dark"}
             onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
           />
+        </div>
+
+        <div
+          className="px-4 py-3.5"
+          style={{ borderBottom: `1px solid ${C.border}` }}
+        >
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-sm" style={{ color: C.fg2 }}>
+              Accent colour
+            </span>
+            {!hasAccentUnlock && (
+              <button
+                onClick={() => onNavigate("paywall")}
+                className="text-[11px] font-bold"
+                style={{ color: C.accentInk }}
+              >
+                Unlock all
+              </button>
+            )}
+          </div>
+
+          <div className="flex gap-2.5 flex-wrap">
+            {ACCENT_PACKS.map((pack) => {
+              const locked = !pack.free && !hasAccentUnlock;
+              const selected = accentPack === pack.id;
+
+              return (
+                <button
+                  key={pack.id}
+                  onClick={() =>
+                    locked ? onNavigate("paywall") : setAccentPack(pack.id)
+                  }
+                  aria-label={pack.name}
+                  className="relative flex items-center justify-center"
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 99,
+                    background: pack.accent,
+                    opacity: locked ? 0.45 : 1,
+                    border: selected
+                      ? `2.5px solid ${C.fg}`
+                      : `1px solid ${C.border}`,
+                  }}
+                >
+                  {locked && <Lock size={13} color="#0A0A0B" />}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="flex justify-between items-center px-4 py-3.5">
