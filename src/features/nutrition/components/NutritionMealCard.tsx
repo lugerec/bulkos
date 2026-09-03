@@ -14,10 +14,13 @@ type Props = {
     id: MealType;
     label: string;
     time: string;
+    /** 24h "HH:MM" value for the <input type="time">, e.g. "09:15". */
+    time24: string;
   };
   foods: LoggedFood[];
   total: Totals;
   onAdd: () => void;
+  onTimeChange: (time24: string) => void;
 };
 
 export default function NutritionMealCard({
@@ -25,6 +28,7 @@ export default function NutritionMealCard({
   foods,
   total,
   onAdd,
+  onTimeChange,
 }: Props) {
   return (
     <div
@@ -40,9 +44,22 @@ export default function NutritionMealCard({
             >
               {meal.label}
             </span>
-            <p className="text-[11px] mt-0.5" style={{ color: C.fg3 }}>
-              {meal.time}
-            </p>
+
+            {/* Tapping the time opens the native time picker (invisible
+                input layered over the styled label) so editing feels like
+                part of the design rather than a raw form field. */}
+            <label className="relative inline-flex items-center mt-0.5">
+              <p className="text-[11px]" style={{ color: C.fg3 }}>
+                {meal.time}
+              </p>
+              <input
+                type="time"
+                value={meal.time24}
+                onChange={(e) => e.target.value && onTimeChange(e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                aria-label={`${meal.label} time`}
+              />
+            </label>
           </div>
 
           <button

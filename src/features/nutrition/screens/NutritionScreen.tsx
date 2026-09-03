@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useFoodStore } from "@/store/foodStore";
@@ -15,15 +15,43 @@ import {
 } from "@/shared/components";
 import NutritionMealCard from "@/features/nutrition/components/NutritionMealCard";
 import { getTodayKey, keyToDate, addDaysToKey } from "@/lib/date";
+import { getMealTimes, setMealTime } from "@/services/mealTimeService";
 
-const meals: { id: MealType; label: string; time: string }[] = [
-  { id: "breakfast", label: "Breakfast", time: "7:30 AM" },
-  { id: "snack", label: "Morning Snack", time: "10:00 AM" },
-  { id: "lunch", label: "Lunch", time: "1:00 PM" },
-  { id: "preWorkout", label: "Pre-Workout", time: "4:30 PM" },
-  { id: "postWorkout", label: "Post-Workout", time: "6:30 PM" },
-  { id: "dinner", label: "Dinner", time: "8:00 PM" },
+/** Default schedule (24h), used until the user customises a day's times. */
+const DEFAULT_MEAL_TIMES: Record<MealType, string> = {
+  breakfast: "07:30",
+  snack: "10:00",
+  lunch: "13:00",
+  preWorkout: "16:30",
+  postWorkout: "18:30",
+  dinner: "20:00",
+};
+
+const MEAL_LABELS: Record<MealType, string> = {
+  breakfast: "Breakfast",
+  snack: "Morning Snack",
+  lunch: "Lunch",
+  preWorkout: "Pre-Workout",
+  postWorkout: "Post-Workout",
+  dinner: "Dinner",
+};
+
+const MEAL_ORDER: MealType[] = [
+  "breakfast",
+  "snack",
+  "lunch",
+  "preWorkout",
+  "postWorkout",
+  "dinner",
 ];
+
+/** "09:15" -> "9:15 AM" for display. */
+function formatTime12h(time24: string): string {
+  const [h, m] = time24.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+}
 
 function dayLabel(key: string): string {
   const today = getTodayKey();
@@ -58,6 +86,8 @@ export default function NutritionScreen({
 
   const isToday = selectedKey === getTodayKey();
 
+  const [mealTimes, setMealTimesState] = useState<Partial<Record<MealType, string>>>({});
+
   useEffect(() => {
     loadFoods();
   }, [loadFoods]);
@@ -66,6 +96,43 @@ export default function NutritionScreen({
     if (!user) return;
     loadDailyLog(user.uid, selectedKey);
   }, [user, loadDailyLog, selectedKey]);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+
+    getMealTimes(user.uid, selectedKey)
+      .then((times) => {
+        if (!cancelled) setMealTimesState(times);
+      })
+      .catch(() => {
+        if (!cancelled) setMealTimesState({});
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, selectedKey]);
+
+  const handleTimeChange = (meal: MealType, time24: string) => {
+    if (!user) return;
+
+    // Optimistic — the picker already shows the new value, persist quietly.
+    setMealTimesState((prev) => ({ ...prev, [meal]: time24 }));
+    setMealTime(user.uid, selectedKey, meal, time24).catch(() => {
+      // Best-effort; a later reload will resync if this failed.
+    });
+  };
+
+  const meals = MEAL_ORDER.map((id) => {
+    const time24 = mealTimes[id] ?? DEFAULT_MEAL_TIMES[id];
+    return {
+      id,
+      label: MEAL_LABELS[id],
+      time: formatTime12h(time24),
+      time24,
+    };
+  });
 
   const openFoodDatabase = (meal: MealType) => {
     setSelectedMeal(meal);
@@ -191,6 +258,7 @@ export default function NutritionScreen({
               foods={foodsByMeal[meal.id]}
               total={mealTotals[meal.id]}
               onAdd={() => openFoodDatabase(meal.id)}
+              onTimeChange={(time24) => handleTimeChange(meal.id, time24)}
             />
           ))}
         </div>
