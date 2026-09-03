@@ -13,9 +13,13 @@ describe("STARTER_FOODS", () => {
     expect(ids.every((id) => id.startsWith("starter-"))).toBe(true);
   });
 
-  it("has sane, non-negative macros per 100 units", () => {
+  it("has sane, non-negative macros per serving", () => {
     for (const f of STARTER_FOODS) {
-      expect(f.serving).toBe(100);
+      // Gram/ml foods are quoted per 100 units; piece foods per 1 unit.
+      expect(f.serving).toBe(f.unit === "piece" ? 1 : 100);
+      if (f.unit === "piece") {
+        expect(f.unitLabel).toBeTruthy();
+      }
       expect(f.calories).toBeGreaterThanOrEqual(0);
       expect(f.protein).toBeGreaterThanOrEqual(0);
       expect(f.carbs).toBeGreaterThanOrEqual(0);

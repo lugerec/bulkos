@@ -29,8 +29,14 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
   const selectedDateKey = useAppStore((state) => state.selectedDateKey);
   const navigate = useAppStore((state) => state.navigate);
 
+  const isPiece = food.unit === "piece";
+
   const [grams, setGrams] = useState(
-    food.defaultServing && food.defaultServing > 0 ? food.defaultServing : 100
+    food.defaultServing && food.defaultServing > 0
+      ? food.defaultServing
+      : food.serving > 0
+        ? food.serving
+        : 100
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -132,14 +138,18 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
   const fat = Number((food.fat * multiplier).toFixed(1));
 
   const category = food.category?.trim();
-  const servingLabel = `${food.serving}${food.unit}`;
+  const servingLabel = isPiece
+    ? `${food.serving} ${food.unitLabel ?? "piece"}${food.serving === 1 ? "" : "s"}`
+    : `${food.serving}${food.unit}`;
 
   const decrease = () => {
-    setGrams((current) => Math.max(10, current - 10));
+    const step = isPiece ? 1 : 10;
+    const min = isPiece ? 1 : 10;
+    setGrams((current) => Math.max(min, current - step));
   };
 
   const increase = () => {
-    setGrams((current) => current + 10);
+    setGrams((current) => current + (isPiece ? 1 : 10));
   };
 
   const handleAddFood = async () => {
@@ -312,12 +322,12 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
           <button
             type="button"
             onClick={decrease}
-            disabled={grams <= 10 || saving}
+            disabled={grams <= (isPiece ? 1 : 10) || saving}
             className="w-12 h-12 rounded-full flex items-center justify-center"
             style={{
               background: C.card2,
               border: `1px solid ${C.border}`,
-              opacity: grams <= 10 || saving ? 0.5 : 1,
+              opacity: grams <= (isPiece ? 1 : 10) || saving ? 0.5 : 1,
             }}
             aria-label="Decrease serving"
           >
@@ -336,7 +346,11 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
               className="text-sm mt-1"
               style={{ color: C.fg3 }}
             >
-              grams
+              {isPiece
+                ? `${food.unitLabel ?? "piece"}${grams === 1 ? "" : "s"}`
+                : food.unit === "ml"
+                  ? "ml"
+                  : "grams"}
             </p>
           </div>
 

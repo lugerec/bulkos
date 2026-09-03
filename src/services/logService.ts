@@ -36,6 +36,8 @@ import {
         protein: Number((food.protein * multiplier).toFixed(1)),
         carbs: Number((food.carbs * multiplier).toFixed(1)),
         fat: Number((food.fat * multiplier).toFixed(1)),
+        unit: food.unit,
+        ...(food.unitLabel ? { unitLabel: food.unitLabel } : {}),
         mealType: meal,
         createdAt: serverTimestamp(),
       }
@@ -206,6 +208,8 @@ export async function logPortion(
       protein: portion.protein,
       carbs: portion.carbs,
       fat: portion.fat,
+      ...(portion.unit ? { unit: portion.unit } : {}),
+      ...(portion.unitLabel ? { unitLabel: portion.unitLabel } : {}),
       mealType: meal,
       createdAt: serverTimestamp(),
     }

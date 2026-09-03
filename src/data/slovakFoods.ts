@@ -36,6 +36,32 @@ function food(
   };
 }
 
+/** A naturally-countable food (1 rožok, 1 tyčinka...) — macros per piece. */
+function piece(
+  id: string,
+  name: string,
+  category: FoodItem["category"],
+  calories: number,
+  protein: number,
+  carbs: number,
+  fat: number,
+  unitLabel: string
+): FoodItem {
+  return {
+    id: `sk-${id}`,
+    name,
+    category,
+    calories,
+    protein,
+    carbs,
+    fat,
+    serving: 1,
+    unit: "piece",
+    unitLabel,
+    verified: true,
+  };
+}
+
 export const SLOVAK_FOODS: FoodItem[] = [
   // Dairy — the local staples OFF handles worst
   food("bryndza", "Bryndza (sheep cheese)", "protein", 230, 15, 2, 18),
@@ -57,7 +83,7 @@ export const SLOVAK_FOODS: FoodItem[] = [
 
   // Bakery & carbs
   food("chlieb-razny", "Chlieb ražný (rye bread)", "carbs", 256, 8.5, 48, 3.3),
-  food("rozok", "Rožok / žemľa (bread roll)", "carbs", 287, 9, 56, 3),
+  piece("rozok", "Rožok / žemľa (bread roll)", "carbs", 144, 4.5, 28, 1.5, "roll"),
   food("knedla", "Knedľa (bread dumpling)", "carbs", 217, 7, 44, 1.5),
   food("halusky", "Bryndzové halušky", "carbs", 158, 6, 20, 6),
   food("zemiakova-kasa", "Zemiaková kaša (mashed potato)", "carbs", 105, 2, 15, 4),
@@ -78,5 +104,5 @@ export const SLOVAK_FOODS: FoodItem[] = [
   food("maslo", "Maslo (butter)", "fat", 717, 0.9, 0.1, 81),
   food("slnecnicovy-olej", "Slnečnicový olej (sunflower oil)", "fat", 900, 0, 0, 100),
   food("med", "Med (honey)", "other", 304, 0.3, 82, 0),
-  food("horalky", "Horalky / oplátka (wafer bar)", "other", 520, 8, 55, 29),
+  piece("horalky", "Horalky / oplátka (wafer bar)", "other", 260, 4, 27.5, 14.5, "wafer bar"),
 ];

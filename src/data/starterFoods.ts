@@ -31,6 +31,36 @@ function food(
   };
 }
 
+/**
+ * A naturally-countable food (1 egg, 1 banana...) — macros are per single
+ * piece rather than per 100 g, so logging feels like "2 eggs" instead of
+ * eyeballing a gram amount for something you'd never weigh in real life.
+ */
+function piece(
+  id: string,
+  name: string,
+  category: FoodItem["category"],
+  calories: number,
+  protein: number,
+  carbs: number,
+  fat: number,
+  unitLabel: string
+): FoodItem {
+  return {
+    id: `starter-${id}`,
+    name,
+    category,
+    calories,
+    protein,
+    carbs,
+    fat,
+    serving: 1,
+    unit: "piece",
+    unitLabel,
+    verified: true,
+  };
+}
+
 export const STARTER_FOODS: FoodItem[] = [
   // Protein
   food("chicken-breast", "Chicken Breast (cooked)", "protein", 165, 31, 0, 3.6),
@@ -41,7 +71,7 @@ export const STARTER_FOODS: FoodItem[] = [
   food("salmon", "Salmon (cooked)", "protein", 208, 20, 0, 13),
   food("tuna-canned", "Tuna, canned in water", "protein", 116, 26, 0, 1),
   food("shrimp", "Shrimp (cooked)", "protein", 99, 24, 0.2, 0.3),
-  food("eggs", "Egg, whole", "protein", 155, 13, 1.1, 11),
+  piece("eggs", "Egg, whole", "protein", 78, 6.5, 0.6, 5.5, "egg"),
   food("egg-whites", "Egg Whites", "protein", 52, 11, 0.7, 0.2),
   food("greek-yogurt", "Greek Yogurt 0%", "protein", 59, 10, 3.6, 0.4),
   food("skyr", "Skyr", "protein", 63, 11, 4, 0.2),
@@ -55,10 +85,10 @@ export const STARTER_FOODS: FoodItem[] = [
   food("pasta", "Pasta (cooked)", "carbs", 158, 6, 31, 0.9),
   food("potato", "Potato (boiled)", "carbs", 87, 2, 20, 0.1),
   food("sweet-potato", "Sweet Potato (cooked)", "carbs", 90, 2, 21, 0.1),
-  food("white-bread", "White Bread", "carbs", 265, 9, 49, 3.2),
-  food("wholewheat-bread", "Wholewheat Bread", "carbs", 247, 13, 41, 3.4),
+  piece("white-bread", "White Bread", "carbs", 80, 2.7, 14.7, 1, "slice"),
+  piece("wholewheat-bread", "Wholewheat Bread", "carbs", 74, 3.9, 12.3, 1, "slice"),
   food("quinoa", "Quinoa (cooked)", "carbs", 120, 4.4, 21, 1.9),
-  food("rice-cakes", "Rice Cakes", "carbs", 387, 8, 82, 3),
+  piece("rice-cakes", "Rice Cakes", "carbs", 35, 0.7, 7.4, 0.3, "rice cake"),
 
   // Fat
   food("almonds", "Almonds", "fat", 579, 21, 22, 50),
@@ -68,8 +98,8 @@ export const STARTER_FOODS: FoodItem[] = [
   food("avocado", "Avocado", "fat", 160, 2, 9, 15),
 
   // Fruit
-  food("banana", "Banana", "fruit", 89, 1.1, 23, 0.3),
-  food("apple", "Apple", "fruit", 52, 0.3, 14, 0.2),
+  piece("banana", "Banana", "fruit", 105, 1.3, 27.1, 0.4, "banana"),
+  piece("apple", "Apple", "fruit", 95, 0.5, 25.5, 0.4, "apple"),
   food("blueberries", "Blueberries", "fruit", 57, 0.7, 14, 0.3),
   food("strawberries", "Strawberries", "fruit", 32, 0.7, 8, 0.3),
 

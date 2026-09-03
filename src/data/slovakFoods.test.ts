@@ -25,7 +25,10 @@ describe("SLOVAK_FOODS", () => {
 
   it("has sane macros that roughly match their calories", () => {
     for (const f of SLOVAK_FOODS) {
-      expect(f.serving).toBe(100);
+      expect(f.serving).toBe(f.unit === "piece" ? 1 : 100);
+      if (f.unit === "piece") {
+        expect(f.unitLabel).toBeTruthy();
+      }
       expect(f.calories).toBeGreaterThanOrEqual(0);
       expect(f.protein).toBeGreaterThanOrEqual(0);
       expect(f.carbs).toBeGreaterThanOrEqual(0);

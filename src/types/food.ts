@@ -20,6 +20,10 @@ export type FoodItem = {
   verified: boolean;
   /** Package serving size (in `unit`), used to prefill the portion input. */
   defaultServing?: number;
+  /** Singular label for one `piece`, e.g. "egg", "slice" — used to show
+   * "4 eggs" instead of a generic "4 pieces". Only relevant when unit is
+   * "piece". */
+  unitLabel?: string;
 };
 
 export type LoggedFood = {
@@ -31,6 +35,8 @@ export type LoggedFood = {
   protein: number;
   carbs: number;
   fat: number;
+  unit?: FoodItem["unit"];
+  unitLabel?: string;
   mealType:
     | "breakfast"
     | "snack"
@@ -49,4 +55,8 @@ export type RecentFood = {
   protein: number;
   carbs: number;
   fat: number;
+  /** Portion unit at the time this was logged; defaults to "g" for older
+   * entries that predate this field. */
+  unit?: FoodItem["unit"];
+  unitLabel?: string;
 };

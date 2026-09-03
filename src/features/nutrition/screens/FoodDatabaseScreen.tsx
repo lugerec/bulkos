@@ -494,8 +494,12 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
                     key={food.id}
                     title={food.name}
                     subtitle={`${Math.round(food.calories)} kcal · ${
-                      food.serving > 0 ? food.serving : 100
-                    }${food.unit}`}
+                      food.unit === "piece"
+                        ? `${food.serving > 0 ? food.serving : 1} ${
+                            food.unitLabel ?? "piece"
+                          }${food.serving === 1 ? "" : "s"}`
+                        : `${food.serving > 0 ? food.serving : 100}${food.unit}`
+                    }`}
                     added={addedKey === `fav-${food.id}`}
                     onOpen={() => setSelectedFood(food)}
                     onQuickAdd={() => quickAddFavorite(food)}
@@ -523,8 +527,12 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
                     key={`${recent.foodId || recent.name}-${index}`}
                     title={recent.name}
                     subtitle={`${Math.round(recent.calories)} kcal · ${
-                      recent.grams
-                    }g`}
+                      recent.unit === "piece"
+                        ? `${recent.grams} ${recent.unitLabel ?? "piece"}${
+                            recent.grams === 1 ? "" : "s"
+                          }`
+                        : `${recent.grams}g`
+                    }`}
                     added={
                       addedKey ===
                       `recent-${recent.foodId || recent.name}-${index}`
@@ -563,7 +571,12 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
       <div className="flex flex-col gap-3">
         {filteredFoods.map((food) => {
           const category = food.category?.trim();
-          const serving = `${food.serving}${food.unit}`;
+          const serving =
+            food.unit === "piece"
+              ? `${food.serving} ${food.unitLabel ?? "piece"}${
+                  food.serving === 1 ? "" : "s"
+                }`
+              : `${food.serving}${food.unit}`;
 
           return (
             <button

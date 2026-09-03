@@ -28,6 +28,8 @@ export function dedupeRecentFoods(
       protein: food.protein,
       carbs: food.carbs,
       fat: food.fat,
+      unit: food.unit,
+      unitLabel: food.unitLabel,
     });
 
     if (recents.length >= limit) break;
