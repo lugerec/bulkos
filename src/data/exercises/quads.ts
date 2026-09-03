@@ -4,7 +4,7 @@ export const quadsExercises: ExerciseDefinition[] = [
   {
     id: "squat",
     name: "Squat",
-    aliases: ["Back Squat", "Barbell Squat"],
+    aliases: ["Back Squat", "Barbell Squat", "Drep"],
     primaryMuscle: "legs",
     secondaryMuscles: ["glutes", "fullBody"],
     equipment: "barbell",
@@ -268,6 +268,7 @@ export const quadsExercises: ExerciseDefinition[] = [
   {
     id: "walking-lunge",
     name: "Walking Lunge",
+    aliases: ["Výpad", "Výpady"],
     primaryMuscle: "legs",
     secondaryMuscles: ["glutes"],
     equipment: "dumbbell",

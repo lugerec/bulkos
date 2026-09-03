@@ -328,7 +328,7 @@ export const chestExercises: ExerciseDefinition[] = [
   {
     id: "push-up",
     name: "Push-up",
-    aliases: ["Press-up"],
+    aliases: ["Press-up", "Kliky", "Klik"],
     primaryMuscle: "chest",
     secondaryMuscles: ["triceps", "shoulders", "abs"],
     equipment: "bodyweight",

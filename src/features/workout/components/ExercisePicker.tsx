@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
 import { C, T } from "@/shared/ui";
+import { foldForSearch } from "@/lib/text";
 import { exerciseDefinitions } from "@/data/exercises";
 import ExerciseThumb from "@/features/workout/components/ExerciseThumb";
 import type { ExerciseDefinition, MuscleGroup } from "@/types/workout";
@@ -166,7 +167,7 @@ export function filterAndRank(
   query: string,
   muscle: MuscleGroup | "all"
 ): ExerciseDefinition[] {
-  const q = query.trim().toLowerCase();
+  const q = foldForSearch(query.trim());
 
   const pool =
     muscle === "all"
@@ -180,14 +181,14 @@ export function filterAndRank(
   const score = (d: ExerciseDefinition): number => {
     if (!q) return 1;
 
-    const name = d.name.toLowerCase();
+    const name = foldForSearch(d.name);
     if (name.startsWith(q)) return 0;
     if (name.includes(q)) return 1;
 
-    const aliasHit = d.aliases?.some((a) => a.toLowerCase().includes(q));
+    const aliasHit = d.aliases?.some((a) => foldForSearch(a).includes(q));
     if (aliasHit) return 2;
 
-    if (d.primaryMuscle.toLowerCase().includes(q)) return 3;
+    if (foldForSearch(d.primaryMuscle).includes(q)) return 3;
 
     return -1; // no match
   };

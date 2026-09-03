@@ -4,7 +4,7 @@ export const backExercises: ExerciseDefinition[] = [
   {
     id: "pull-up",
     name: "Pull-up",
-    aliases: ["Strict Pull-up", "Bodyweight Pull-up"],
+    aliases: ["Strict Pull-up", "Bodyweight Pull-up", "Zhyby", "Zhyb"],
     primaryMuscle: "back",
     secondaryMuscles: ["biceps", "abs"],
     equipment: "bodyweight",
@@ -315,7 +315,7 @@ export const backExercises: ExerciseDefinition[] = [
   {
     id: "deadlift",
     name: "Deadlift",
-    aliases: ["Conventional Deadlift"],
+    aliases: ["Conventional Deadlift", "Mŕtvy ťah"],
     primaryMuscle: "back",
     secondaryMuscles: ["legs", "glutes", "fullBody"],
     equipment: "barbell",
