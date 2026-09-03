@@ -4,6 +4,7 @@ import {
   hasReminderPermission,
   requestReminderPermission,
   scheduleStreakReminder,
+  type ReminderPermissionStatus,
 } from "@/services/reminderService";
 import { create } from "zustand";
 import {
@@ -169,40 +170,67 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       return;
     }
 
-    // Turning it on needs permission; if already granted, skip the prompt.
-    const alreadyGranted = await hasReminderPermission();
-    const status = alreadyGranted
-      ? "granted"
-      : await requestReminderPermission();
+    // A native plugin that isn't actually wired into this build can leave a
+    // bridge call neither resolving nor rejecting — hanging the toggle
+    // forever with no error to show. Race everything against a hard
+    // timeout so the UI always recovers.
+    const TIMEOUT_MS = 8000;
+    const timeout = <T,>(): Promise<T> =>
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), TIMEOUT_MS)
+      );
 
-    if (status !== "granted") {
+    try {
+      // Turning it on needs permission; if already granted, skip the prompt.
+      const alreadyGranted = await Promise.race([
+        hasReminderPermission(),
+        timeout<boolean>(),
+      ]);
+      const status = alreadyGranted
+        ? "granted"
+        : await Promise.race([requestReminderPermission(), timeout<ReminderPermissionStatus>()]);
+
+      if (status !== "granted") {
+        set({
+          streakReminder: false,
+          reminderStatus:
+            status === "denied"
+              ? "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications."
+              : "Couldn't turn on reminders — please try again.",
+          reminderBusy: false,
+        });
+        return;
+      }
+
+      const scheduled = await Promise.race([
+        scheduleStreakReminder(get().streakReminderHour),
+        timeout<boolean>(),
+      ]);
+      if (!scheduled) {
+        set({
+          streakReminder: false,
+          reminderStatus: "Couldn't schedule the reminder — please try again.",
+          reminderBusy: false,
+        });
+        return;
+      }
+
+      try {
+        localStorage.setItem(REMINDER_KEY, "1");
+      } catch {
+        // non-fatal
+      }
+      set({ streakReminder: true, reminderStatus: null, reminderBusy: false });
+    } catch {
+      // Covers the timeout race and any unexpected native-bridge failure —
+      // the toggle always recovers with a message instead of spinning.
       set({
         streakReminder: false,
         reminderStatus:
-          status === "denied"
-            ? "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications."
-            : "Couldn't turn on reminders — please try again.",
+          "Couldn't reach notifications right now — please try again.",
         reminderBusy: false,
       });
-      return;
     }
-
-    const scheduled = await scheduleStreakReminder(get().streakReminderHour);
-    if (!scheduled) {
-      set({
-        streakReminder: false,
-        reminderStatus: "Couldn't schedule the reminder — please try again.",
-        reminderBusy: false,
-      });
-      return;
-    }
-
-    try {
-      localStorage.setItem(REMINDER_KEY, "1");
-    } catch {
-      // non-fatal
-    }
-    set({ streakReminder: true, reminderStatus: null, reminderBusy: false });
   },
 
   setStreakReminderHour: async (hour) => {
