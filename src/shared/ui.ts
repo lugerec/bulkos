@@ -94,6 +94,8 @@ export const T = {
   | "workout-history"
   | "workout-detail"
   | "progress"
+  | "personal-records"
+  | "check-in-history"
   | "rewards"
   | "friends"
   | "pro-analytics"

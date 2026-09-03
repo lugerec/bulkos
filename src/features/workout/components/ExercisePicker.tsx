@@ -172,11 +172,10 @@ export function filterAndRank(
   const pool =
     muscle === "all"
       ? definitions
-      : definitions.filter(
-          (d) =>
-            d.primaryMuscle === muscle ||
-            d.secondaryMuscles?.includes(muscle)
-        );
+      // A muscle chip means "targets this muscle" — matching secondary
+      // muscles too pulled in unrelated exercises (e.g. Back rows/pulldowns
+      // showing up under "Biceps" just because biceps assist the pull).
+      : definitions.filter((d) => d.primaryMuscle === muscle);
 
   const score = (d: ExerciseDefinition): number => {
     if (!q) return 1;

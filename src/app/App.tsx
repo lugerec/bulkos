@@ -7,6 +7,8 @@ import WorkoutDetailScreen from "@/features/workout/screens/WorkoutDetailScreen"
 import WorkoutHistoryScreen from "@/features/workout/screens/WorkoutHistoryScreen";
 import SettingsScreen from "@/features/settings/screens/SettingsScreen";
 import ProgressScreen from "@/features/progress/screens/ProgressScreen";
+import AllPersonalRecordsScreen from "@/features/progress/screens/AllPersonalRecordsScreen";
+import CheckInHistoryScreen from "@/features/progress/screens/CheckInHistoryScreen";
 import RewardsScreen from "@/features/rewards/screens/RewardsScreen";
 import RewardCelebration from "@/features/rewards/components/RewardCelebration";
 import FriendsScreen from "@/features/social/screens/FriendsScreen";
@@ -1059,6 +1061,14 @@ export default function App() {
         <ExerciseHistoryScreen onBack={() => navigate("workout-detail")} />
         )}
           {screen === "progress" && <ProgressScreen onNavigate={navigate} />}
+
+          {screen === "personal-records" && (
+            <AllPersonalRecordsScreen onBack={() => navigate("progress")} />
+          )}
+
+          {screen === "check-in-history" && (
+            <CheckInHistoryScreen onBack={() => navigate("progress")} />
+          )}
 
           {screen === "rewards" && (
             <RewardsScreen onBack={() => navigate("dashboard")} onNavigate={navigate} />

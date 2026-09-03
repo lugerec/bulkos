@@ -30,53 +30,12 @@ import {
 } from "lucide-react";
 
 import { C, type Screen } from "@/shared/ui";
+import { getAllStrengthPRs } from "@/features/progress/utils/personalRecords";
 import { ProgressRing, SectionHeader } from "@/shared/components";
 import { useAuthStore } from "@/store/authStore";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
 import { toDateKey } from "@/lib/date";
-
-type StrengthPR = {
-  lift: string;
-  pr: string;
-  date: string;
-  score: number;
-};
-
-function estimateOneRepMax(weight: number, reps: number) {
-  if (reps <= 1) return weight;
-  return Math.round(weight * (1 + reps / 30));
-}
-
-function getStrengthPRs(
-  workouts: ReturnType<typeof useWorkoutHistoryStore.getState>["workouts"]
-) {
-  const bestByExercise = new Map<string, StrengthPR>();
-
-  for (const workout of workouts) {
-    for (const exercise of workout.exercises ?? []) {
-      for (const set of exercise.sets) {
-        if (!set.completed) continue;
-
-        const score = estimateOneRepMax(set.weight, set.reps);
-        const current = bestByExercise.get(exercise.id);
-
-        if (!current || score > current.score) {
-          bestByExercise.set(exercise.id, {
-            lift: exercise.name,
-            pr: `${set.weight} kg × ${set.reps}`,
-            date: workout.date,
-            score,
-          });
-        }
-      }
-    }
-  }
-
-  return Array.from(bestByExercise.values())
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4);
-}
 
 function getStrengthPRCount(
   workouts: ReturnType<typeof useWorkoutHistoryStore.getState>["workouts"]
@@ -180,7 +139,7 @@ export default function ProgressScreen({
         waist: entry.waistCm,
       }));
 
-  const strengthPRs = getStrengthPRs(workouts);
+  const strengthPRs = getAllStrengthPRs(workouts).slice(0, 4);
 
   const totalWorkouts = workouts.length;
 
@@ -532,7 +491,11 @@ const averageWorkoutDuration =
         </div>
       </div>
 
-      <SectionHeader title="Personal Records" action="View all" />
+      <SectionHeader
+        title="Personal Records"
+        action="View all"
+        onAction={() => onNavigate("personal-records")}
+      />
 
       <div
         className="rounded-[20px] mb-4 overflow-hidden card-lit"
@@ -582,6 +545,14 @@ const averageWorkoutDuration =
         action="Upload"
         onAction={() => onNavigate("check-in")}
       />
+
+      <button
+        onClick={() => onNavigate("check-in-history")}
+        className="text-[11px] font-semibold mb-3 -mt-2"
+        style={{ color: C.fg3 }}
+      >
+        View past check-ins & photos →
+      </button>
 
       {latestBodyEntry?.frontPhotoUrl ||
       latestBodyEntry?.sidePhotoUrl ||
