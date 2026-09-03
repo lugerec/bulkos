@@ -48,7 +48,7 @@ export default function NutritionMealCard({
             {/* Tapping the time opens the native time picker (invisible
                 input layered over the styled label) so editing feels like
                 part of the design rather than a raw form field. */}
-            <label className="relative inline-flex items-center mt-0.5">
+            <label className="relative flex items-center w-fit mt-1">
               <p className="text-[11px]" style={{ color: C.fg3 }}>
                 {meal.time}
               </p>
