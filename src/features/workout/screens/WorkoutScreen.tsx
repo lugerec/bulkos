@@ -1402,41 +1402,29 @@ export default function WorkoutScreen() {
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               <div className="flex justify-between items-start mb-3">
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
                   <ExerciseThumb
                     exercise={{
                       id: ex.exerciseId ?? ex.id,
                       media: exerciseDefinition?.media,
                     }}
                   />
-                  <div>
-                  <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
                   <button
                   type="button"
                   onClick={() => {
                     if (ex.exerciseId) {setSelectedExerciseId(ex.exerciseId);
                     }
                   }}
-                  className="text-left hover:underline">
-                  <p className="text-sm font-bold"
+                  className="text-left hover:underline min-w-0">
+                  <p className="text-sm font-bold truncate"
                     style={{ color: C.fg }}>
                     {ex.name}
                   </p>
                 </button>
 
-                    {exerciseHasPR(ex.id) && (
-                      <span
-                        className="px-2 py-0.5 rounded-full text-[11px] font-bold"
-                        style={{
-                          background: "rgba(204,242,50,0.15)",
-                          color: C.accentInk,
-                          border: "1px solid rgba(204,242,50,0.25)",
-                        }}
-                      >
-                        🏆 NEW PR
-                      </span>
-                    )}
-
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
                       type="button"
                       onClick={() => setSwapExerciseIdx(exIdx)}
@@ -1471,7 +1459,21 @@ export default function WorkoutScreen() {
                         <X size={12} />
                       </button>
                     )}
+                    </div>
                   </div>
+
+                  {exerciseHasPR(ex.id) && (
+                    <span
+                      className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold"
+                      style={{
+                        background: "rgba(204,242,50,0.15)",
+                        color: C.accentInk,
+                        border: "1px solid rgba(204,242,50,0.25)",
+                      }}
+                    >
+                      🏆 NEW PR
+                    </span>
+                  )}
 
                   {(() => {
                     const range = exerciseDefinition?.progression;
