@@ -15,6 +15,7 @@ export const backExercises: ExerciseDefinition[] = [
     defaultReps: 8,
     media: {
       start: "/exercises/pull-up/start.png",
+      finish: "/exercises/pull-up/finish.png",
       thumbnail: "/exercises/pull-up/start.png",
     },
     progression: {
@@ -60,6 +61,7 @@ export const backExercises: ExerciseDefinition[] = [
     defaultReps: 10,
     media: {
       start: "/exercises/lat-pulldown/start.png",
+      finish: "/exercises/lat-pulldown/finish.png",
       thumbnail: "/exercises/lat-pulldown/start.png",
     },
     progression: {
@@ -150,6 +152,7 @@ export const backExercises: ExerciseDefinition[] = [
     defaultReps: 10,
     media: {
       start: "/exercises/db-row/start.png",
+      finish: "/exercises/db-row/finish.png",
       thumbnail: "/exercises/db-row/start.png",
     },
     progression: {

@@ -277,8 +277,9 @@ export const shouldersExercises: ExerciseDefinition[] = [
     defaultSets: 3,
     defaultReps: 15,
     media: {
-      start: "/exercises/face-pull/start.webp",
-      thumbnail: "/exercises/face-pull/start.webp",
+      start: "/exercises/face-pull/start.png",
+      finish: "/exercises/face-pull/finish.png",
+      thumbnail: "/exercises/face-pull/start.png",
     },
     progression: {
       minReps: 12,
