@@ -285,6 +285,7 @@ export const backExercises: ExerciseDefinition[] = [
     defaultReps: 12,
     media: {
       start: "/exercises/straight-arm-pulldown/start.png",
+      finish: "/exercises/straight-arm-pulldown/finish.png",
       thumbnail: "/exercises/straight-arm-pulldown/start.png",
     },
     progression: {
