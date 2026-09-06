@@ -1,4 +1,4 @@
-import { resolvePhotoSrc } from "@/services/progressPhotoService";
+import { usePhotoSrc } from "@/features/progress/hooks/usePhotoSrc";
 import { useFeatureFlags } from "@/features/settings/useFeatureFlags";
 import MuscleVolumeCard from "../components/MuscleVolumeCard";
 import MuscleRecoveryCard from "../components/MuscleRecoveryCard";
@@ -614,6 +614,8 @@ function ProgressPhoto({
   label: string;
   url?: string;
 }) {
+  const src = usePhotoSrc(url);
+
   return (
     <div
       className="rounded-[20px] overflow-hidden card-lit"
@@ -623,9 +625,9 @@ function ProgressPhoto({
         height: 150,
       }}
     >
-      {url ? (
+      {src ? (
         <img
-          src={resolvePhotoSrc(url)}
+          src={src}
           alt={label}
           className="w-full h-full object-cover"
         />

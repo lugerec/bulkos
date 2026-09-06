@@ -4,7 +4,7 @@ import { GitCompareArrows } from "lucide-react";
 import { C } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
 import type { BodyMetrics } from "@/types/bodyMetrics";
-import { resolvePhotoSrc } from "@/services/progressPhotoService";
+import { usePhotoSrc } from "@/features/progress/hooks/usePhotoSrc";
 
 type Props = {
   entries: BodyMetrics[];
@@ -24,6 +24,80 @@ function photoUrl(entry: BodyMetrics, type: PhotoType): string | undefined {
 function hasAnyPhoto(entry: BodyMetrics): boolean {
   return Boolean(
     entry.frontPhotoUrl || entry.sidePhotoUrl || entry.backPhotoUrl
+  );
+}
+
+/**
+ * Hoisted out of the parent on purpose: defined inline it was a brand new
+ * component type on every render, remounting both sides (and re-resolving
+ * their photo src) on every state change.
+ */
+function Side({
+  entry,
+  label,
+  type,
+  options,
+  selectedId,
+  onSelect,
+}: {
+  entry: BodyMetrics;
+  label: string;
+  type: PhotoType;
+  options: BodyMetrics[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  const src = usePhotoSrc(photoUrl(entry, type));
+
+  return (
+    <div className="flex-1 min-w-0">
+      <select
+        value={selectedId}
+        onChange={(event) => onSelect(event.target.value)}
+        className="w-full mb-2 px-2 py-1.5 rounded-xl text-xs font-semibold outline-none"
+        style={{
+          background: C.card2,
+          border: `1px solid ${C.border}`,
+          color: C.fg,
+        }}
+      >
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.date}
+          </option>
+        ))}
+      </select>
+
+      <div
+        className="rounded-[14px] overflow-hidden"
+        style={{
+          height: 220,
+          background: C.card2,
+          border: `1px solid ${C.border}`,
+        }}
+      >
+        {src ? (
+          <img
+            src={src}
+            alt={`${label} ${type}`}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <p className="text-[11px]" style={{ color: C.fg3 }}>
+              No {type} photo
+            </p>
+          </div>
+        )}
+      </div>
+
+      <p
+        className="text-xs font-semibold mt-1.5 text-center"
+        style={{ color: C.fg2 }}
+      >
+        {entry.weightKg} kg
+      </p>
+    </div>
   );
 }
 
@@ -51,71 +125,6 @@ export default function PhotoComparisonCard({ entries }: Props) {
 
   const weightDelta =
     Math.round((after.weightKg - before.weightKg) * 10) / 10;
-
-  const Side = ({
-    entry,
-    label,
-    selectedId,
-    onSelect,
-  }: {
-    entry: BodyMetrics;
-    label: string;
-    selectedId: string;
-    onSelect: (id: string) => void;
-  }) => {
-    const url = photoUrl(entry, type);
-
-    return (
-      <div className="flex-1 min-w-0">
-        <select
-          value={selectedId}
-          onChange={(event) => onSelect(event.target.value)}
-          className="w-full mb-2 px-2 py-1.5 rounded-xl text-xs font-semibold outline-none"
-          style={{
-            background: C.card2,
-            border: `1px solid ${C.border}`,
-            color: C.fg,
-          }}
-        >
-          {photoEntries.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.date}
-            </option>
-          ))}
-        </select>
-
-        <div
-          className="rounded-[14px] overflow-hidden"
-          style={{
-            height: 220,
-            background: C.card2,
-            border: `1px solid ${C.border}`,
-          }}
-        >
-          {url ? (
-            <img
-              src={resolvePhotoSrc(url)}
-              alt={`${label} ${type}`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="h-full flex items-center justify-center">
-              <p className="text-[11px]" style={{ color: C.fg3 }}>
-                No {type} photo
-              </p>
-            </div>
-          )}
-        </div>
-
-        <p
-          className="text-xs font-semibold mt-1.5 text-center"
-          style={{ color: C.fg2 }}
-        >
-          {entry.weightKg} kg
-        </p>
-      </div>
-    );
-  };
 
   return (
     <>
@@ -163,12 +172,16 @@ export default function PhotoComparisonCard({ entries }: Props) {
           <Side
             entry={before}
             label="Before"
+            type={type}
+            options={photoEntries}
             selectedId={before.id}
             onSelect={setBeforeId}
           />
           <Side
             entry={after}
             label="After"
+            type={type}
+            options={photoEntries}
             selectedId={after.id}
             onSelect={setAfterId}
           />

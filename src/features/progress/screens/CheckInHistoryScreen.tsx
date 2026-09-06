@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { C } from "@/shared/ui";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
-import { resolvePhotoSrc } from "@/services/progressPhotoService";
+import { usePhotoSrc } from "@/features/progress/hooks/usePhotoSrc";
 
 export default function CheckInHistoryScreen({
   onBack,
@@ -61,17 +61,7 @@ export default function CheckInHistoryScreen({
                 {photos.length > 0 && (
                   <div className="flex gap-2 mb-3">
                     {photos.map((url, i) => (
-                      <div
-                        key={i}
-                        className="rounded-[14px] overflow-hidden flex-1"
-                        style={{ height: 90, background: C.card2 }}
-                      >
-                        <img
-                          src={resolvePhotoSrc(url)}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                      <Thumb key={i} url={url} />
                     ))}
                   </div>
                 )}
@@ -98,6 +88,19 @@ export default function CheckInHistoryScreen({
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function Thumb({ url }: { url: string }) {
+  const src = usePhotoSrc(url);
+
+  return (
+    <div
+      className="rounded-[14px] overflow-hidden flex-1"
+      style={{ height: 90, background: C.card2 }}
+    >
+      {src && <img src={src} alt="" className="w-full h-full object-cover" />}
     </div>
   );
 }

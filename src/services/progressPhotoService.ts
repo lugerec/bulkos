@@ -26,11 +26,22 @@ async function fileToBase64(file: File): Promise<string> {
   });
 }
 
+/** Path inside Directory.Documents. Relative on purpose — see below. */
+export function progressPhotoPath(
+  uid: string,
+  date: string,
+  type: "front" | "side" | "back"
+): string {
+  return `progress-photos/${uid}/${date}/${type}.jpg`;
+}
+
 /**
- * Save a progress photo locally and return a reference to store on the
- * check-in (a native URI on device, a temporary blob URL on web/dev — the
- * web path never persists across reloads, matching that native is the only
- * real target for this feature).
+ * Save a progress photo locally and return the reference to persist on the
+ * check-in: a *relative* path on device, a temporary blob URL on web/dev.
+ *
+ * Deliberately not `writeFile()`'s returned absolute URI — that contains the
+ * app container UUID, which iOS regenerates on every (re)install. Storing it
+ * meant every photo silently 404'd after the next build was installed.
  */
 export async function uploadProgressPhoto({
   uid,
@@ -54,28 +65,53 @@ export async function uploadProgressPhoto({
   // backup" brings progress photos back automatically.
 
   const base64 = await fileToBase64(file);
-  const path = `progress-photos/${uid}/${date}/${type}.jpg`;
+  const path = progressPhotoPath(uid, date, type);
 
-  const result = await Filesystem.writeFile({
+  await Filesystem.writeFile({
     path,
     data: base64,
     directory: Directory.Documents,
     recursive: true,
   });
 
-  return result.uri;
+  return path;
+}
+
+/** Entries written before the fix stored a full file:// URI — recover the tail. */
+function toRelativePath(stored: string): string {
+  const marker = "/Documents/";
+  const index = stored.indexOf(marker);
+
+  if (index === -1) return stored;
+
+  try {
+    return decodeURI(stored.slice(index + marker.length));
+  } catch {
+    return stored.slice(index + marker.length);
+  }
 }
 
 /**
- * Turn a stored photo reference into something an <img> can load. Native
- * file URIs need Capacitor's scheme conversion to be loadable inside the
- * webview; http(s)/blob references (web fallback, or any future cloud URL)
- * are already directly usable.
+ * Turn a stored photo reference into something an <img> can load. On device
+ * the container path has to be re-derived at read time and run through
+ * Capacitor's scheme conversion; http(s)/blob references (web fallback, or
+ * any future cloud URL) are already directly usable.
  */
-export function resolvePhotoSrc(pathOrUri: string): string {
-  if (/^(https?:|blob:|data:)/.test(pathOrUri)) {
-    return pathOrUri;
+export async function resolvePhotoSrc(stored: string): Promise<string> {
+  if (/^(https?:|blob:|data:)/.test(stored)) {
+    return stored;
   }
 
-  return Capacitor.convertFileSrc(pathOrUri);
+  if (!Capacitor.isNativePlatform()) {
+    return stored;
+  }
+
+  const { Filesystem, Directory } = await import("@capacitor/filesystem");
+
+  const { uri } = await Filesystem.getUri({
+    directory: Directory.Documents,
+    path: toRelativePath(stored),
+  });
+
+  return Capacitor.convertFileSrc(uri);
 }

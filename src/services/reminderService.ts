@@ -67,22 +67,16 @@ export async function scheduleStreakReminder(
   try {
     const LocalNotifications = await plugin();
 
-    // Next occurrence of hour:minute; if it's already past today, start
-    // tomorrow so the first fire isn't immediate.
-    const at = new Date();
-    at.setSeconds(0, 0);
-    at.setHours(hour, minute);
-    if (at.getTime() <= Date.now()) {
-      at.setDate(at.getDate() + 1);
-    }
-
     await LocalNotifications.schedule({
       notifications: [
         {
           id: STREAK_REMINDER_ID,
           title: "Keep your streak alive",
           body: "Log a workout or hit your protein target today.",
-          schedule: { at, repeats: true, allowWhileIdle: true },
+          // `on` maps to a repeating calendar trigger — the documented way to
+          // get "every day at HH:MM". `{ at, repeats: true }` repeats at the
+          // *interval* to `at`, which is not a daily reminder.
+          schedule: { on: { hour, minute }, allowWhileIdle: true },
         },
       ],
     });

@@ -67,7 +67,7 @@ type AppState = {
   completeWorkout: () => void;
 };
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   userName: "Lukáš",
 
   screen: "dashboard",
@@ -80,7 +80,10 @@ export const useAppStore = create<AppState>((set) => ({
   pendingWorkoutPreview: false,
   requestWorkoutPreview: () => set({ pendingWorkoutPreview: true }),
   consumeWorkoutPreview: () => {
-    const pending = useAppStore.getState().pendingWorkoutPreview;
+    // Was useAppStore.getState() — a self-reference inside the store's own
+    // initializer, which made TS infer the whole store as `any` and silently
+    // untyped every useAppStore(...) selector in the app.
+    const pending = get().pendingWorkoutPreview;
     if (pending) set({ pendingWorkoutPreview: false });
     return pending;
   },

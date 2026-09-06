@@ -24,6 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>BulkOS uses the camera so you can take progress photos at check-in.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>BulkOS lets you pick progress photos from your library at check-in.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>BulkOS reads your steps, activity, and weight to show your progress alongside your training.</string>
 	<key>NSHealthUpdateUsageDescription</key>
