@@ -24,6 +24,8 @@ import NutritionScreen from "../features/nutrition/screens/NutritionScreen";
 
 import { pushA } from "@/data/workouts/pushA";
 import { useWorkoutTemplateStore } from "@/store/workoutTemplateStore";
+import { t } from "@/i18n";
+import { useSettingsStore } from "@/store/settingsStore";
 
 import { useAuthStore } from "../store/authStore";
 import { useWorkoutHistoryStore } from "../store/workoutHistoryStore";
@@ -843,6 +845,8 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
 
 // ─── Bottom Nav ────────────────────────────────────────────────────────────────
 
+// Labels are resolved at render, not here: this array is module-level, so
+// baking t() in would freeze the language at first import.
 const navItems = [
   { id: "dashboard" as Screen, icon: Home, label: "Home" },
   { id: "nutrition" as Screen, icon: Utensils, label: "Nutrition" },
@@ -870,8 +874,9 @@ function BottomNav({ active, onNavigate }: {
             "0 12px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05)",
         }}
       >
-        {navItems.map(({ id, icon: Icon, label }) => {
+        {navItems.map(({ id, icon: Icon, label: source }) => {
           const isActive = active === id;
+          const label = t(source);
           return (
             <button
               key={id}
@@ -937,6 +942,10 @@ export default function App() {
 
   const profile = useAuthStore((s) => s.profile);
   const activeWorkout = useActiveWorkoutStore();
+  // t() is a plain function, so nothing re-renders on its own when the
+  // language changes; keying the tree on it remounts once and everything
+  // re-reads the new dictionary.
+  const language = useSettingsStore((s) => s.language);
 
   if (loading)
     return (
@@ -980,6 +989,7 @@ export default function App() {
 
   return (
     <div
+      key={language}
       className="min-h-screen w-full flex items-center justify-center"
       style={{ background: "#050505", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
     >
@@ -1126,7 +1136,7 @@ export default function App() {
                 animation: "pulse 1.5s ease-in-out infinite",
               }}
             />
-            <span className="text-sm font-bold">Resume</span>
+            <span className="text-sm font-bold">{t("Resume")}</span>
           </button>
         )}
 

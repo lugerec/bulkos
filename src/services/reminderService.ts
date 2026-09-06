@@ -1,5 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 
+import { t } from "@/i18n";
+
 /**
  * Streak reminders via local notifications — no server or push certificates
  * needed, the phone schedules them itself. Native-only; every function is a
@@ -71,8 +73,8 @@ export async function scheduleStreakReminder(
       notifications: [
         {
           id: STREAK_REMINDER_ID,
-          title: "Keep your streak alive",
-          body: "Log a workout or hit your protein target today.",
+          title: t("Keep your streak alive"),
+          body: t("Log a workout or hit your protein target today."),
           // `on` maps to a repeating calendar trigger — the documented way to
           // get "every day at HH:MM". `{ at, repeats: true }` repeats at the
           // *interval* to `at`, which is not a daily reminder.
@@ -119,8 +121,8 @@ export async function scheduleRestDone(seconds: number): Promise<void> {
       notifications: [
         {
           id: REST_DONE_ID,
-          title: "Rest over",
-          body: "Time for your next set.",
+          title: t("Rest over"),
+          body: t("Time for your next set."),
           schedule: {
             at: new Date(Date.now() + seconds * 1000),
             allowWhileIdle: true,

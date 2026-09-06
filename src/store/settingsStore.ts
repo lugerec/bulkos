@@ -8,6 +8,11 @@ import {
 } from "@/services/reminderService";
 import { create } from "zustand";
 import {
+  setLanguage as applyLanguage,
+  t,
+  type Language,
+} from "@/i18n";
+import {
   applyAccentPack,
   DEFAULT_ACCENT_PACK,
   findAccentPack,
@@ -21,6 +26,7 @@ const THEME_KEY = "bulkos.settings.theme";
 const REMINDER_KEY = "bulkos.settings.streakReminder";
 const REMINDER_HOUR_KEY = "bulkos.settings.streakReminderHour";
 const ACCENT_KEY = "bulkos.settings.accentPack";
+const LANGUAGE_KEY = "bulkos.settings.language";
 
 function loadUnits(): UnitSystem {
   if (typeof localStorage === "undefined") return "metric";
@@ -64,6 +70,18 @@ function loadReminderHour(): number {
   }
 }
 
+function loadLanguage(): Language {
+  // Slovak is the product's primary market, so it's the default rather than
+  // a device-locale guess — an English phone in Bratislava is the norm.
+  if (typeof localStorage === "undefined") return "sk";
+
+  try {
+    return localStorage.getItem(LANGUAGE_KEY) === "en" ? "en" : "sk";
+  } catch {
+    return "sk";
+  }
+}
+
 function loadAccentPack(): string {
   if (typeof localStorage === "undefined") return DEFAULT_ACCENT_PACK.id;
 
@@ -100,6 +118,10 @@ type SettingsState = {
   /** Cosmetic accent pack id. */
   accentPack: string;
   setAccentPack: (id: string) => void;
+
+  /** UI language. */
+  language: Language;
+  setLanguage: (language: Language) => void;
 };
 
 /**
@@ -143,6 +165,17 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     applyAccentPack(findAccentPack(id), get().theme === "light");
   },
 
+  language: loadLanguage(),
+  setLanguage: (language) => {
+    try {
+      localStorage.setItem(LANGUAGE_KEY, language);
+    } catch {
+      // non-fatal
+    }
+    applyLanguage(language);
+    set({ language });
+  },
+
   streakReminder: loadReminderEnabled(),
   streakReminderHour: loadReminderHour(),
   reminderStatus: null,
@@ -164,7 +197,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     if (!areRemindersSupported()) {
       set({
         streakReminder: false,
-        reminderStatus: "Reminders only work in the app, not in a browser.",
+        reminderStatus: t("Reminders only work in the app, not in a browser."),
         reminderBusy: false,
       });
       return;
@@ -195,8 +228,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           streakReminder: false,
           reminderStatus:
             status === "denied"
-              ? "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications."
-              : "Couldn't turn on reminders — please try again.",
+              ? t(
+                  "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications."
+                )
+              : t("Couldn't turn on reminders — please try again."),
           reminderBusy: false,
         });
         return;
@@ -209,7 +244,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       if (!scheduled) {
         set({
           streakReminder: false,
-          reminderStatus: "Couldn't schedule the reminder — please try again.",
+          reminderStatus: t("Couldn't schedule the reminder — please try again."),
           reminderBusy: false,
         });
         return;
@@ -226,8 +261,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       // the toggle always recovers with a message instead of spinning.
       set({
         streakReminder: false,
-        reminderStatus:
-          "Couldn't reach notifications right now — please try again.",
+        reminderStatus: t(
+          "Couldn't reach notifications right now — please try again."
+        ),
         reminderBusy: false,
       });
     }
@@ -249,6 +285,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   },
 }));
+
+// t() is a plain function, not a hook, so the module-level language has to be
+// primed from storage before the first render reads it.
+applyLanguage(useSettingsStore.getState().language);
 
 const KG_PER_LB = 0.45359237;
 

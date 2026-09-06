@@ -5,6 +5,7 @@ import { C } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
 import type { BodyMetrics } from "@/types/bodyMetrics";
 import { usePhotoSrc } from "@/features/progress/hooks/usePhotoSrc";
+import { t } from "@/i18n";
 
 type Props = {
   entries: BodyMetrics[];
@@ -13,6 +14,14 @@ type Props = {
 type PhotoType = "front" | "side" | "back";
 
 const PHOTO_TYPES: readonly PhotoType[] = ["front", "side", "back"];
+
+/** Slovak has no neat lowercase-in-a-sentence form here, so label separately. */
+function photoTypeLabel(type: PhotoType): string {
+  if (type === "front") return t("Front");
+  if (type === "side") return t("Side");
+
+  return t("Back photo");
+}
 
 function photoUrl(entry: BodyMetrics, type: PhotoType): string | undefined {
   if (type === "front") return entry.frontPhotoUrl;
@@ -48,6 +57,7 @@ function Side({
   onSelect: (id: string) => void;
 }) {
   const src = usePhotoSrc(photoUrl(entry, type));
+  const typeLabel = photoTypeLabel(type);
 
   return (
     <div className="flex-1 min-w-0">
@@ -79,13 +89,13 @@ function Side({
         {src ? (
           <img
             src={src}
-            alt={`${label} ${type}`}
+            alt={`${label} — ${typeLabel}`}
             className="w-full h-full object-cover"
           />
         ) : (
           <div className="h-full flex items-center justify-center">
             <p className="text-[11px]" style={{ color: C.fg3 }}>
-              No {type} photo
+              {t("No {type} photo", { type: typeLabel })}
             </p>
           </div>
         )}
@@ -128,7 +138,7 @@ export default function PhotoComparisonCard({ entries }: Props) {
 
   return (
     <>
-      <SectionHeader title="Photo Comparison" />
+      <SectionHeader title={t("Photo Comparison")} />
 
       <div
         className="rounded-[20px] p-4 mb-4 card-lit"
@@ -143,8 +153,9 @@ export default function PhotoComparisonCard({ entries }: Props) {
                 color: weightDelta >= 0 ? C.accent : C.blue,
               }}
             >
-              {weightDelta > 0 ? "+" : ""}
-              {weightDelta} kg between photos
+              {t("{delta} kg between photos", {
+                delta: `${weightDelta > 0 ? "+" : ""}${weightDelta}`,
+              })}
             </span>
           </div>
 
@@ -156,13 +167,13 @@ export default function PhotoComparisonCard({ entries }: Props) {
               <button
                 key={option}
                 onClick={() => setType(option)}
-                className="px-2.5 py-1 text-[11px] font-semibold capitalize"
+                className="px-2.5 py-1 text-[11px] font-semibold"
                 style={{
                   background: type === option ? C.accent : "transparent",
                   color: type === option ? C.bg : C.fg3,
                 }}
               >
-                {option}
+                {photoTypeLabel(option)}
               </button>
             ))}
           </div>
@@ -171,7 +182,7 @@ export default function PhotoComparisonCard({ entries }: Props) {
         <div className="flex gap-3">
           <Side
             entry={before}
-            label="Before"
+            label={t("Before")}
             type={type}
             options={photoEntries}
             selectedId={before.id}
@@ -179,7 +190,7 @@ export default function PhotoComparisonCard({ entries }: Props) {
           />
           <Side
             entry={after}
-            label="After"
+            label={t("After")}
             type={type}
             options={photoEntries}
             selectedId={after.id}

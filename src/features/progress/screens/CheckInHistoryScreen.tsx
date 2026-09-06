@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { C } from "@/shared/ui";
 import { useBodyMetricsStore } from "@/store/bodyMetricsStore";
 import { usePhotoSrc } from "@/features/progress/hooks/usePhotoSrc";
+import { t } from "@/i18n";
 
 export default function CheckInHistoryScreen({
   onBack,
@@ -19,20 +20,20 @@ export default function CheckInHistoryScreen({
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={onBack}
-          aria-label="Back"
+          aria-label={t("Back")}
           className="w-9 h-9 rounded-full flex items-center justify-center"
           style={{ background: C.card, border: `1px solid ${C.border}`, color: C.fg }}
         >
           <ArrowLeft size={18} />
         </button>
         <h1 className="text-2xl font-extrabold" style={{ color: C.fg }}>
-          Check-in History
+          {t("Check-in History")}
         </h1>
       </div>
 
       {sorted.length === 0 ? (
         <p className="text-sm px-1" style={{ color: C.fg3 }}>
-          No check-ins logged yet.
+          {t("No check-ins logged yet.")}
         </p>
       ) : (
         <div className="flex flex-col gap-3">
@@ -68,19 +69,19 @@ export default function CheckInHistoryScreen({
 
                 <div className="flex flex-wrap gap-2">
                   {entry.bodyFatPct != null && (
-                    <Stat label="Body Fat" value={`${entry.bodyFatPct}%`} />
+                    <Stat label={t("Body Fat")} value={`${entry.bodyFatPct}%`} />
                   )}
                   {entry.waistCm != null && (
-                    <Stat label="Waist" value={`${entry.waistCm} cm`} />
+                    <Stat label={t("Waist")} value={`${entry.waistCm} cm`} />
                   )}
                   {entry.chestCm != null && (
-                    <Stat label="Chest" value={`${entry.chestCm} cm`} />
+                    <Stat label={t("Chest")} value={`${entry.chestCm} cm`} />
                   )}
                   {entry.armCm != null && (
-                    <Stat label="Arms" value={`${entry.armCm} cm`} />
+                    <Stat label={t("Arms")} value={`${entry.armCm} cm`} />
                   )}
                   {entry.legCm != null && (
-                    <Stat label="Legs" value={`${entry.legCm} cm`} />
+                    <Stat label={t("Legs")} value={`${entry.legCm} cm`} />
                   )}
                 </div>
               </div>

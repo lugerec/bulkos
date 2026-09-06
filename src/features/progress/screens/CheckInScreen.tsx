@@ -10,6 +10,7 @@ import { useRewardsStore } from "@/store/rewardsStore";
 import { XP_REWARDS } from "@/features/rewards/gamification";
 import { uploadProgressPhoto } from "@/services/progressPhotoService";
 import { toDateKey } from "@/lib/date";
+import { t } from "@/i18n";
 
 export default function CheckInScreen({ onBack }: { onBack: () => void }) {
   const [weight, setWeight] = useState("");
@@ -108,7 +109,9 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
         // Metrics saved fine; only the photo(s) failed — let the user know
         // rather than silently dropping them.
         setSaveError(
+          t(
           "Saved, but one or more photos couldn't upload. Check your connection and try again."
+        )
         );
         return;
       }
@@ -118,7 +121,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
       setSaveError(
         error instanceof Error
           ? error.message
-          : "Couldn't save your check-in — please try again."
+          : t("Couldn't save your check-in — please try again.")
       );
     }
   };
@@ -137,33 +140,33 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
       </button>
 
       <h2 className="text-[22px] font-extrabold mb-1" style={{ color: C.fg }}>
-        Weekly Check-in
+        {t("Weekly Check-in")}
       </h2>
 
       <p className="text-sm mb-6" style={{ color: C.fg3 }}>
-        Track your body changes over time.
+        {t("Track your body changes over time.")}
       </p>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <MetricInput label="Weight" value={weight} onChange={setWeight} unit="kg" />
-        <MetricInput label="Body Fat" value={bodyFat} onChange={setBodyFat} unit="%" />
-        <MetricInput label="Waist" value={waist} onChange={setWaist} unit="cm" />
-        <MetricInput label="Chest" value={chest} onChange={setChest} unit="cm" />
-        <MetricInput label="Arms" value={arms} onChange={setArms} unit="cm" />
-        <MetricInput label="Legs" value={legs} onChange={setLegs} unit="cm" />
+        <MetricInput label={t("Weight")} value={weight} onChange={setWeight} unit="kg" />
+        <MetricInput label={t("Body Fat")} value={bodyFat} onChange={setBodyFat} unit="%" />
+        <MetricInput label={t("Waist")} value={waist} onChange={setWaist} unit="cm" />
+        <MetricInput label={t("Chest")} value={chest} onChange={setChest} unit="cm" />
+        <MetricInput label={t("Arms")} value={arms} onChange={setArms} unit="cm" />
+        <MetricInput label={t("Legs")} value={legs} onChange={setLegs} unit="cm" />
       </div>
 
       <p
         className="text-[11px] font-bold uppercase tracking-widest mb-3"
         style={{ color: C.fg2 }}
       >
-        Progress Photos
+        {t("Progress Photos")}
       </p>
 
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <PhotoInput label="Front" file={frontPhoto} onChange={setFrontPhoto} />
-        <PhotoInput label="Side" file={sidePhoto} onChange={setSidePhoto} />
-        <PhotoInput label="Back" file={backPhoto} onChange={setBackPhoto} />
+        <PhotoInput label={t("Front")} file={frontPhoto} onChange={setFrontPhoto} />
+        <PhotoInput label={t("Side")} file={sidePhoto} onChange={setSidePhoto} />
+        <PhotoInput label={t("Back photo")} file={backPhoto} onChange={setBackPhoto} />
       </div>
 
       <button
@@ -176,7 +179,7 @@ export default function CheckInScreen({ onBack }: { onBack: () => void }) {
           opacity: loading || !weight ? 0.5 : 1,
         }}
       >
-        {loading ? "Saving..." : "Save Check-in"}
+        {loading ? t("Saving...") : t("Save Check-in")}
       </button>
 
       {saveError && (
@@ -273,7 +276,7 @@ function PhotoInput({
         <>
           <img
             src={previewUrl}
-            alt={`${label} progress photo`}
+            alt={t("{label} progress photo", { label })}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div
@@ -289,7 +292,7 @@ function PhotoInput({
               e.preventDefault();
               onChange(null);
             }}
-            aria-label={`Remove ${label} photo`}
+            aria-label={t("Remove {label} photo", { label })}
             className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center"
             style={{ background: "rgba(0,0,0,0.55)" }}
           >
@@ -309,7 +312,7 @@ function PhotoInput({
             {label}
           </p>
           <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
-            Upload
+            {t("Upload")}
           </p>
         </>
       )}

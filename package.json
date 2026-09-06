@@ -10,7 +10,8 @@
     "test:watch": "vitest",
     "fetch-images": "node scripts/fetch-exercise-images.mjs",
     "ios:sync": "vite build && cap sync ios",
-    "ios:open": "cap open ios"
+    "ios:open": "cap open ios",
+    "i18n:missing": "node scripts/i18n-missing.mjs"
   },
   "dependencies": {
     "@capacitor/barcode-scanner": "^3.1.0",

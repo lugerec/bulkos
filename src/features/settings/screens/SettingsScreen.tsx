@@ -28,6 +28,7 @@ import {
   downloadCsvFiles,
 } from "@/lib/exportCsv";
 import { toDateKey } from "@/lib/date";
+import { t, LANGUAGES } from "@/i18n";
 
 export default function SettingsScreen({
   onNavigate,
@@ -44,6 +45,8 @@ export default function SettingsScreen({
   const setStreakReminderHour = useSettingsStore((s) => s.setStreakReminderHour);
   const reminderStatus = useSettingsStore((s) => s.reminderStatus);
   const reminderBusy = useSettingsStore((s) => s.reminderBusy);
+  const language = useSettingsStore((s) => s.language);
+  const setLanguage = useSettingsStore((s) => s.setLanguage);
   const accentPack = useSettingsStore((s) => s.accentPack);
   const setAccentPack = useSettingsStore((s) => s.setAccentPack);
   // Accent packs come with Pro (or a one-off unlock, once billing is live).
@@ -144,13 +147,13 @@ export default function SettingsScreen({
         />
       )}
 
-      <SectionHeader title="Integrations" />
+      <SectionHeader title={t("Integrations")} />
 
       <HealthConnectCard />
 
       <WatchStatusCard />
 
-      <SectionHeader title="Tools" />
+      <SectionHeader title={t("Tools")} />
 
       <div
         className="rounded-[20px] mb-4 overflow-hidden card-lit"
@@ -210,7 +213,7 @@ export default function SettingsScreen({
         ))}
       </div>
 
-      <SectionHeader title="Experience level" />
+      <SectionHeader title={t("Experience level")} />
 
 
       <div
@@ -299,7 +302,7 @@ export default function SettingsScreen({
         </div>
       )}
 
-      <SectionHeader title="Preferences" />
+      <SectionHeader title={t("Preferences")} />
 
       <div
         className="rounded-[20px] mb-4 overflow-hidden card-lit"
@@ -310,7 +313,7 @@ export default function SettingsScreen({
           style={{ borderBottom: `1px solid ${C.border}` }}
         >
           <span className="text-sm" style={{ color: C.fg2 }}>
-            Streak reminder
+            {t("Streak reminder")}
           </span>
           {reminderBusy ? (
             <div
@@ -350,7 +353,7 @@ export default function SettingsScreen({
             style={{ borderBottom: `1px solid ${C.border}` }}
           >
             <span className="text-sm" style={{ color: C.fg2 }}>
-              Remind me at
+              {t("Remind me at")}
             </span>
             <div className="flex gap-1.5">
               {[17, 19, 21].map((hour) => (
@@ -379,7 +382,7 @@ export default function SettingsScreen({
           style={{ borderBottom: `1px solid ${C.border}` }}
         >
           <span className="text-sm" style={{ color: C.fg2 }}>
-            Dark Mode
+            {t("Dark Mode")}
           </span>
           <Toggle
             value={theme === "dark"}
@@ -393,7 +396,7 @@ export default function SettingsScreen({
         >
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm" style={{ color: C.fg2 }}>
-              Accent colour
+              {t("Accent colour")}
             </span>
             {!hasAccentUnlock && (
               <button
@@ -439,7 +442,7 @@ export default function SettingsScreen({
 
         <div className="flex justify-between items-center px-4 py-3.5">
           <span className="text-sm" style={{ color: C.fg2 }}>
-            Units
+            {t("Units")}
           </span>
 
           <div
@@ -450,13 +453,41 @@ export default function SettingsScreen({
               <button
                 key={u}
                 onClick={() => setUnits(u)}
-                className="px-3 py-1.5 text-xs font-semibold capitalize"
+                className="px-3 py-1.5 text-xs font-semibold"
                 style={{
                   background: units === u ? C.accent : "transparent",
                   color: units === u ? "#0A0A0B" : C.fg2,
                 }}
               >
-                {u}
+                {u === "metric" ? t("Metric") : t("Imperial")}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div
+          className="flex justify-between items-center px-4 py-3.5"
+          style={{ borderTop: `1px solid ${C.border}` }}
+        >
+          <span className="text-sm" style={{ color: C.fg2 }}>
+            {t("Language")}
+          </span>
+
+          <div
+            className="flex rounded-xl overflow-hidden"
+            style={{ border: `1px solid ${C.border}` }}
+          >
+            {LANGUAGES.map((option) => (
+              <button
+                key={option.id}
+                onClick={() => setLanguage(option.id)}
+                className="px-3 py-1.5 text-xs font-semibold"
+                style={{
+                  background: language === option.id ? C.accent : "transparent",
+                  color: language === option.id ? "#0A0A0B" : C.fg2,
+                }}
+              >
+                {option.label}
               </button>
             ))}
           </div>

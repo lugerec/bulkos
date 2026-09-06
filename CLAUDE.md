@@ -12,6 +12,20 @@ Owner: Lukáš. Goal: premium-level fitness app (Strong, Hevy, RP Hypertrophy ti
 - Fix type mismatches with minimal-impact helper types (see structural typing pattern below).
 - TypeScript strict mode; `npx tsc --noEmit` must stay **completely clean — zero errors**. There are no longer any "known pre-existing errors" to ignore; if you see any, you introduced them.
 
+## Localisation (sk / en)
+
+Slovak is the default and the target market; English stays as the source language.
+
+- `src/i18n/index.ts` — `t()`, `tPlural()`, `pluralForm()`. **The lookup key is the English source string**, so call sites read as `t("Save Check-in")`, diffs show real text, and an untranslated string degrades to English instead of showing a raw key.
+- `src/i18n/sk.ts` — the dictionary, grouped by area.
+- `t()` is a plain function, not a hook — translating a screen is one line per string with no component signature churn. It is therefore **not reactive**; `App.tsx` carries `key={language}` so switching remounts the tree once.
+- Slovak has three cardinal forms (1 séria · 2–4 série · 0/5+ sérií). Never build a plural by hand — use `tPlural(n, { one, few, many })`.
+- Interpolate with `{name}` placeholders, never string concatenation — Slovak word order differs.
+- **Not translated on purpose:** exercise names, muscle groups, gym terminology (Bench Press, RPE, 1RM). Slovak lifters use the English terms. Slovak *search aliases* live with the exercise data instead.
+- `npm run i18n:missing` lists keys called but absent from `sk.ts`, dead keys, and the files with the most untranslated text left. Run it before claiming a screen is done.
+
+Migration status: core + bottom nav + Settings + check-in/progress-photo screens. ~50 of ~500 strings. Remaining biggest: Onboarding, WorkoutScreen, ExerciseDetailsSheet, App.tsx, FoodDatabaseScreen.
+
 ## Architecture
 
 - `src/features/<domain>/{screens,components,utils}` — feature code
