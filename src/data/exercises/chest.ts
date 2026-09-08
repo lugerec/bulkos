@@ -236,6 +236,51 @@ export const chestExercises: ExerciseDefinition[] = [
   },
 
   {
+    id: "dumbbell-fly",
+    name: "DB Fly",
+    aliases: ["Dumbbell Fly", "Dumbbell Flye", "Chest Fly", "Rozpažky"],
+    primaryMuscle: "chest",
+    secondaryMuscles: ["shoulders"],
+    equipment: "dumbbell",
+    category: "isolation",
+    difficulty: "beginner",
+    defaultRestSeconds: 90,
+    defaultSets: 3,
+    defaultReps: 12,
+    media: {
+      start: "/exercises/dumbbell-fly/start.png",
+      finish: "/exercises/dumbbell-fly/finish.png",
+      thumbnail: "/exercises/dumbbell-fly/start.png",
+    },
+    progression: {
+      minReps: 10,
+      maxReps: 15,
+      weightStep: 2,
+    },
+    activation: {
+      chest: 100,
+      shoulders: 30,
+    },
+    instructions: [
+      "Lie back on a flat bench with a dumbbell in each hand.",
+      "Press the dumbbells up, palms facing each other.",
+      "Keep a soft, fixed bend in your elbows.",
+      "Open your arms wide until you feel a stretch across the chest.",
+      "Bring the dumbbells back together over your chest.",
+    ],
+    tips: [
+      "Think of hugging a barrel rather than pressing.",
+      "Keep the elbow angle locked — it should not change during the rep.",
+      "Go lighter than you would on a press; this is a stretch movement.",
+    ],
+    mistakes: [
+      "Bending and straightening the elbows, turning it into a press.",
+      "Lowering so deep the shoulders roll forward.",
+      "Using too much weight and losing control at the bottom.",
+    ],
+    tags: ["fly", "chest", "dumbbell", "isolation"],
+  },
+  {
     id: "cable-fly",
     name: "Cable Fly",
     aliases: ["Standing Cable Fly"],
