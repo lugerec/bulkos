@@ -29,6 +29,7 @@ import {
 } from "@/lib/exportCsv";
 import { toDateKey } from "@/lib/date";
 import { t, LANGUAGES } from "@/i18n";
+import { sendTestNotification } from "@/services/reminderService";
 
 export default function SettingsScreen({
   onNavigate,
@@ -52,6 +53,18 @@ export default function SettingsScreen({
   // Accent packs come with Pro (or a one-off unlock, once billing is live).
   const hasAccentUnlock = useEntitlementStore((s) => s.isPro);
   const [exporting, setExporting] = useState(false);
+  const [testResult, setTestResult] = useState<string | null>(null);
+
+  async function handleTestNotification() {
+    setTestResult(t("Sending..."));
+    const result = await sendTestNotification();
+
+    setTestResult(
+      result.ok
+        ? t("Scheduled — it should arrive in about 5 seconds.")
+        : t("Failed: {detail}", { detail: result.detail })
+    );
+  }
   const [exportError, setExportError] = useState<string | null>(null);
 
   const logout = useAuthStore((s) => s.logout);
@@ -346,6 +359,25 @@ export default function SettingsScreen({
             {reminderStatus}
           </p>
         )}
+
+        <div
+          className="px-4 py-3"
+          style={{ borderBottom: `1px solid ${C.border}` }}
+        >
+          <button
+            onClick={handleTestNotification}
+            className="text-xs font-semibold underline"
+            style={{ color: C.fg2 }}
+          >
+            {t("Send a test notification")}
+          </button>
+
+          {testResult && (
+            <p className="text-[11px] mt-1.5" style={{ color: C.fg3 }}>
+              {testResult}
+            </p>
+          )}
+        </div>
 
         {streakReminder && (
           <div

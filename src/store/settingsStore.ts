@@ -219,19 +219,30 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         hasReminderPermission(),
         timeout<boolean>(),
       ]);
-      const status = alreadyGranted
-        ? "granted"
-        : await Promise.race([requestReminderPermission(), timeout<ReminderPermissionStatus>()]);
+      const permission: ReminderPermissionStatus = alreadyGranted
+        ? { status: "granted" }
+        : await Promise.race([
+            requestReminderPermission(),
+            timeout<ReminderPermissionStatus>(),
+          ]);
 
-      if (status !== "granted") {
+      if (permission.status !== "granted") {
         set({
           streakReminder: false,
           reminderStatus:
-            status === "denied"
+            permission.status === "denied"
               ? t(
                   "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications."
                 )
-              : t("Couldn't turn on reminders — please try again."),
+              : // Show the real native error rather than a generic apology —
+                // otherwise every distinct failure looks the same and there is
+                // nothing to act on.
+                t("Couldn't turn on reminders: {detail}", {
+                  detail:
+                    permission.status === "error"
+                      ? permission.detail
+                      : permission.status,
+                }),
           reminderBusy: false,
         });
         return;
@@ -239,12 +250,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
       const scheduled = await Promise.race([
         scheduleStreakReminder(get().streakReminderHour),
-        timeout<boolean>(),
+        timeout<Awaited<ReturnType<typeof scheduleStreakReminder>>>(),
       ]);
-      if (!scheduled) {
+
+      if (!scheduled.ok) {
         set({
           streakReminder: false,
-          reminderStatus: t("Couldn't schedule the reminder — please try again."),
+          reminderStatus: t("Couldn't schedule the reminder: {detail}", {
+            detail: scheduled.detail,
+          }),
           reminderBusy: false,
         });
         return;
@@ -256,14 +270,14 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         // non-fatal
       }
       set({ streakReminder: true, reminderStatus: null, reminderBusy: false });
-    } catch {
+    } catch (error) {
       // Covers the timeout race and any unexpected native-bridge failure —
       // the toggle always recovers with a message instead of spinning.
       set({
         streakReminder: false,
-        reminderStatus: t(
-          "Couldn't reach notifications right now — please try again."
-        ),
+        reminderStatus: t("Notifications failed: {detail}", {
+          detail: error instanceof Error ? error.message : String(error),
+        }),
         reminderBusy: false,
       });
     }

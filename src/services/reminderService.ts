@@ -13,6 +13,7 @@ import { t } from "@/i18n";
 /** Fixed ids so re-scheduling replaces rather than stacks up reminders. */
 const STREAK_REMINDER_ID = 1001;
 const REST_DONE_ID = 1002;
+const TEST_ID = 1003;
 
 export function areRemindersSupported(): boolean {
   return Capacitor.isNativePlatform();
@@ -23,22 +24,37 @@ async function plugin() {
   return mod.LocalNotifications;
 }
 
+/**
+ * Every failure here used to be swallowed by a bare `catch {}`, so a broken
+ * reminder looked identical whether the chunk failed to load, the plugin
+ * wasn't registered, or the user denied permission. Keep the real message.
+ */
+function describe(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+
+  return String(error);
+}
+
 export type ReminderPermissionStatus =
-  | "granted"
-  | "denied"
-  | "unsupported"
-  | "error";
+  | { status: "granted" }
+  | { status: "denied" }
+  | { status: "unsupported" }
+  | { status: "error"; detail: string };
 
 /** Ask for notification permission. */
 export async function requestReminderPermission(): Promise<ReminderPermissionStatus> {
-  if (!areRemindersSupported()) return "unsupported";
+  if (!areRemindersSupported()) return { status: "unsupported" };
 
   try {
     const LocalNotifications = await plugin();
-    const status = await LocalNotifications.requestPermissions();
-    return status.display === "granted" ? "granted" : "denied";
-  } catch {
-    return "error";
+    const permissions = await LocalNotifications.requestPermissions();
+
+    return permissions.display === "granted"
+      ? { status: "granted" }
+      : { status: "denied" };
+  } catch (error) {
+    return { status: "error", detail: describe(error) };
   }
 }
 
@@ -62,9 +78,14 @@ export async function hasReminderPermission(): Promise<boolean> {
 export async function scheduleStreakReminder(
   hour: number,
   minute = 0
-): Promise<boolean> {
-  if (!areRemindersSupported()) return false;
-  if (!(await hasReminderPermission())) return false;
+): Promise<{ ok: true } | { ok: false; detail: string }> {
+  if (!areRemindersSupported()) {
+    return { ok: false, detail: "not a native platform" };
+  }
+
+  if (!(await hasReminderPermission())) {
+    return { ok: false, detail: "permission not granted" };
+  }
 
   try {
     const LocalNotifications = await plugin();
@@ -83,9 +104,42 @@ export async function scheduleStreakReminder(
       ],
     });
 
-    return true;
-  } catch {
-    return false;
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, detail: describe(error) };
+  }
+}
+
+/**
+ * Fire a notification a few seconds from now so the reminder pipeline can
+ * actually be verified. Without this the daily reminder is untestable: it is
+ * scheduled for a fixed hour, so "broken" and "working, arriving tomorrow"
+ * look exactly the same.
+ */
+export async function sendTestNotification(): Promise<
+  { ok: true } | { ok: false; detail: string }
+> {
+  if (!areRemindersSupported()) {
+    return { ok: false, detail: "not a native platform" };
+  }
+
+  try {
+    const LocalNotifications = await plugin();
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: TEST_ID,
+          title: t("BulkOS reminders work"),
+          body: t("This is a test notification."),
+          schedule: { at: new Date(Date.now() + 5000) },
+        },
+      ],
+    });
+
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, detail: describe(error) };
   }
 }
 

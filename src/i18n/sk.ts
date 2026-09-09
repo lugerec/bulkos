@@ -65,12 +65,18 @@ export const sk: Record<string, string> = {
     "Pripomienky fungujú len v aplikácii, nie v prehliadači.",
   "Notifications are turned off for BulkOS. Enable them in iPhone Settings → BulkOS → Notifications.":
     "Notifikácie sú pre BulkOS vypnuté. Zapni ich v Nastavenia iPhonu → BulkOS → Notifikácie.",
-  "Couldn't turn on reminders — please try again.":
-    "Pripomienky sa nepodarilo zapnúť — skús to znova.",
-  "Couldn't schedule the reminder — please try again.":
-    "Pripomienku sa nepodarilo naplánovať — skús to znova.",
-  "Couldn't reach notifications right now — please try again.":
-    "Notifikácie sú momentálne nedostupné — skús to znova.",
+  "Couldn't turn on reminders: {detail}":
+    "Pripomienky sa nepodarilo zapnúť: {detail}",
+  "Couldn't schedule the reminder: {detail}":
+    "Pripomienku sa nepodarilo naplánovať: {detail}",
+  "Notifications failed: {detail}": "Notifikácie zlyhali: {detail}",
+  "Send a test notification": "Poslať testovaciu notifikáciu",
+  "Sending...": "Odosiela sa...",
+  "Scheduled — it should arrive in about 5 seconds.":
+    "Naplánované — mala by prísť do 5 sekúnd.",
+  "Failed: {detail}": "Zlyhalo: {detail}",
+  "BulkOS reminders work": "Pripomienky BulkOS fungujú",
+  "This is a test notification.": "Toto je testovacia notifikácia.",
   "Keep your streak alive": "Udrž si sériu",
   "Log a workout or hit your protein target today.":
     "Zapíš si dnes tréning alebo splň cieľ bielkovín.",
