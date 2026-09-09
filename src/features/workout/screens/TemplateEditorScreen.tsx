@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Check, Copy, Plus, Save, Trash2 } from "lucide-react";
+import { t } from "@/i18n";
 
 import { exerciseDefinitions } from "@/data/exercises";
 import { C } from "@/shared/ui";
@@ -83,7 +84,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
   if (!template) {
     return (
       <div className="px-5 pt-5">
-        <p style={{ color: C.fg3 }}>No template selected.</p>
+        <p style={{ color: C.fg3 }}>{t("No template selected.")}</p>
       </div>
     );
   }
@@ -245,9 +246,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
       <p
         className="text-[11px] uppercase tracking-widest font-bold"
         style={{ color: C.accentInk }}
-      >
-        Workout Template
-      </p>
+      >{t("Workout Template")}</p>
 
       <input
         value={name}
@@ -262,9 +261,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
             className="rounded-[20px] p-5 text-center card-lit"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
-            <p className="text-sm" style={{ color: C.fg3 }}>
-              No exercises yet.
-            </p>
+            <p className="text-sm" style={{ color: C.fg3 }}>{t("No exercises yet.")}</p>
           </div>
         ) : (
           exercises.map((exercise) => (
@@ -288,14 +285,12 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
       <p
         className="text-[11px] uppercase tracking-widest font-bold mt-7 mb-3"
         style={{ color: C.fg2 }}
-      >
-        Add Exercise
-      </p>
+      >{t("Add Exercise")}</p>
 
       <input
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search exercise..."
+        placeholder={t("Search exercise...")}
         className="w-full mb-3 px-4 py-3 rounded-[14px] bg-transparent outline-none"
         style={{
           background: C.card,
@@ -351,9 +346,7 @@ export default function TemplateEditorScreen({ onBack }: { onBack: () => void })
             boxShadow: "0 8px 28px rgba(204,242,50,0.25)",
           }}
         >
-          <Save size={18} />
-          Save Template
-        </button>
+          <Save size={18} />{t("Save Template")}</button>
       </div>
     </div>
   );

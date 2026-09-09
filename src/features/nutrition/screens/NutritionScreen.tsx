@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { t } from "@/i18n";
 
 import { useFoodStore } from "@/store/foodStore";
 import { useAppStore, type MealType } from "@/store/appStore";

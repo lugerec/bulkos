@@ -7,6 +7,7 @@ import {
   Flame,
   Target,
 } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C } from "@/shared/ui";
 import { useAuthStore } from "@/store/authStore";
@@ -119,24 +120,24 @@ export default function OnboardingScreen() {
 
           {step === 1 && (
             <ChoiceStep
-              eyebrow="Goal"
-              title="What are we building?"
-              subtitle="Pick the phase. This decides your calorie direction."
+              eyebrow={t("Goal")}
+              title={t("What are we building?")}
+              subtitle={t("Pick the phase. This decides your calorie direction.")}
               value={goal}
               onChange={(v) => setGoal(v as Goal)}
               options={[
-                { value: "bulk", title: "Lean bulk", description: "Gain muscle with controlled fat gain." },
-                { value: "cut", title: "Cut", description: "Drop fat while preserving performance." },
-                { value: "maintain", title: "Maintain", description: "Stay around the same weight and improve habits." },
+                { value: "bulk", title: t("Lean bulk"), description: t("Gain muscle with controlled fat gain.") },
+                { value: "cut", title: t("Cut"), description: t("Drop fat while preserving performance.") },
+                { value: "maintain", title: t("Maintain"), description: t("Stay around the same weight and improve habits.") },
               ]}
             />
           )}
 
           {step === 2 && (
             <NumberStep
-              eyebrow="Age"
-              title="How old are you?"
-              subtitle="Used for baseline calorie calculation."
+              eyebrow={t("Age")}
+              title={t("How old are you?")}
+              subtitle={t("Used for baseline calorie calculation.")}
               value={age}
               setValue={setAge}
               unit="years"
@@ -147,9 +148,9 @@ export default function OnboardingScreen() {
 
           {step === 3 && (
             <NumberStep
-              eyebrow="Height"
-              title="How tall are you?"
-              subtitle="Height helps estimate your daily expenditure."
+              eyebrow={t("Height")}
+              title={t("How tall are you?")}
+              subtitle={t("Height helps estimate your daily expenditure.")}
               value={height}
               setValue={setHeight}
               unit="cm"
@@ -161,8 +162,8 @@ export default function OnboardingScreen() {
           {step === 4 && (
             <NumberStep
               eyebrow="Current weight"
-              title="Where are we starting?"
-              subtitle="This is your baseline for targets and progress tracking."
+              title={t("Where are we starting?")}
+              subtitle={t("This is your baseline for targets and progress tracking.")}
               value={weight}
               setValue={setWeight}
               unit="kg"
@@ -174,8 +175,8 @@ export default function OnboardingScreen() {
           {step === 5 && (
             <NumberStep
               eyebrow="Target weight"
-              title="Where are we going?"
-              subtitle="Be realistic. Aggressive targets usually create worse adherence."
+              title={t("Where are we going?")}
+              subtitle={t("Be realistic. Aggressive targets usually create worse adherence.")}
               value={goalWeight}
               setValue={setGoalWeight}
               unit="kg"
@@ -186,31 +187,31 @@ export default function OnboardingScreen() {
 
           {step === 6 && (
             <ChoiceStep
-              eyebrow="Activity"
-              title="How active are you?"
-              subtitle="Include work, steps, sport and general movement."
+              eyebrow={t("Activity")}
+              title={t("How active are you?")}
+              subtitle={t("Include work, steps, sport and general movement.")}
               value={activity}
               onChange={(v) => setActivity(v as ActivityLevel)}
               options={[
-                { value: "low", title: "Low", description: "Desk job, low steps, mostly gym only." },
-                { value: "moderate", title: "Moderate", description: "Regular movement, 7–10k steps, training." },
-                { value: "high", title: "High", description: "Very active lifestyle, sport, high output." },
+                { value: "low", title: t("Low"), description: t("Desk job, low steps, mostly gym only.") },
+                { value: "moderate", title: t("Moderate"), description: t("Regular movement, 7–10k steps, training.") },
+                { value: "high", title: t("High"), description: t("Very active lifestyle, sport, high output.") },
               ]}
             />
           )}
 
           {step === 7 && (
             <ChoiceStep
-              eyebrow="Experience"
-              title="How experienced are you?"
+              eyebrow={t("Experience")}
+              title={t("How experienced are you?")}
               subtitle="This tailors how much detail the app shows and how it programs your training. You can change it anytime in Settings."
               value={experienceLevel}
               onChange={(v) => setExperienceLevel(v as ExperienceLevel)}
               options={[
-                { value: "beginner", title: "Beginner", description: "Just tell me what to train and how hard — no charts yet." },
-                { value: "intermediate", title: "Intermediate", description: "Show my progress and volume, hide the deep analytics." },
-                { value: "advanced", title: "Advanced", description: "Everything — effort strain, muscle balance, 1RM, the lot." },
-                { value: "custom", title: "Custom", description: "I'll pick which sections to show myself." },
+                { value: "beginner", title: "Beginner", description: t("Just tell me what to train and how hard — no charts yet.") },
+                { value: "intermediate", title: "Intermediate", description: t("Show my progress and volume, hide the deep analytics.") },
+                { value: "advanced", title: "Advanced", description: t("Everything — effort strain, muscle balance, 1RM, the lot.") },
+                { value: "custom", title: "Custom", description: t("I'll pick which sections to show myself.") },
               ]}
             />
           )}
@@ -280,9 +281,7 @@ function IntroStep({
         Welcome
       </p>
 
-      <h1 className="text-4xl font-extrabold leading-tight mb-3" style={{ color: C.fg }}>
-        Let's build your operating system.
-      </h1>
+      <h1 className="text-4xl font-extrabold leading-tight mb-3" style={{ color: C.fg }}>{t("Let's build your operating system.")}</h1>
 
       <p className="text-base leading-relaxed mb-8" style={{ color: C.fg2 }}>
         BulkOS will calculate your starting targets and turn your training, food and progress into one system.
@@ -302,8 +301,8 @@ function IntroStep({
 
       <div className="grid grid-cols-2 gap-3">
         {[
-          { label: "Male", value: "male" },
-          { label: "Female", value: "female" },
+          { label: t("Male"), value: "male" },
+          { label: t("Female"), value: "female" },
         ].map((option) => {
           const active = sex === option.value;
           return (
@@ -492,22 +491,16 @@ function SummaryStep({
 }) {
   return (
     <div>
-      <p className="text-sm font-bold mb-2" style={{ color: C.accentInk }}>
-        Plan ready
-      </p>
+      <p className="text-sm font-bold mb-2" style={{ color: C.accentInk }}>{t("Plan ready")}</p>
 
-      <h2 className="text-4xl font-extrabold leading-tight mb-3" style={{ color: C.fg }}>
-        Your starting targets are ready.
-      </h2>
+      <h2 className="text-4xl font-extrabold leading-tight mb-3" style={{ color: C.fg }}>{t("Your starting targets are ready.")}</h2>
 
       <p className="text-base leading-relaxed mb-6" style={{ color: C.fg2 }}>
         These are not permanent. BulkOS should adjust them from your weekly trend, not your ego.
       </p>
 
       <div className="mb-5">
-        <p className="text-xs font-semibold mb-2" style={{ color: C.fg2 }}>
-          Training days per week
-        </p>
+        <p className="text-xs font-semibold mb-2" style={{ color: C.fg2 }}>{t("Training days per week")}</p>
 
         <div className="grid grid-cols-4 gap-2">
           {[3, 4, 5, 6].map((days) => {
@@ -546,12 +539,8 @@ function SummaryStep({
           </div>
 
           <div>
-            <p className="text-sm font-bold" style={{ color: C.fg }}>
-              Daily targets
-            </p>
-            <p className="text-xs" style={{ color: C.fg3 }}>
-              Start here. Adjust after 7–14 days.
-            </p>
+            <p className="text-sm font-bold" style={{ color: C.fg }}>{t("Daily targets")}</p>
+            <p className="text-xs" style={{ color: C.fg3 }}>{t("Start here. Adjust after 7–14 days.")}</p>
           </div>
         </div>
 
@@ -564,9 +553,7 @@ function SummaryStep({
       </div>
 
       {saving && (
-        <p className="text-center text-sm mt-4" style={{ color: C.fg3 }}>
-          Saving your profile...
-        </p>
+        <p className="text-center text-sm mt-4" style={{ color: C.fg3 }}>{t("Saving your profile...")}</p>
       )}
     </div>
   );

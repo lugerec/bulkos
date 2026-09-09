@@ -9,6 +9,7 @@ import {
   Tooltip,
 } from "recharts";
 import { ArrowLeft, TrendingUp, Lock } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C, type Screen } from "@/shared/ui";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
@@ -93,9 +94,7 @@ export default function ProAnalyticsScreen({
           >
             <ArrowLeft size={18} />
           </button>
-          <h1 className="text-2xl font-extrabold" style={{ color: C.fg }}>
-            Advanced Analytics
-          </h1>
+          <h1 className="text-2xl font-extrabold" style={{ color: C.fg }}>{t("Advanced Analytics")}</h1>
         </div>
 
         <div
@@ -108,9 +107,7 @@ export default function ProAnalyticsScreen({
           >
             <Lock size={24} color={C.accent} />
           </div>
-          <p className="text-sm font-bold mb-1" style={{ color: C.fg }}>
-            This is a Pro feature
-          </p>
+          <p className="text-sm font-bold mb-1" style={{ color: C.fg }}>{t("This is a Pro feature")}</p>
           <p className="text-[12px] mb-5" style={{ color: C.fg3 }}>
             Strength trends, 12-week volume, and muscle balance across your
             full training history.
@@ -119,9 +116,7 @@ export default function ProAnalyticsScreen({
             onClick={() => onNavigate("paywall")}
             className="w-full py-3.5 rounded-[16px] font-bold text-sm"
             style={{ background: C.accent, color: C.onAccent }}
-          >
-            See Pro
-          </button>
+          >{t("See Pro")}</button>
         </div>
       </div>
     );
@@ -138,9 +133,7 @@ export default function ProAnalyticsScreen({
         >
           <ArrowLeft size={18} />
         </button>
-        <h1 className="text-2xl font-extrabold" style={{ color: C.fg }}>
-          Advanced Analytics
-        </h1>
+        <h1 className="text-2xl font-extrabold" style={{ color: C.fg }}>{t("Advanced Analytics")}</h1>
       </div>
 
       {/* Volume trend */}
@@ -148,14 +141,10 @@ export default function ProAnalyticsScreen({
         className="rounded-[20px] p-4 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
-        <p className="text-[11px] uppercase tracking-wider font-semibold mb-3" style={{ color: C.fg2 }}>
-          Volume — last 12 weeks
-        </p>
+        <p className="text-[11px] uppercase tracking-wider font-semibold mb-3" style={{ color: C.fg2 }}>{t("Volume — last 12 weeks")}</p>
 
         {volumeTrend.every((w) => w.volumeKg === 0) ? (
-          <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>
-            No logged training in this window yet.
-          </p>
+          <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>{t("No logged training in this window yet.")}</p>
         ) : (
           <div style={{ height: 140 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -191,16 +180,12 @@ export default function ProAnalyticsScreen({
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: C.fg2 }}>
-            Est. 1RM trend
-          </p>
+          <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: C.fg2 }}>{t("Est. 1RM trend")}</p>
           <TrendingUp size={14} color={C.accent} />
         </div>
 
         {exercisesWithHistory.length === 0 ? (
-          <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>
-            Log a few sessions to see strength trends here.
-          </p>
+          <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>{t("Log a few sessions to see strength trends here.")}</p>
         ) : (
           <>
             <select
@@ -217,9 +202,7 @@ export default function ProAnalyticsScreen({
             </select>
 
             {strengthTrend.length < 2 ? (
-              <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>
-                Need at least two sessions of this exercise to chart a trend.
-              </p>
+              <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>{t("Need at least two sessions of this exercise to chart a trend.")}</p>
             ) : (
               <div style={{ height: 140 }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -250,14 +233,10 @@ export default function ProAnalyticsScreen({
         className="rounded-[20px] p-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
-        <p className="text-[11px] uppercase tracking-wider font-semibold mb-3" style={{ color: C.fg2 }}>
-          Muscle balance — this week vs last
-        </p>
+        <p className="text-[11px] uppercase tracking-wider font-semibold mb-3" style={{ color: C.fg2 }}>{t("Muscle balance — this week vs last")}</p>
 
         {muscleTrend.length === 0 ? (
-          <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>
-            No sets logged in the last two weeks.
-          </p>
+          <p className="text-sm py-6 text-center" style={{ color: C.fg3 }}>{t("No sets logged in the last two weeks.")}</p>
         ) : (
           <div className="flex flex-col gap-2.5">
             {muscleTrend.slice(0, 8).map((m) => {

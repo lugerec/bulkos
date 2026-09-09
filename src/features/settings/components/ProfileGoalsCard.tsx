@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { t } from "@/i18n";
 
 import { C } from "@/shared/ui";
 import { SectionHeader } from "@/shared/components";
@@ -107,7 +108,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
 
   return (
     <>
-      <SectionHeader title="Profile & Goals" />
+      <SectionHeader title={t("Profile & Goals")} />
 
       <div
         className="rounded-[20px] mb-4 overflow-hidden card-lit"
@@ -127,9 +128,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
           className="flex justify-between items-center px-4 py-3.5"
           style={{ borderBottom: `1px solid ${C.border}` }}
         >
-          <span className="text-sm" style={{ color: C.fg2 }}>
-            Training days / week
-          </span>
+          <span className="text-sm" style={{ color: C.fg2 }}>{t("Training days / week")}</span>
           <Segmented
             options={FREQUENCIES}
             value={frequency}
@@ -141,9 +140,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
           className="flex justify-between items-center px-4 py-3.5"
           style={{ borderBottom: `1px solid ${C.border}` }}
         >
-          <span className="text-sm" style={{ color: C.fg2 }}>
-            Activity level
-          </span>
+          <span className="text-sm" style={{ color: C.fg2 }}>{t("Activity level")}</span>
           <Segmented
             options={ACTIVITIES}
             value={activity}
@@ -152,9 +149,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
         </div>
 
         <div className="flex justify-between items-center px-4 py-3.5">
-          <span className="text-sm" style={{ color: C.fg2 }}>
-            Goal weight (kg)
-          </span>
+          <span className="text-sm" style={{ color: C.fg2 }}>{t("Goal weight (kg)")}</span>
           <input
             type="number"
             inputMode="decimal"
@@ -178,9 +173,7 @@ export default function ProfileGoalsCard({ uid, profile, onSaved }: Props) {
             )}
 
             {saved && !dirty ? (
-              <p className="text-xs font-semibold" style={{ color: C.accentInk }}>
-                Saved — macro targets updated.
-              </p>
+              <p className="text-xs font-semibold" style={{ color: C.accentInk }}>{t("Saved — macro targets updated.")}</p>
             ) : (
               <button
                 onClick={handleSave}

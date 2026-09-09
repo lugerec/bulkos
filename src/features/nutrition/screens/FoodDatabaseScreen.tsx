@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Globe, Search, CheckCircle2, ScanLine, X, Star, Plus, Clock } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C } from "@/shared/ui";
 import { useFoodStore } from "@/store/foodStore";
@@ -281,14 +282,10 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
             <ArrowLeft size={17} />
           </button>
         )}
-        <h2 className="text-[22px] font-bold" style={{ color: C.fg }}>
-          Food Database
-        </h2>
+        <h2 className="text-[22px] font-bold" style={{ color: C.fg }}>{t("Food Database")}</h2>
       </div>
 
-      <p className="text-sm mb-5" style={{ color: C.fg3 }}>
-        Search your foods and Open Food Facts
-      </p>
+      <p className="text-sm mb-5" style={{ color: C.fg3 }}>{t("Search your foods and Open Food Facts")}</p>
 
       <div className="flex items-center gap-2 mb-3">
         <div
@@ -300,7 +297,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search food..."
+            placeholder={t("Search food...")}
             className="flex-1 bg-transparent outline-none text-sm"
             style={{ color: C.fg }}
           />
@@ -309,7 +306,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
         <button
           onClick={handleScanClick}
           disabled={scanState === "scanning" || scanState === "looking"}
-          aria-label="Scan barcode"
+          aria-label={t("Scan barcode")}
           className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center flex-shrink-0 disabled:opacity-60"
           style={{ background: C.accent, color: "#0A0A0B" }}
         >
@@ -334,7 +331,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
             }}
             inputMode="numeric"
             autoFocus
-            placeholder="Enter barcode number…"
+            placeholder={t("Enter barcode number…")}
             className="flex-1 bg-transparent outline-none text-sm"
             style={{ color: C.fg }}
           />
@@ -424,14 +421,12 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
               setCustomForm((form) => ({ ...form, name: event.target.value }))
             }
             autoFocus
-            placeholder="Product name"
+            placeholder={t("Product name")}
             className="w-full bg-transparent outline-none text-sm px-3 py-2.5 rounded-[10px] mb-3"
             style={{ color: C.fg, border: `1px solid ${C.border}` }}
           />
 
-          <p className="text-[11px] mb-2" style={{ color: C.fg3 }}>
-            Per 100 g
-          </p>
+          <p className="text-[11px] mb-2" style={{ color: C.fg3 }}>{t("Per 100 g")}</p>
 
           <div className="grid grid-cols-4 gap-2 mb-4">
             <CustomField
@@ -467,9 +462,7 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
             disabled={!customForm.name.trim() || !customForm.calories.trim()}
             className="w-full py-3 rounded-[14px] font-bold text-sm disabled:opacity-50"
             style={{ background: C.accent, color: "#0A0A0B" }}
-          >
-            Save & log
-          </button>
+          >{t("Save & log")}</button>
         </div>
       )}
 
@@ -559,12 +552,8 @@ export default function FoodDatabaseScreen({ onBack }: { onBack?: () => void }) 
           className="rounded-[20px] p-5 text-center card-lit"
           style={{ background: C.card, border: `1px solid ${C.border}` }}
         >
-          <p className="text-sm font-semibold" style={{ color: C.fg }}>
-            No foods found
-          </p>
-          <p className="text-xs mt-1" style={{ color: C.fg3 }}>
-            Try a different search.
-          </p>
+          <p className="text-sm font-semibold" style={{ color: C.fg }}>{t("No foods found")}</p>
+          <p className="text-xs mt-1" style={{ color: C.fg3 }}>{t("Try a different search.")}</p>
         </div>
       )}
 

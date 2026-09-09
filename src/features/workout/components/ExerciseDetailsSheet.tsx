@@ -1,5 +1,6 @@
 import MuscleActivationList from "@/features/workout/components/MuscleActivationList";
 import ExerciseMedia from "@/features/workout/components/ExerciseMedia";
+import { t } from "@/i18n";
 
 import {
   getExerciseMedia,
@@ -158,9 +159,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           <p
             className="text-[11px] uppercase tracking-widest font-bold mb-1"
             style={{ color: C.accentInk }}
-          >
-            Exercise Detail
-          </p>
+          >{t("Exercise Detail")}</p>
 
           <h2
             className="text-[22px] font-extrabold pr-12"
@@ -205,9 +204,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
               <p
                 className="text-xs font-bold uppercase mb-2"
                 style={{ color: C.fg3 }}
-              >
-                Secondary muscles
-              </p>
+              >{t("Secondary muscles")}</p>
 
               <div className="flex flex-wrap gap-2">
                 {exercise.secondaryMuscles.map((muscle) => (
@@ -228,13 +225,11 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           ) : null}
         </div>
 
-        <Section title="Muscle Activation">
+        <Section title={t("Muscle Activation")}>
           {exercise.activation ? (
             <MuscleActivationList activation={exercise.activation} />
           ) : (
-            <p className="text-sm" style={{ color: C.fg3 }}>
-              No activation data yet.
-            </p>
+            <p className="text-sm" style={{ color: C.fg3 }}>{t("No activation data yet.")}</p>
           )}
         </Section>
 
@@ -256,7 +251,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
           <MiniStat label="Rest" value={`${exercise.defaultRestSeconds}s`} />
         </div>
 
-        <Section title="Tips">
+        <Section title={t("Tips")}>
           {exercise.tips?.length ? (
             exercise.tips.map((tip) => (
               <p key={tip} className="text-sm mb-2" style={{ color: C.fg2 }}>
@@ -264,13 +259,11 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
               </p>
             ))
           ) : (
-            <p className="text-sm" style={{ color: C.fg3 }}>
-              No tips added yet.
-            </p>
+            <p className="text-sm" style={{ color: C.fg3 }}>{t("No tips added yet.")}</p>
           )}
         </Section>
 
-        <Section title="Common Mistakes">
+        <Section title={t("Common Mistakes")}>
           {exercise.mistakes?.length ? (
             exercise.mistakes.map((mistake) => (
               <p key={mistake} className="text-sm mb-2" style={{ color: C.fg2 }}>
@@ -278,17 +271,15 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
               </p>
             ))
           ) : (
-            <p className="text-sm" style={{ color: C.fg3 }}>
-              No mistakes added yet.
-            </p>
+            <p className="text-sm" style={{ color: C.fg3 }}>{t("No mistakes added yet.")}</p>
           )}
         </Section>
 
-        <Section title="Your Stats">
+        <Section title={t("Your Stats")}>
           <div className="grid grid-cols-2 gap-2">
             <StatCard
               icon={<Trophy size={15} color={C.accent} />}
-              label="Best Set"
+              label={t("Best Set")}
               value={bestSet ? `${bestSet.weight} × ${bestSet.reps}` : "—"}
             />
             <StatCard
@@ -297,21 +288,21 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
               value={bestSet ? `${bestSet.estimatedOneRepMax} kg` : "—"}
             />
             <StatCard
-              label="Last Set"
+              label={t("Last Set")}
               value={lastSet ? `${lastSet.weight} × ${lastSet.reps}` : "—"}
             />
             <StatCard
-              label="Total Volume"
+              label={t("Total Volume")}
               value={`${totalVolume.toLocaleString()} kg`}
             />
           </div>
         </Section>
 
-        <Section title="Next Suggested Target">
+        <Section title={t("Next Suggested Target")}>
         {suggestion ? (
             <>
             <div className="flex justify-between mb-3">
-                <span style={{ color: C.fg3 }}>Last best</span>
+                <span style={{ color: C.fg3 }}>{t("Last best")}</span>
 
                 <strong style={{ color: C.fg }}>
                 {bestSet?.weight} × {bestSet?.reps}
@@ -334,9 +325,7 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
             </p>
             </>
         ) : (
-            <p style={{ color: C.fg3 }}>
-            No recommendation yet.
-            </p>
+            <p style={{ color: C.fg3 }}>{t("No recommendation yet.")}</p>
         )}
         </Section>
 
@@ -344,16 +333,12 @@ export default function ExerciseDetailsSheet({ exerciseId, onClose }: Props) {
         {chartData.length > 1 ? (
             <ExerciseProgressChart data={chartData} />
         ) : (
-            <p className="text-sm" style={{ color: C.fg3 }}>
-            Not enough data for a chart yet.
-            </p>
+            <p className="text-sm" style={{ color: C.fg3 }}>{t("Not enough data for a chart yet.")}</p>
         )}
         </Section>
 
-        <Section title="Recent Performance">{loggedSets.length === 0 ? (
-            <p className="text-sm" style={{ color: C.fg3 }}>
-            No history yet.
-            </p>
+        <Section title={t("Recent Performance")}>{loggedSets.length === 0 ? (
+            <p className="text-sm" style={{ color: C.fg3 }}>{t("No history yet.")}</p>
         ) : (
             loggedSets.slice(0, 5).map((set, index) => (
             <div

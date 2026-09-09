@@ -9,6 +9,7 @@ import {
   Snowflake,
   BarChart3,
 } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C, type Screen } from "@/shared/ui";
 import { useRewardsStore } from "@/store/rewardsStore";
@@ -193,9 +194,7 @@ export default function RewardsScreen({
           <p className="text-[26px] font-extrabold mt-2 leading-none" style={{ color: C.fg }}>
             {stats.streak}
           </p>
-          <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
-            Day streak
-          </p>
+          <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>{t("Day streak")}</p>
         </div>
         <div
           className="rounded-[18px] p-4"
@@ -205,9 +204,7 @@ export default function RewardsScreen({
           <p className="text-[26px] font-extrabold mt-2 leading-none" style={{ color: C.fg }}>
             {stats.longestStreak}
           </p>
-          <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
-            Longest streak
-          </p>
+          <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>{t("Longest streak")}</p>
         </div>
       </div>
 
@@ -243,9 +240,7 @@ export default function RewardsScreen({
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
         <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-bold" style={{ color: C.fg }}>
-            This week
-          </p>
+          <p className="text-sm font-bold" style={{ color: C.fg }}>{t("This week")}</p>
           <p className="text-[11px]" style={{ color: C.fg3 }}>
             {adherence.completedThisWeek}/{trainingFrequency} workouts
           </p>
@@ -279,9 +274,7 @@ export default function RewardsScreen({
             {adherence.remainingThisWeek} more to hit your weekly goal
           </p>
         ) : (
-          <p className="text-[11px] mt-3 font-semibold" style={{ color: C.accentInk }}>
-            Weekly goal complete — nice work!
-          </p>
+          <p className="text-[11px] mt-3 font-semibold" style={{ color: C.accentInk }}>{t("Weekly goal complete — nice work!")}</p>
         )}
       </div>
 
@@ -298,9 +291,7 @@ export default function RewardsScreen({
           <BarChart3 size={18} color={C.accent} />
         </div>
         <div className="flex-1 text-left">
-          <p className="text-sm font-bold" style={{ color: C.fg }}>
-            Advanced analytics
-          </p>
+          <p className="text-sm font-bold" style={{ color: C.fg }}>{t("Advanced analytics")}</p>
           <p className="text-[11px]" style={{ color: C.fg3 }}>
             {isPro ? "Strength trends & muscle balance" : "Pro — strength trends & muscle balance"}
           </p>
@@ -320,12 +311,8 @@ export default function RewardsScreen({
           <Users size={18} color={C.accent} />
         </div>
         <div className="flex-1 text-left">
-          <p className="text-sm font-bold" style={{ color: C.fg }}>
-            Friends & leaderboard
-          </p>
-          <p className="text-[11px]" style={{ color: C.fg3 }}>
-            Compare streaks and XP
-          </p>
+          <p className="text-sm font-bold" style={{ color: C.fg }}>{t("Friends & leaderboard")}</p>
+          <p className="text-[11px]" style={{ color: C.fg3 }}>{t("Compare streaks and XP")}</p>
         </div>
       </button>
 

@@ -7,6 +7,7 @@ import {
   } from "recharts";
   
   import { C } from "@/shared/ui";
+  import { t } from "@/i18n";
   
   type ChartPoint = {
     day: string;
@@ -31,13 +32,9 @@ import {
       >
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-sm font-bold" style={{ color: C.fg }}>
-              Weekly Volume
-            </p>
+            <p className="text-sm font-bold" style={{ color: C.fg }}>{t("Weekly Volume")}</p>
   
-            <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
-              Training volume from the last 7 days
-            </p>
+            <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>{t("Training volume from the last 7 days")}</p>
           </div>
         </div>
   
@@ -118,13 +115,9 @@ import {
             style={{ height: 150 }}
           >
             <div>
-              <p className="text-sm font-semibold" style={{ color: C.fg }}>
-                No training data yet
-              </p>
+              <p className="text-sm font-semibold" style={{ color: C.fg }}>{t("No training data yet")}</p>
   
-              <p className="text-xs mt-1" style={{ color: C.fg3 }}>
-                Complete a workout to start the chart.
-              </p>
+              <p className="text-xs mt-1" style={{ color: C.fg3 }}>{t("Complete a workout to start the chart.")}</p>
             </div>
           </div>
         )}

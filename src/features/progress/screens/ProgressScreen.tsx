@@ -17,6 +17,7 @@ import {
   getMuscleRecoveryOverview,
   getMuscleSetTargetOverview,
 } from "@/features/workout/utils/workoutRecommendation";
+import { t } from "@/i18n";
 
 import WeeklyWorkoutChart from "../components/WeeklyWorkoutChart";
 
@@ -328,7 +329,7 @@ const averageWorkoutDuration =
         />
       )}
 
-      <SectionHeader title="This Week" />
+      <SectionHeader title={t("This Week")} />
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <Stat
@@ -342,12 +343,12 @@ const averageWorkoutDuration =
         />
 
         <Stat
-          label="Training time"
+          label={t("Training time")}
           value={formatTrainingTime(weeklyTrainingTime)}
         />
 
         <Stat
-          label="Average session"
+          label={t("Average session")}
           value={
             averageWorkoutDuration > 0
               ? formatTrainingTime(averageWorkoutDuration)
@@ -409,9 +410,7 @@ const averageWorkoutDuration =
 
               <div className="flex items-center gap-1 mt-2">
                 {change == null ? (
-                  <span className="text-[11px]" style={{ color: C.fg3 }}>
-                    No previous data
-                  </span>
+                  <span className="text-[11px]" style={{ color: C.fg3 }}>{t("No previous data")}</span>
                 ) : (
                   <>
                     {isDown ? (
@@ -443,9 +442,7 @@ const averageWorkoutDuration =
             <p
               className="text-[11px] uppercase tracking-wider font-semibold mb-1.5"
               style={{ color: C.fg2 }}
-            >
-              Est. Body Fat
-            </p>
+            >{t("Est. Body Fat")}</p>
 
             <p
               className="text-[32px] font-extrabold leading-none"
@@ -456,9 +453,7 @@ const averageWorkoutDuration =
             </p>
 
             {bodyFatChange == null ? (
-              <p className="text-xs mt-2" style={{ color: C.fg3 }}>
-                Based on latest check-in
-              </p>
+              <p className="text-xs mt-2" style={{ color: C.fg3 }}>{t("Based on latest check-in")}</p>
             ) : (
               <div className="flex items-center gap-1 mt-2">
                 {bodyFatChange < 0 ? (
@@ -573,12 +568,8 @@ const averageWorkoutDuration =
         >
           <div className="text-center">
             <Camera size={22} color={C.fg3} className="mx-auto mb-2" />
-            <p className="text-sm font-medium" style={{ color: C.fg3 }}>
-              Upload progress photos
-            </p>
-            <p className="text-xs mt-1" style={{ color: C.fg3 }}>
-              Compare your transformation week by week
-            </p>
+            <p className="text-sm font-medium" style={{ color: C.fg3 }}>{t("Upload progress photos")}</p>
+            <p className="text-xs mt-1" style={{ color: C.fg3 }}>{t("Compare your transformation week by week")}</p>
           </div>
         </div>
       )}

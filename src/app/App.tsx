@@ -277,7 +277,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
           <div className="flex gap-3 items-start">
             <Zap size={16} color={C.accent} className="mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-semibold mb-1" style={{ color: C.accent }}>Meal Prep Tip</p>
+              <p className="text-sm font-semibold mb-1" style={{ color: C.accent }}>{t("Meal Prep Tip")}</p>
               <p className="text-xs leading-relaxed" style={{ color: C.fg2 }}>
                 Cook salmon in batches of 3-4 fillets. Store in airtight container for up to 3 days.
                 Quinoa can be cooked in bulk and refrigerated up to 5 days.
@@ -310,7 +310,7 @@ function MealDetailScreen({ onBack }: { onBack: () => void }) {
           <div className="flex gap-3 items-start">
             <Info size={16} color={C.red} className="mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-semibold mb-1" style={{ color: C.red }}>Allergen Info</p>
+              <p className="text-sm font-semibold mb-1" style={{ color: C.red }}>{t("Allergen Info")}</p>
               <p className="text-xs leading-relaxed" style={{ color: C.fg2 }}>
                 Contains: <span style={{ color: C.fg }}>Fish (Salmon)</span>.
                 May contain traces of nuts and gluten. Suitable for gluten-free diets if using certified quinoa.
@@ -465,9 +465,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
         <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex justify-between items-center mb-4">
             <div>
-              <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: C.fg2 }}>
-                Weekly Avg Calories
-              </p>
+              <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: C.fg2 }}>{t("Weekly Avg Calories")}</p>
               <p className="text-[22px] font-extrabold mt-0.5 leading-none" style={{ color: C.fg }}>
                 {weeklyAvgCalories.toLocaleString()}<span className="text-sm font-medium ml-1" style={{ color: C.fg3 }}>kcal</span>
               </p>
@@ -501,7 +499,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
         {/* Macro adherence */}
         {macroAdherence && (
           <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-            <SectionHeader title="Macro Adherence" />
+            <SectionHeader title={t("Macro Adherence")} />
             <div className="flex flex-col gap-4">
               {macroAdherence.map(({ label, percent }, index) => {
                 const color = [C.accent, C.blue, C.purple][index % 3];
@@ -519,9 +517,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
                 );
               })}
             </div>
-            <p className="text-[11px] mt-3" style={{ color: C.fg3 }}>
-              Average of the last 7 days with logged food vs your targets.
-            </p>
+            <p className="text-[11px] mt-3" style={{ color: C.fg3 }}>{t("Average of the last 7 days with logged food vs your targets.")}</p>
           </div>
         )}
 
@@ -541,8 +537,8 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
               <Brain size={17} color={C.accent} />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: C.accent }}>Coach Insight</p>
-              <p className="text-[11px]" style={{ color: C.fg2 }}>Based on the last 14 days of check-ins</p>
+              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: C.accent }}>{t("Coach Insight")}</p>
+              <p className="text-[11px]" style={{ color: C.fg2 }}>{t("Based on the last 14 days of check-ins")}</p>
             </div>
           </div>
           <p className="text-sm leading-relaxed mb-4" style={{ color: C.fg }}>
@@ -566,9 +562,7 @@ function AnalyticsScreen({ onBack }: { onBack: () => void }) {
             </button>
           )}
           {insightApplied && (
-            <p className="text-sm font-bold" style={{ color: C.accent }}>
-              Applied — your calorie and carb targets were updated.
-            </p>
+            <p className="text-sm font-bold" style={{ color: C.accent }}>{t("Applied — your calorie and carb targets were updated.")}</p>
           )}
         </div>
       </div>
@@ -684,13 +678,13 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="pb-8">
-      <SubScreenHeader title="Grocery List" onBack={onBack} />
+      <SubScreenHeader title={t("Grocery List")} onBack={onBack} />
 
       <div className="px-5">
         {/* Summary */}
         <div className="rounded-[20px] p-4 mb-4 card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold" style={{ color: C.fg }}>Shopping progress</span>
+            <span className="text-sm font-semibold" style={{ color: C.fg }}>{t("Shopping progress")}</span>
             <span className="text-sm font-bold" style={{ color: C.accent }}>
               {Math.round(progress)}%
             </span>
@@ -721,7 +715,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
               onKeyDown={(event) => {
                 if (event.key === "Enter") addItem(searchTerm, "custom");
               }}
-              placeholder="Search products or add your own…"
+              placeholder={t("Search products or add your own…")}
               className="flex-1 bg-transparent outline-none text-sm py-1.5"
               style={{ color: C.fg }}
             />
@@ -760,9 +754,7 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
         {/* Suggestions from meals */}
         {suggestions.length > 0 && (
           <div className="mb-5">
-            <p className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: C.fg2 }}>
-              From your recent meals
-            </p>
+            <p className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: C.fg2 }}>{t("From your recent meals")}</p>
             <div className="flex flex-wrap gap-2">
               {suggestions.map((name) => (
                 <button
@@ -783,10 +775,8 @@ function GroceryListScreen({ onBack }: { onBack: () => void }) {
           <p className="text-sm" style={{ color: C.fg3 }}>Loading list…</p>
         ) : items.length === 0 ? (
           <div className="rounded-[20px] p-5 text-center card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-            <p className="text-sm font-semibold" style={{ color: C.fg }}>Your list is empty</p>
-            <p className="text-xs mt-1" style={{ color: C.fg3 }}>
-              Search real products above or tap a suggestion from your meals.
-            </p>
+            <p className="text-sm font-semibold" style={{ color: C.fg }}>{t("Your list is empty")}</p>
+            <p className="text-xs mt-1" style={{ color: C.fg3 }}>{t("Search real products above or tap a suggestion from your meals.")}</p>
           </div>
         ) : (
           <div className="rounded-[20px] overflow-hidden card-lit" style={{ background: C.card, border: `1px solid ${C.border}` }}>
@@ -1116,7 +1106,7 @@ export default function App() {
         {activeWorkout.active && screen !== "workout" && (
           <button
             onClick={() => navigate("workout")}
-            aria-label="Resume workout"
+            aria-label={t("Resume workout")}
             className="absolute flex items-center gap-2 px-4 py-3 rounded-full"
             style={{
               bottom: showNav

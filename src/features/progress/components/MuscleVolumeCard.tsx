@@ -1,5 +1,6 @@
 import { C } from "@/shared/ui";
 import type { MuscleVolumeItem } from "@/features/progress/utils/muscleVolume";
+import { t } from "@/i18n";
 
 type Props = {
   data: MuscleVolumeItem[];
@@ -32,13 +33,9 @@ export default function MuscleVolumeCard({
       }}
     >
       <div className="mb-4">
-        <p className="text-sm font-bold" style={{ color: C.fg }}>
-          Muscle Load
-        </p>
+        <p className="text-sm font-bold" style={{ color: C.fg }}>{t("Muscle Load")}</p>
 
-        <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
-          Estimated weighted volume this week
-        </p>
+        <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>{t("Estimated weighted volume this week")}</p>
       </div>
 
       {visibleData.length === 0 ? (
@@ -47,13 +44,9 @@ export default function MuscleVolumeCard({
           style={{ minHeight: 120 }}
         >
           <div>
-            <p className="text-sm font-semibold" style={{ color: C.fg }}>
-              No muscle load data yet
-            </p>
+            <p className="text-sm font-semibold" style={{ color: C.fg }}>{t("No muscle load data yet")}</p>
 
-            <p className="text-xs mt-1" style={{ color: C.fg3 }}>
-              Complete a weighted workout to populate this section.
-            </p>
+            <p className="text-xs mt-1" style={{ color: C.fg3 }}>{t("Complete a weighted workout to populate this section.")}</p>
           </div>
         </div>
       ) : (

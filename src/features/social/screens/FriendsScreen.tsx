@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, UserPlus, Flame, Trophy, X, Pencil, Activity, Dumbbell, Sparkles } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C } from "@/shared/ui";
 import { useSocialStore, buildLeaderboard } from "@/store/socialStore";
@@ -54,29 +55,23 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
         className="rounded-[20px] p-5 mb-4"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
-        <p className="text-[11px] font-semibold mb-1" style={{ color: C.fg3 }}>
-          YOUR FRIEND CODE
-        </p>
+        <p className="text-[11px] font-semibold mb-1" style={{ color: C.fg3 }}>{t("YOUR FRIEND CODE")}</p>
         <p
           className="text-[30px] font-extrabold tracking-[0.2em] leading-none"
           style={{ color: C.accentInk }}
         >
           {myProfile?.friendCode ?? "······"}
         </p>
-        <p className="text-[11px] mt-2 mb-4" style={{ color: C.fg3 }}>
-          Share this so friends can add you.
-        </p>
+        <p className="text-[11px] mt-2 mb-4" style={{ color: C.fg3 }}>{t("Share this so friends can add you.")}</p>
 
-        <p className="text-[11px] font-semibold mb-1.5" style={{ color: C.fg3 }}>
-          DISPLAY NAME
-        </p>
+        <p className="text-[11px] font-semibold mb-1.5" style={{ color: C.fg3 }}>{t("DISPLAY NAME")}</p>
         {editingName ? (
           <div className="flex gap-2">
             <input
               value={nameDraft}
               onChange={(e) => setNameDraft(e.target.value)}
               maxLength={20}
-              placeholder="How friends see you"
+              placeholder={t("How friends see you")}
               className="flex-1 bg-transparent outline-none text-sm px-3 py-2.5 rounded-[12px]"
               style={{ color: C.fg, border: `1px solid ${C.border}`, background: C.card2 }}
             />
@@ -117,7 +112,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
             setCode(e.target.value.toUpperCase());
             if (addStatus) clearAddStatus();
           }}
-          placeholder="Enter friend code"
+          placeholder={t("Enter friend code")}
           maxLength={6}
           className="flex-1 bg-transparent outline-none text-sm px-4 py-3 rounded-[14px] tracking-widest"
           style={{ color: C.fg, border: `1px solid ${C.border}`, background: C.card }}
@@ -146,9 +141,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
       </div>
 
       {leaderboard.length <= 1 && !loading && (
-        <p className="text-sm px-1" style={{ color: C.fg3 }}>
-          Add a friend by their code to see how you stack up.
-        </p>
+        <p className="text-sm px-1" style={{ color: C.fg3 }}>{t("Add a friend by their code to see how you stack up.")}</p>
       )}
 
       <div className="flex flex-col gap-2">
@@ -208,15 +201,11 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
       {/* Activity feed */}
       <div className="flex items-center gap-2 mt-8 mb-3">
         <Activity size={16} color={C.accent} />
-        <h2 className="text-sm font-bold" style={{ color: C.fg }}>
-          Recent activity
-        </h2>
+        <h2 className="text-sm font-bold" style={{ color: C.fg }}>{t("Recent activity")}</h2>
       </div>
 
       {feed.length === 0 ? (
-        <p className="text-sm px-1" style={{ color: C.fg3 }}>
-          Workouts and level-ups from you and your friends show up here.
-        </p>
+        <p className="text-sm px-1" style={{ color: C.fg3 }}>{t("Workouts and level-ups from you and your friends show up here.")}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {feed.map((item) => (

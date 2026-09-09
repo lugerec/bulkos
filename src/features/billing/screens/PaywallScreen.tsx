@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, Check, Snowflake, BarChart3, Sparkles } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C } from "@/shared/ui";
 import { useEntitlementStore } from "@/store/entitlementStore";
@@ -17,12 +18,12 @@ const PERKS = [
   },
   {
     icon: BarChart3,
-    title: "Full history & analytics",
+    title: t("Full history & analytics"),
     body: "Every session you've ever logged, with the deeper progress charts.",
   },
   {
     icon: Sparkles,
-    title: "Smarter generated sessions",
+    title: t("Smarter generated sessions"),
     body: "Fatigue-aware programming that adapts to how your last weeks actually went.",
   },
 ];
@@ -86,14 +87,10 @@ export default function PaywallScreen({ onBack }: { onBack: () => void }) {
           style={{ background: C.accentDim, border: `1px solid ${C.accent}` }}
         >
           <Check size={20} color={C.accent} />
-          <p className="text-sm font-bold" style={{ color: C.fg }}>
-            You're on Pro — thanks for supporting BulkOS.
-          </p>
+          <p className="text-sm font-bold" style={{ color: C.fg }}>{t("You're on Pro — thanks for supporting BulkOS.")}</p>
         </div>
       ) : (
-        <p className="text-sm mb-6" style={{ color: C.fg2 }}>
-          Tracking your lifts and food stays free, always. Pro adds the extras.
-        </p>
+        <p className="text-sm mb-6" style={{ color: C.fg2 }}>{t("Tracking your lifts and food stays free, always. Pro adds the extras.")}</p>
       )}
 
       <div className="flex flex-col gap-3 mb-6">
@@ -137,9 +134,7 @@ export default function PaywallScreen({ onBack }: { onBack: () => void }) {
             disabled={busy}
             className="w-full py-3 mt-2 text-xs font-semibold"
             style={{ color: C.fg3 }}
-          >
-            Restore purchase
-          </button>
+          >{t("Restore purchase")}</button>
         </>
       )}
 

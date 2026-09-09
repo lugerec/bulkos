@@ -14,6 +14,7 @@ import { getBulkPace } from "@/lib/bulkPace";
 import { getFrequencyAdherence } from "@/features/workout/utils/frequencyAdherence";
 import { getWorkoutStreak } from "@/features/workout/utils/workoutStreak";
 import { getWaterGoalLiters } from "@/lib/hydration";
+import { t } from "@/i18n";
 
 import { useHydrationStore } from "@/store/hydrationStore";
 import type { ReactNode } from "react";
@@ -386,7 +387,7 @@ export default function DashboardScreen({
         remainingWeight={remainingWeight}
       />
 
-      <SectionHeader title="Remaining Today" />
+      <SectionHeader title={t("Remaining Today")} />
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         {[
@@ -466,9 +467,7 @@ export default function DashboardScreen({
         </ProgressRing>
 
         <div className="flex-1">
-          <p className="text-xs font-semibold mb-1" style={{ color: C.fg }}>
-            Daily Goal Progress
-          </p>
+          <p className="text-xs font-semibold mb-1" style={{ color: C.fg }}>{t("Daily Goal Progress")}</p>
           <p className="text-[11px] mb-2.5" style={{ color: C.fg3 }}>
             {macros.cal.toLocaleString()} of{" "}
             {macros.calGoal.toLocaleString()} kcal consumed
@@ -522,19 +521,17 @@ export default function DashboardScreen({
       />
 
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <MetricCard label="Workouts this week" value={`${workoutsThisWeek}`} />
-        <MetricCard label="Total workouts" value={`${workouts.length}`} />
-        <MetricCard label="Total volume" value={`${totalVolume.toLocaleString()} kg`} />
-        <MetricCard label="Training time" value={formatDuration(totalTrainingTime)} />
+        <MetricCard label={t("Workouts this week")} value={`${workoutsThisWeek}`} />
+        <MetricCard label={t("Total workouts")} value={`${workouts.length}`} />
+        <MetricCard label={t("Total volume")} value={`${totalVolume.toLocaleString()} kg`} />
+        <MetricCard label={t("Training time")} value={formatDuration(totalTrainingTime)} />
       </div>
 
       <div
         className="rounded-[20px] p-4 mb-4 card-lit"
         style={{ background: C.card, border: `1px solid ${C.border}` }}
       >
-        <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>
-          Best workout
-        </p>
+        <p className="text-[11px] mb-1.5" style={{ color: C.fg2 }}>{t("Best workout")}</p>
         <p className="text-base font-bold" style={{ color: C.fg }}>
           {bestWorkout?.name ?? "No workout yet"}
         </p>
@@ -653,9 +650,7 @@ export default function DashboardScreen({
           border: `1px solid ${C.border}`,
           color: C.red,
         }}
-        >
-          Reset Water
-        </button>
+        >{t("Reset Water")}</button>
       </div>
 
       <button
@@ -666,9 +661,7 @@ export default function DashboardScreen({
           color: C.onAccent,
           boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
         }}
-      >
-        Start Today's Workout
-      </button>
+      >{t("Start Today's Workout")}</button>
     </div>
   );
 }

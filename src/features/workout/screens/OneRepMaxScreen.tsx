@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { t } from "@/i18n";
 
 import { useSettingsStore, weightUnit } from "@/store/settingsStore";
 import { Calculator } from "lucide-react";
@@ -63,7 +64,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="pb-8">
-      <SubScreenHeader title="1RM Calculator" onBack={onBack} />
+      <SubScreenHeader title={t("1RM Calculator")} onBack={onBack} />
 
       <div className="px-5">
         <div
@@ -85,9 +86,7 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
                 <span
                   className="text-[11px] font-bold uppercase tracking-wider"
                   style={{ color: C.accentInk }}
-                >
-                  Estimated 1RM
-                </span>
+                >{t("Estimated 1RM")}</span>
               </div>
               <p className="text-[32px] font-extrabold" style={{ color: C.fg }}>
                 {estimate.average}
@@ -101,15 +100,11 @@ export default function OneRepMaxScreen({ onBack }: { onBack: () => void }) {
               </p>
             </div>
           ) : (
-            <p className="text-sm text-center py-4" style={{ color: C.fg3 }}>
-              Enter a weight and rep count to estimate your 1RM.
-            </p>
+            <p className="text-sm text-center py-4" style={{ color: C.fg3 }}>{t("Enter a weight and rep count to estimate your 1RM.")}</p>
           )}
 
           {highReps && (
-            <p className="text-[11px] mt-3 text-center" style={{ color: C.amber }}>
-              Estimates are most accurate at 10 reps or fewer.
-            </p>
+            <p className="text-[11px] mt-3 text-center" style={{ color: C.amber }}>{t("Estimates are most accurate at 10 reps or fewer.")}</p>
           )}
         </div>
 

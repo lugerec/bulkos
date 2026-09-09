@@ -1,4 +1,5 @@
 import { Capacitor } from "@capacitor/core";
+import { t } from "@/i18n";
 
 /**
  * In-app barcode scanner.

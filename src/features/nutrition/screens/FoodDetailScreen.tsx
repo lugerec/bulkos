@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, CheckCircle2, Minus, Plus, Bookmark, Check, Star, Pencil, Trash2 } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C } from "@/shared/ui";
 import type { FoodItem } from "@/types/food";
@@ -191,7 +192,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
             background: C.card,
             border: `1px solid ${C.border}`,
           }}
-          aria-label="Go back"
+          aria-label={t("Go back")}
         >
           <ArrowLeft size={18} color={C.fg} />
         </button>
@@ -314,9 +315,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         <p
           className="text-[11px] font-bold uppercase tracking-widest mb-4"
           style={{ color: C.fg2 }}
-        >
-          Serving size
-        </p>
+        >{t("Serving size")}</p>
 
         <div className="flex items-center justify-between">
           <button
@@ -329,7 +328,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
               border: `1px solid ${C.border}`,
               opacity: grams <= (isPiece ? 1 : 10) || saving ? 0.5 : 1,
             }}
-            aria-label="Decrease serving"
+            aria-label={t("Decrease serving")}
           >
             <Minus size={18} color={C.fg} />
           </button>
@@ -363,7 +362,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
               background: C.accent,
               opacity: saving ? 0.6 : 1,
             }}
-            aria-label="Increase serving"
+            aria-label={t("Increase serving")}
           >
             <Plus size={18} color={C.bg} />
           </button>
@@ -381,9 +380,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         <p
           className="text-[11px] font-bold uppercase tracking-widest mb-4"
           style={{ color: C.fg2 }}
-        >
-          Calculated macros
-        </p>
+        >{t("Calculated macros")}</p>
 
         <div className="grid grid-cols-2 gap-3">
           <BigMacro
@@ -432,9 +429,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
           className="rounded-[16px] p-4 mb-3"
           style={{ background: C.card, border: `1px solid ${C.accent}` }}
         >
-          <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>
-            Edit food
-          </p>
+          <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>{t("Edit food")}</p>
 
           <input
             value={editForm.name}
@@ -537,9 +532,7 @@ export default function FoodDetailScreen({ food, onBack }: Props) {
         >
           {inMyFoods ? (
             <>
-              <Check size={16} />
-              In your foods
-            </>
+              <Check size={16} />{t("In your foods")}</>
           ) : (
             <>
               <Bookmark size={16} />

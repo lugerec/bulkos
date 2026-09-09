@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { t } from "@/i18n";
 
 import { C } from "@/shared/ui";
 import { useWorkoutHistoryStore } from "@/store/workoutHistoryStore";
@@ -115,12 +116,10 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
         {exerciseName ?? "Exercise"}
       </h2>
 
-      <p className="text-sm mb-5" style={{ color: C.fg3 }}>
-        Exercise progress
-      </p>
+      <p className="text-sm mb-5" style={{ color: C.fg3 }}>{t("Exercise progress")}</p>
 
       <div className="grid grid-cols-2 gap-2 mb-5">
-        <Stat label="Max weight" value={`${maxWeight} kg`} />
+        <Stat label={t("Max weight")} value={`${maxWeight} kg`} />
         <Stat label="Est. 1RM" value={`${estimatedOneRepMax} kg`} />
         <Stat label="Total volume" value={`${totalVolume.toLocaleString()} kg`} />
         <Stat label="Sessions" value={`${history.length}`} />
@@ -136,9 +135,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
               <p className="text-sm font-bold mb-1" style={{ color: C.fg }}>
                 {chartTitle}
               </p>
-              <p className="text-xs" style={{ color: C.fg3 }}>
-                Progress over time
-              </p>
+              <p className="text-xs" style={{ color: C.fg3 }}>{t("Progress over time")}</p>
             </div>
           </div>
 
@@ -192,9 +189,7 @@ export default function ExerciseHistoryScreen({ onBack }: { onBack: () => void }
             className="rounded-[20px] p-5 card-lit"
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
-            <p className="text-sm" style={{ color: C.fg3 }}>
-              No history for this exercise yet.
-            </p>
+            <p className="text-sm" style={{ color: C.fg3 }}>{t("No history for this exercise yet.")}</p>
           </div>
         ) : (
           history.map((entry) => (

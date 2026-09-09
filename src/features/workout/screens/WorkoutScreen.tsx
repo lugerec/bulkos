@@ -1,5 +1,6 @@
 import { exerciseDefinitions } from "@/data/exercises";
 import { getProgressionSuggestion } from "@/features/workout/utils/progression";
+import { t } from "@/i18n";
 
 import ExerciseDetailsSheet from "@/features/workout/components/ExerciseDetailsSheet";
 import SwapExerciseSheet from "@/features/workout/components/SwapExerciseSheet";
@@ -309,13 +310,9 @@ export default function WorkoutScreen() {
             Train
           </p>
   
-          <h2 className="text-[22px] font-extrabold" style={{ color: C.fg }}>
-            Select Workout
-          </h2>
+          <h2 className="text-[22px] font-extrabold" style={{ color: C.fg }}>{t("Select Workout")}</h2>
   
-          <p className="text-sm mt-1" style={{ color: C.fg3 }}>
-            Choose a template to start your session.
-          </p>
+          <p className="text-sm mt-1" style={{ color: C.fg3 }}>{t("Choose a template to start your session.")}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-2.5 mb-5">
@@ -328,9 +325,7 @@ export default function WorkoutScreen() {
               boxShadow: "0 8px 24px rgba(204,242,50,0.2)",
             }}
           >
-            <Sparkles size={16} />
-            AI workout
-          </button>
+            <Sparkles size={16} />{t("AI workout")}</button>
 
           <button
             onClick={() => navigateTo("template-builder")}
@@ -341,9 +336,7 @@ export default function WorkoutScreen() {
               color: C.fg,
             }}
           >
-            <Pencil size={15} />
-            My templates
-          </button>
+            <Pencil size={15} />{t("My templates")}</button>
         </div>
 
         <AiWorkoutSheet
@@ -369,7 +362,7 @@ export default function WorkoutScreen() {
         {templates.length === 0 ? (
           <EmptyState
             icon={Dumbbell}
-            title="No templates yet"
+            title={t("No templates yet")}
             body="Build a workout template first — pick your exercises once and start it any time. Head to Settings → Workout Templates."
           />
         ) : (
@@ -1002,9 +995,7 @@ export default function WorkoutScreen() {
           <CheckCircle2 size={48} color={C.accent} />
         </div>
   
-        <h2 className="text-[32px] font-extrabold mb-2" style={{ color: C.fg }}>
-          Workout Complete
-        </h2>
+        <h2 className="text-[32px] font-extrabold mb-2" style={{ color: C.fg }}>{t("Workout Complete")}</h2>
 
         <div className="mb-4">
         <p
@@ -1046,12 +1037,8 @@ export default function WorkoutScreen() {
         </div>
 
         <div className="w-full mb-6">
-          <p className="text-sm font-semibold mb-1" style={{ color: C.fg }}>
-            How was your workout?
-          </p>
-          <p className="text-[11px] mb-3" style={{ color: C.fg3 }}>
-            This helps tune your next session
-          </p>
+          <p className="text-sm font-semibold mb-1" style={{ color: C.fg }}>{t("How was your workout?")}</p>
+          <p className="text-[11px] mb-3" style={{ color: C.fg3 }}>{t("This helps tune your next session")}</p>
 
           <div
             className="h-1.5 rounded-full mb-3"
@@ -1063,8 +1050,8 @@ export default function WorkoutScreen() {
 
           <div className="flex gap-2">
             {[
-              { value: "easy" as SetEffort, label: "Too easy", color: C.blue },
-              { value: "moderate" as SetEffort, label: "Just right", color: C.accent },
+              { value: "easy" as SetEffort, label: t("Too easy"), color: C.blue },
+              { value: "moderate" as SetEffort, label: t("Just right"), color: C.accent },
               { value: "hard" as SetEffort, label: "Tough", color: C.amber },
             ].map((option) => {
               const active = sessionRating === option.value;
@@ -1180,9 +1167,7 @@ export default function WorkoutScreen() {
               border: `1px solid ${C.border}`,
             }}
           >
-            <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>
-              Compared to last time
-            </p>
+            <p className="text-sm font-bold mb-3" style={{ color: C.fg }}>{t("Compared to last time")}</p>
   
             <div className="grid grid-cols-3 gap-2">
               <DiffStat
@@ -1225,9 +1210,7 @@ export default function WorkoutScreen() {
             border: `1px solid ${C.border}`,
             color: C.fg,
           }}
-        >
-          Start Again
-        </button>
+        >{t("Start Again")}</button>
       </div>
     );
   }
@@ -1370,13 +1353,13 @@ export default function WorkoutScreen() {
               ? `${strongestSet.weight}×${strongestSet.reps}`
               : "—"
           }
-          label="Best set"
+          label={t("Best set")}
         />
 
         <StatTile
           icon={<Dumbbell size={16} />}
           value={estimatedOneRepMax > 0 ? `${estimatedOneRepMax} kg` : "—"}
-          label="Est. 1RM"
+          label={t("Est. 1RM")}
         />
       </div>
       </div>
@@ -1428,7 +1411,7 @@ export default function WorkoutScreen() {
                     <button
                       type="button"
                       onClick={() => setSwapExerciseIdx(exIdx)}
-                      aria-label="Swap exercise"
+                      aria-label={t("Swap exercise")}
                       className="flex items-center justify-center w-6 h-6 rounded-full"
                       style={{ background: C.card2, color: C.fg3 }}
                     >
@@ -1438,7 +1421,7 @@ export default function WorkoutScreen() {
                     <button
                       type="button"
                       onClick={() => toggleNote(exIdx)}
-                      aria-label="Exercise note"
+                      aria-label={t("Exercise note")}
                       className="flex items-center justify-center w-6 h-6 rounded-full"
                       style={{
                         background: ex.notes ? C.accentDim : C.card2,
@@ -1452,7 +1435,7 @@ export default function WorkoutScreen() {
                       <button
                         type="button"
                         onClick={() => removeExercise(exIdx)}
-                        aria-label="Remove exercise"
+                        aria-label={t("Remove exercise")}
                         className="flex items-center justify-center w-6 h-6 rounded-full"
                         style={{ background: C.card2, color: C.fg3 }}
                       >
@@ -1541,9 +1524,7 @@ export default function WorkoutScreen() {
                           color: C.fg,
                           border: `1px solid ${C.border}`,
                         }}
-                      >
-                        Apply All
-                      </button>
+                      >{t("Apply All")}</button>
 
                       <span
                         className="flex items-center text-[11px] font-semibold"
@@ -1582,7 +1563,7 @@ export default function WorkoutScreen() {
                 <textarea
                   value={ex.notes ?? ""}
                   onChange={(e) => updateNote(exIdx, e.target.value)}
-                  placeholder="Note for this exercise (e.g. grip, form cue, how it felt)…"
+                  placeholder={t("Note for this exercise (e.g. grip, form cue, how it felt)…")}
                   rows={2}
                   className="w-full rounded-[14px] px-3 py-2 mb-3 text-sm outline-none resize-none"
                   style={{
@@ -1719,7 +1700,7 @@ export default function WorkoutScreen() {
                             setRestKey(null);
                             cancelRestDone();
                           }}
-                          aria-label="Skip rest"
+                          aria-label={t("Skip rest")}
                           className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{ background: C.accentDim }}
                         >
@@ -1791,9 +1772,7 @@ export default function WorkoutScreen() {
               color: C.onAccent,
               boxShadow: `0 8px 32px rgba(204,242,50,0.25)`,
             }}
-          >
-            Start Workout
-          </button>
+          >{t("Start Workout")}</button>
         ) : (
           <button
             onClick={handleFinishWorkout}

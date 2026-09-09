@@ -24,7 +24,7 @@ Slovak is the default and the target market; English stays as the source languag
 - **Not translated on purpose:** exercise names, muscle groups, gym terminology (Bench Press, RPE, 1RM). Slovak lifters use the English terms. Slovak *search aliases* live with the exercise data instead.
 - `npm run i18n:missing` lists keys called but absent from `sk.ts`, dead keys, and the files with the most untranslated text left. Run it before claiming a screen is done.
 
-Migration status: core + bottom nav + Settings + check-in/progress-photo screens. ~50 of ~500 strings. Remaining biggest: Onboarding, WorkoutScreen, ExerciseDetailsSheet, App.tsx, FoodDatabaseScreen.
+Migration status: onboarding, workout, dashboard, nutrition, progress, analytics, social, rewards, paywall, settings, check-in and navigation are done — 332 keys, 246 call sites. What's left is scattered 2–3 string tails; `npm run i18n:missing` lists them. Exercise/food *data* names are out of scope by design.
 
 ## Architecture
 

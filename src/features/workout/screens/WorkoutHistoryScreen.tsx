@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { ArrowLeft, Dumbbell } from "lucide-react";
+import { t } from "@/i18n";
 
 import { C, type Screen } from "@/shared/ui";
 import EmptyState from "@/shared/EmptyState";
@@ -79,13 +80,9 @@ export default function WorkoutHistoryScreen({
         <ArrowLeft size={18} color={C.fg} />
       </button>
 
-      <h2 className="text-[22px] font-extrabold mb-1" style={{ color: C.fg }}>
-        Workout History
-      </h2>
+      <h2 className="text-[22px] font-extrabold mb-1" style={{ color: C.fg }}>{t("Workout History")}</h2>
 
-      <p className="text-sm mb-5" style={{ color: C.fg3 }}>
-        Your completed workouts
-      </p>
+      <p className="text-sm mb-5" style={{ color: C.fg3 }}>{t("Your completed workouts")}</p>
 
       <div className="flex flex-col gap-3">
         {workouts.length === 0 ? (
@@ -98,7 +95,7 @@ export default function WorkoutHistoryScreen({
           ) : (
             <EmptyState
               icon={Dumbbell}
-              title="No workouts yet"
+              title={t("No workouts yet")}
               body="Finish a session and it'll show up here with your volume, sets and personal records."
               actionLabel="Start a workout"
               onAction={() => onNavigate("workout")}
@@ -152,9 +149,7 @@ export default function WorkoutHistoryScreen({
             <p className="text-sm font-bold" style={{ color: C.fg }}>
               {hiddenCount} older {hiddenCount === 1 ? "session is" : "sessions are"} saved but hidden
             </p>
-            <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>
-              Nothing was deleted — Pro unlocks your full history.
-            </p>
+            <p className="text-[11px] mt-1" style={{ color: C.fg3 }}>{t("Nothing was deleted — Pro unlocks your full history.")}</p>
           </button>
         )}
       </div>
